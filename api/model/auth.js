@@ -1,14 +1,17 @@
 import bcrypt from 'bcrypt';
-import runSQL from "../model/database.js";
+import runSQL from "./database.js";
 import jwt from 'jsonwebtoken';
 
 
-let user = {};
+let auth = {};
 
-user.checkPassword = async (username, password) => {
+//check password
+auth.checkPassword = async (username, password) => {
 
-    const this_user = await user.login(username);
+    //get the user data
+    const this_user = await auth.login(username);
     
+    //no user then cant match
     if(this_user.length != 1)
         return false;
     
@@ -17,8 +20,8 @@ user.checkPassword = async (username, password) => {
     
 }
 
-
-user.login = async (username) => {
+//get basic user data
+auth.login = async (username) => {
 
     let sql = "SELECT ally_code, password, access ";
     sql += "FROM player ";
@@ -29,11 +32,23 @@ user.login = async (username) => {
     return this_user;
 }
 
-user.getUserToken = async (username) => {
+//create a jwt token and return this with the user data
+auth.getAuthToken = async (username) => {
 
-    const this_user = await user.login(username);
+    const this_user = await auth.login(username);
     this_user[0].token = jwt.sign({ username: this_user[0].ally_code, access: this_user[0].access}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '168h' });
     return this_user[0];
+}
+
+//verify the token
+auth.verifyAuthToken = async (authToken) => {
+
+    return jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+          return false;
+        }
+        return true;
+    })
 }
 /*
 player.setPassword = async (username, password) => {
@@ -152,4 +167,4 @@ player.getUnits = async (ally_code) => {
 
 } 
 */
-export default user;
+export default auth;

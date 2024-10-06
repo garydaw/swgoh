@@ -1,6 +1,5 @@
-import React, { useContext, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ACTIONS, useGlobalContext } from '../store/GlobalStore'
+import React, { useEffect, useState } from 'react'
+import {  useNavigate } from 'react-router-dom'
 import { useAuth } from '../store/useAuth';
 
 export default function Login() {
@@ -8,24 +7,51 @@ export default function Login() {
   const { login } = useAuth();
   const [loginError, setLoginError] = useState("");
   const [username, setUsername] = useState("");
-  const [password, setpassword] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-  const globalStore = useGlobalContext();
   
+  //see if user is logged in
+  useEffect(() => {
+    // Send a request to the backend to check if the user is logged in
+    const checkLoginStatus = async () => {
+      const response = await fetch('http://localhost:5000/api/auth/check', {
+        method: 'GET',
+        credentials: 'include', 
+      });
+
+      if (response.ok) {
+        //store user data
+        const userData = await response.json();
+        await login( userData);
+        //navigate to units, need to update this for deep linking
+        navigate("/units");
+      }
+    };
+
+    //check if use is still logged in
+    checkLoginStatus();
+  }, []);
+
+
+  //call login
   const handleLogin = async (e) => {
+    //prevent default and clear error message
     e.preventDefault();
     setLoginError("");
 
-    const response = await fetch('http://localhost:5000/api' + '/user/login', {
+    //check user credentials
+    const response = await fetch('http://localhost:5000/api' + '/auth/login', {
       method: 'POST',
+      credentials: 'include', 
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password })
     });
   
     if (response.ok) {
+      //if all good get user details and redirect to units
       const userData = await response.json();
       await login( userData);
       navigate("/units");
@@ -36,22 +62,13 @@ export default function Login() {
     }
   };
 
-  /*function handleLogin(e){
-    e.preventDefault();
-
-    //verify user
-    if(true){
-      globalStore.dispatch({type:ACTIONS.UPDATE_ALLY_CODE,payload:username});
-      navigate("./units");
-    }
-  }*/
 
   function usernameChanged(e) {
     setUsername(e.target.value);
   }
 
   function passwordChanged(e) {
-    setpassword(e.target.value);
+    setPassword(e.target.value);
   }
 
   return (

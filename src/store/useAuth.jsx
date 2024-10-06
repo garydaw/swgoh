@@ -1,37 +1,32 @@
-import { createContext, useContext, useMemo } from "react";
-//import { useNavigate } from "react-router-dom";
-import { useLocalStorage } from "./useLocalStorage";
+import { createContext, useContext, useMemo, useState } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
-    const [user, setUser] = useLocalStorage("user", null);
-    const [admin, setAdmin] = useLocalStorage("admin", null);
-    const [token, setToken] = useLocalStorage("token", null);
-    //const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [username, setUsername] = useState('');
+    const [admin, setAdmin] = useState(false);
 
     const login = async (userData) => {
-        setUser(userData.user.ally_code);
+        setIsLoggedIn(true);
+        setUsername(userData.user.ally_code);
         setAdmin(userData.user.access);
-        setToken(userData.token);
-        //navigate("/units");
     };
 
     const logout = () => {
-        setUser(null);
+        setIsLoggedIn(false);
+        setUsername(null);
         setAdmin(null);
-        setToken(null);
-        //navigate("/", {replace: true});
     };
 
     const value = useMemo(
         () => ({
-            user,
+            isLoggedIn,
+            username,
             admin,
-            token,
             login,
             logout,
         }),
-        [user]
+        [username]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
