@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {  useNavigate } from 'react-router-dom'
 import { useAuth } from '../store/useAuth';
+import { apiRequest } from '../helpers/ApiRequest';
 
 export default function Login() {
 
@@ -10,22 +11,19 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-  
+
   //see if user is logged in
   useEffect(() => {
     // Send a request to the backend to check if the user is logged in
+    
     const checkLoginStatus = async () => {
-      const response = await fetch('http://localhost:5000/api/auth/check', {
-        method: 'GET',
-        credentials: 'include', 
-      });
-
-      if (response.ok) {
-        //store user data
-        const userData = await response.json();
+      try {
+        const userData = await apiRequest('auth/check', 'GET');
         await login( userData);
-        //navigate to units, need to update this for deep linking
-        navigate("/units");
+        //navigate to characters, need to update this for deep linking
+        navigate("/characters");
+      } catch (error){
+        //nothing to do
       }
     };
 
@@ -40,25 +38,14 @@ export default function Login() {
     e.preventDefault();
     setLoginError("");
 
-    //check user credentials
-    const response = await fetch('http://localhost:5000/api' + '/auth/login', {
-      method: 'POST',
-      credentials: 'include', 
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password })
-    });
-  
-    if (response.ok) {
-      //if all good get user details and redirect to units
-      const userData = await response.json();
+    
+    try {
+      const userData = await apiRequest('auth/login', 'POST', { username, password });
       await login( userData);
-      navigate("/units");
-    } else {
+      navigate("/characters");
+    } catch(error) {
       // Handle login failure
-      const errorData = await response.json();
-      setLoginError(errorData.message);
+      setLoginError(error.message);
     }
   };
 

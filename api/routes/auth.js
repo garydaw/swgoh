@@ -56,22 +56,8 @@ authRouter.get('/check', async (req, res) => {
   //get the token from the cookie
   const authToken = req.cookies.token; 
 
-  //if no token then not logged in
-  if (!authToken) {
-    return res.status(401).json({ message: 'Not logged in' });
-  }
-
-  //verify the token
-  const valid = await auth.verifyAuthToken(authToken);
-
-  // if valid return as normal
-  if(valid){
-    res.json({ user:{ally_code: authToken.ally_code, access: authToken.access}});
-  } else {
-    //token is invalid in someway
-    res.status(403).json({ message: 'Token expired or invalid' });
-  }
-    
+  res.json({ user:{ally_code: authToken.ally_code, access: authToken.access}});
+  
 });
 
 export default authRouter;

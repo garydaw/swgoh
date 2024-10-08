@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import css from './ProtectedLayout.module.css'
 import { useAuth } from '../store/useAuth';
 import { Outlet, useNavigate } from 'react-router';
-import Navigation from '../pages/Navigation';
+import Navigation from '../components/general/Navigation';
 import LogoutButton from '../components/general/LogoutButton';
 
 export default function ProtectedLayout(props) {

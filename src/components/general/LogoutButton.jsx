@@ -1,18 +1,17 @@
 import React from 'react'
 import { useAuth } from '../../store/useAuth';
+import { apiRequest } from '../../helpers/ApiRequest';
 
 export default function LogoutButton() {
   const {logout} = useAuth();
 
   //call logout api to invalidate cookie
   const handleLogout = async (e) => {
-    const response = await fetch('http://localhost:5000/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include', 
-    });
-
-    if (response.ok) {
-      await response.json();
+    try{
+      await apiRequest('auth/logout', 'POST');
+      await logout();
+    } catch(error){
+      //still call logout
       await logout();
     }
   }

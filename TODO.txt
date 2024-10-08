@@ -1,0 +1,5 @@
+env file on frontend for port and api url
+error when going to blocked url
+deep linking
+search bar passing through to loaders
+
