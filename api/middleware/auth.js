@@ -5,6 +5,7 @@ const authMiddleware = async (req, res, next) => {
   // Check if the current route should be excluded
   if (
         req.path === '/auth/login'
+        || req.path === '/auth/check'
         || req.path.slice(0, 18) === '/database/migrate/' 
         || req.path.slice(0, 13) === '/swgoh/guild/' 
       ) {

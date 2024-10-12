@@ -17,14 +17,14 @@ export default function Login() {
     // Send a request to the backend to check if the user is logged in
     
     const checkLoginStatus = async () => {
-      try {
-        const userData = await apiRequest('auth/check', 'GET');
-        await login( userData);
+      
+      const check = await apiRequest('auth/check', 'GET');
+      if(check.auth){
+        await login( check);
         //navigate to characters, need to update this for deep linking
         navigate("/characters");
-      } catch (error){
-        //nothing to do
       }
+      
     };
 
     //check if use is still logged in
@@ -58,6 +58,38 @@ export default function Login() {
     setPassword(e.target.value);
   }
 
+  return (
+    <div className="row">
+        <div className="col-4 offset-4 card d-show mt-5 pb-3">
+          <h2 className="text-center mb-4">Login</h2>
+            <div className="mb-3">
+                <label htmlFor="username" className="form-label">Username</label>
+                <input type="text" 
+                        className="form-control"
+                        id="username"
+                        placeholder="Enter your username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required></input>
+            </div>
+            <div className="mb-3">
+                <label htmlFor="password" className="form-label">Password</label>
+                <input type="password"
+                        className="form-control"
+                        id="password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required></input>
+            </div>
+            <div className={loginError === "" ? "d-none" : "d-show pb-3 text-danger"}>
+              {loginError}
+            </div>
+            <button type="submit" onClick={handleLogin} className="btn btn-primary btn-block">Login</button>
+        </div>
+      </div>
+  );
+  
   return (
       <div className="w-full max-w-xs">
         <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleLogin}>

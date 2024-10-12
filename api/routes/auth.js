@@ -2,6 +2,7 @@
 import express from 'express';
 const authRouter = express.Router();
 import auth from "../model/auth.js";
+import jwt from 'jsonwebtoken';
 
 //login function
 authRouter.post('/login', async (req, res) => {
@@ -56,7 +57,19 @@ authRouter.get('/check', async (req, res) => {
   //get the token from the cookie
   const authToken = req.cookies.token; 
 
-  res.json({ user:{ally_code: authToken.ally_code, access: authToken.access}});
+  //if no token then not logged in
+  if (!authToken) {
+    return res.json({ auth:false, message: 'No Token' });
+  }
+
+  //verify the token
+  return jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ auth:false, message: 'Token expired or invalid' });
+    }
+    return res.json({ auth:true, user:{ally_code: decoded.username, access: decoded.access}});
+  });
+ 
   
 });
 

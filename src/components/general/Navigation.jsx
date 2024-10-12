@@ -6,14 +6,14 @@ export default function Navigation() {
 
   //list of main links
   const navItems = [
-    { title:"Characters",to:"/characters" },
-    { title:"Ships",to:"/ships" },
-    { title:"Journey Guide", to:"/journey"},
-    { title:"GAC", to:"/gac"},
-    { title:"TW", to:"/tw"},
-    { title:"RoTE", to:"/rote"},
-    { title:"Tips", to:"/tips"},
-    { title:"Admin", to:"/admin"},
+    { title: "Characters", to: "/characters" },
+    { title: "Ships", to: "/ships" },
+    { title: "Journey Guide", to: "/journey" },
+    { title: "GAC", to: "/gac" },
+    { title: "TW", to: "/tw" },
+    { title: "RoTE", to: "/rote" },
+    { title: "Tips", to: "/tips" },
+    { title: "Admin", to: "/admin" },
   ]
 
   return (

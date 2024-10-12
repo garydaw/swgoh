@@ -1,36 +1,40 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useEffect,useState } from "react";
+import { apiRequest } from "../helpers/ApiRequest";
+import { useAuth } from '../store/useAuth';
 
-export const ACTIONS = {
-  UPDATE_ALLY_CODE: "update-ally_code"
-}
+export const GlobalContext = createContext([]);
 
-export function globalReducer(state, action){
-  
-  switch(action.type){
-    case ACTIONS.UPDATE_ALLY_CODE:
-      return {
-          ...state,
-          ally_code: action.payload
-      }
-  }
-  
-  return state;
-}
-
-export const GlobalContext = createContext();;
+export const GlobalContextProvider = props => {
+    const [units, setUnits] = useState([]);
+    const [ships, setShips] = useState([]);
+    const [allies, setAllies] = useState([])
+    
+    const {isLoggedIn} = useAuth();
 
 
-export function GlobalProvider(props){
+    useEffect(() => {
+        const fetchGeneral = async () => {
+            const general = await apiRequest('general', 'GET');
 
-  const [state, dispatch] = useReducer(globalReducer, {
-    ally_code: ''
-  });
+            setUnits(general.units);
+            setShips(general.ships);
+            setAllies(general.allies);
+        };
 
-  return (
-    <GlobalContext.Provider {...props} value={{state, dispatch}}></GlobalContext.Provider>
-  )
-}
-export function useGlobalContext(){
-  return useContext(GlobalContext);
-}
+        if(isLoggedIn){
+            fetchGeneral();
+        }
+    }, [isLoggedIn]);
 
+    return (
+        <GlobalContext.Provider
+            value={{
+              units,
+              ships,
+              allies
+            }}
+        >
+            {props.children}
+        </GlobalContext.Provider>
+    );
+};
