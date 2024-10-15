@@ -4,10 +4,11 @@ import { useAuth } from '../store/useAuth';
 
 export const GlobalContext = createContext([]);
 
+
 export const GlobalContextProvider = props => {
     const [units, setUnits] = useState([]);
     const [ships, setShips] = useState([]);
-    const [allies, setAllies] = useState([])
+    const [allies, setAllies] = useState([]);
     
     const {isLoggedIn} = useAuth();
 
@@ -26,12 +27,20 @@ export const GlobalContextProvider = props => {
         }
     }, [isLoggedIn]);
 
+    function getUserName(ally_code) {
+        const ally = allies.find(item => item.ally_code === parseInt(ally_code));
+
+        // If the result is found, return the name; otherwise, return code back
+        return ally ? ally.ally_name : ally_code;
+    }
+
     return (
         <GlobalContext.Provider
             value={{
               units,
               ships,
-              allies
+              allies,
+              getUserName
             }}
         >
             {props.children}

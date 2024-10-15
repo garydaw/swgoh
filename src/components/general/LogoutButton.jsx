@@ -17,6 +17,15 @@ export default function LogoutButton() {
   }
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <div className="dropdown">
+      <a className="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i className="bi bi-person-circle fs-3"/>
+      </a>
+
+      <ul className="dropdown-menu">
+        <li><a className="dropdown-item" href="#" onClick={handleLogout}>Logout</a></li>
+        <li><a className="dropdown-item" href="#">Change Password</a></li>
+      </ul>
+    </div>
   )
 }

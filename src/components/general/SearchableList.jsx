@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const SearchableList = ({items, item_id, item_name}) => {
+const SearchableList = ({items, item_id, item_name, placeholder, clickHandler}) => {
 
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,9 +22,10 @@ const SearchableList = ({items, item_id, item_name}) => {
   };
 
   const handleItemClick = (item) => {
-    alert(`You clicked on: ${item[item_name]}`);
     setSearchTerm(''); // Clear search when item is clicked
     setFilteredItems([]); // Clear filtered items
+
+    clickHandler(item)
   };
 
   return (
@@ -35,7 +36,7 @@ const SearchableList = ({items, item_id, item_name}) => {
         <input
           type="text"
           className="form-control"
-          placeholder="Ally Name/Code"
+          placeholder={placeholder}
           value={searchTerm}
           onChange={handleSearch}
         />
