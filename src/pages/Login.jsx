@@ -18,11 +18,13 @@ export default function Login() {
     
     const checkLoginStatus = async () => {
       
-      const check = await apiRequest('auth/check', 'GET');
+      const check = await apiRequest('auth/check', false, 'GET');
       if(check.auth){
         await login( check);
         //navigate to characters, need to update this for deep linking
         navigate("/characters");
+      } else {
+        localStorage.setItem('isLoggedIn', false);
       }
       
     };
@@ -40,7 +42,7 @@ export default function Login() {
 
     
     try {
-      const userData = await apiRequest('auth/login', 'POST', { username, password });
+      const userData = await apiRequest('auth/login', false, 'POST', { username, password });
       await login( userData);
       navigate("/characters");
     } catch(error) {

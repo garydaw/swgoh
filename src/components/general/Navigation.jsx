@@ -1,6 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Navigation() {
+
+  //get the current url params
+  const location = useLocation();
+  const currentQueryParams = location.search;
 
   const style = "list-group-item list-group-item-action";
 
@@ -20,7 +24,7 @@ export default function Navigation() {
     <div className="list-group list-group-flush">
       {navItems.map((navItem, index) => (
         <div key={"navItem_"+index} className={style}>
-          <Link to={navItem.to} className="nav-link">{navItem.title}</Link>
+          <Link to={navItem.to + currentQueryParams} className="nav-link">{navItem.title}</Link>
         </div>
         ))
         }

@@ -15,7 +15,7 @@ export const GlobalContextProvider = props => {
 
     useEffect(() => {
         const fetchGeneral = async () => {
-            const general = await apiRequest('general', 'GET');
+            const general = await apiRequest('general', true, "GET");
 
             setUnits(general.units);
             setShips(general.ships);

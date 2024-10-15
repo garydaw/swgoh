@@ -7,12 +7,14 @@ export const AuthProvider = ({children}) => {
     const [admin, setAdmin] = useState(false);
 
     const login = async (userData) => {
+        localStorage.setItem('isLoggedIn', true);
         setIsLoggedIn(true);
         setUsername(userData.user.ally_code);
         setAdmin(userData.user.access);
     };
 
     const logout = () => {
+        localStorage.setItem('isLoggedIn', false);
         setIsLoggedIn(false);
         setUsername(null);
         setAdmin(null);

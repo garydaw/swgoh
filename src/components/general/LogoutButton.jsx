@@ -8,7 +8,7 @@ export default function LogoutButton() {
   //call logout api to invalidate cookie
   const handleLogout = async (e) => {
     try{
-      await apiRequest('auth/logout', 'POST');
+      await apiRequest('auth/logout', true, 'POST');
       await logout();
     } catch(error){
       //still call logout
@@ -23,8 +23,8 @@ export default function LogoutButton() {
       </a>
 
       <ul className="dropdown-menu">
-        <li><a className="dropdown-item" href="#" onClick={handleLogout}>Logout</a></li>
-        <li><a className="dropdown-item" href="#">Change Password</a></li>
+        <li><span className="dropdown-item" onClick={handleLogout}>Logout</span></li>
+        <li><span className="dropdown-item">Change Password</span></li>
       </ul>
     </div>
   )

@@ -3,14 +3,18 @@ import { useLoaderData } from 'react-router'
 import { apiRequest } from '../helpers/ApiRequest';
 
 export function characterLoader({params, request}){
-  
-  const url = new URL(request.url);
-  const ally_code = url.searchParams.get('ally_code') || "";
+ 
+  if(JSON.parse(localStorage.getItem('isLoggedIn'))){
+    const url = new URL(request.url);
+    const ally_code = url.searchParams.get('ally_code') || "";
 
-  if(ally_code === "" ){
-    return apiRequest("characters");
+    if(ally_code === "" ){
+      return apiRequest("characters", true, "GET");
+    } else {
+      return apiRequest("characters?ally_code=" + ally_code, true, "GET");
+    }
   } else {
-    return apiRequest("characters?ally_code="+ally_code);
+    return null;
   }
 }
 

@@ -6,7 +6,7 @@ import Navigation from '../components/general/Navigation';
 import LogoutButton from '../components/general/LogoutButton';
 import SearchableList from '../components/general/SearchableList';
 import { GlobalContext } from '../store/GlobalStore';
-import {  useSearchParams, Navigate } from 'react-router-dom';
+import {  useSearchParams } from 'react-router-dom';
 
 export default function ProtectedLayout(props) {
   const navigate = useNavigate();

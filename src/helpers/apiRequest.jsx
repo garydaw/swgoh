@@ -1,28 +1,32 @@
 const API_URL= "http://localhost:5000/api/"
 
-export const apiRequest = async (endpoint, method = 'GET', data = null) => {
+export const apiRequest = async (endpoint, auth, method, data = null) => {
 
-  const options = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  };
+  if(auth && !JSON.parse(localStorage.getItem('isLoggedIn'))){
+    return [];
+  } else {
+    const options = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    };
 
-  if (data) {
-    options.body = JSON.stringify(data);
-  }
-
-  try {
-    const response = await fetch(`${API_URL}${endpoint}`, options);
-    if (!response.ok) {
-      const errorData = await response.json();
-      const errorMessage = errorData.message;
-      throw new Error(errorMessage || 'Request failed');
+    if (data) {
+      options.body = JSON.stringify(data);
     }
-    return await response.json();
-  } catch (error) {
-    throw error;
+
+    try {
+      const response = await fetch(`${API_URL}${endpoint}`, options);
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.message;
+        throw new Error(errorMessage || 'Request failed');
+      }
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
   }
 };

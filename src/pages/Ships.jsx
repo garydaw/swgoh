@@ -4,9 +4,15 @@ import { apiRequest } from '../helpers/ApiRequest';
 
 export function shipLoader({params, request}){
   
-  //send ally_code if searched for
-  //return apiRequest("ships?ally_code=34");
-  return apiRequest("ships");
+  const url = new URL(request.url);
+  const ally_code = url.searchParams.get('ally_code') || "";
+
+  if(ally_code === "" ){
+    return apiRequest("ships", true, "GET");
+  } else {
+    return apiRequest("ships?ally_code=" + ally_code, true, "GET");
+  }
+
 }
 
 export default function Ships() {
