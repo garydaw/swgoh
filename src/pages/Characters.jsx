@@ -4,18 +4,15 @@ import { apiRequest } from '../helpers/ApiRequest';
 
 export function characterLoader({params, request}){
  
-  if(JSON.parse(localStorage.getItem('isLoggedIn'))){
-    const url = new URL(request.url);
-    const ally_code = url.searchParams.get('ally_code') || "";
+  const url = new URL(request.url);
+  const ally_code = url.searchParams.get('ally_code') || "";
 
-    if(ally_code === "" ){
-      return apiRequest("characters", true, "GET");
-    } else {
-      return apiRequest("characters?ally_code=" + ally_code, true, "GET");
-    }
+  if(ally_code === "" ){
+    return apiRequest("characters", true, "GET");
   } else {
-    return null;
+    return apiRequest("characters?ally_code=" + ally_code, true, "GET");
   }
+  
 }
 
 export default function Characters() {

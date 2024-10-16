@@ -48,7 +48,7 @@ export default function ProtectedLayout(props) {
 
       {/* HEADER */}
       <div className={"row "+css.header}>
-        <div className="col-11 d-flex align-items-center">
+        <div className="col-10 d-flex align-items-center">
           <i role="btn" className='btn bi-list ms-2 d-block d-sm-none' onClick={sidebarToggle}></i>
           <h3 className='d-none d-sm-block'>Mos Eisley&apos;s Vip Club</h3>
           <div className="form-group row ps-5">
@@ -61,7 +61,7 @@ export default function ProtectedLayout(props) {
           </div>
         </div>
         
-        <div className="col-1 text-end">
+        <div className="col-2 text-end">
           <LogoutButton/>
         </div>
       </div>
