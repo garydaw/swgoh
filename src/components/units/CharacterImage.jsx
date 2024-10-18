@@ -19,12 +19,14 @@ export default function CharacterImage({character}) {
   }
 
   return (
+    <div className={css.centreImage}>
     <div className={css.relative}>
       <img className={`${css.characterImage} ${css[imgClass]}`} src={"https://game-assets.swgoh.gg/textures/"+character.unit_image}/>
       {character.relic_tier < 2 && <div className={`${css.CharacterImageOverlay} ${css.levelOverlay} ${css.level}`}>{character.level}</div>}
       {character.relic_tier > 1 && <div className={`${css.CharacterImageOverlay} ${css.levelOverlay} ${css[alignment]}`}>{character.relic_tier - 2}</div>}
       {character.zeta_abilities > 0 && <div className={`${css.CharacterImageOverlay} ${css.zetaOverlay}`}>{character.zeta_abilities}</div>}
       {character.omicron_abilities > 0 && <div className={`${css.CharacterImageOverlay} ${css.omicronOverlay}`}>{character.omicron_abilities}</div>}
+    </div>
     </div>
   )
 }

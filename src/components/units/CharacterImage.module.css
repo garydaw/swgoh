@@ -1,3 +1,8 @@
+.centreImage {
+  display: flex;
+  justify-content: center;
+}
+
 /*set relative position so we can overlay the images */
 .relative {
   position: relative;

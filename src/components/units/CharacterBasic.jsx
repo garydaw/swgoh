@@ -1,6 +1,7 @@
 import React from 'react'
 import css from './CharacterBasic.module.css'
 import CharacterImage from './CharacterImage';
+import Stars from './Stars';
 
 export default function CharacterBasic({character}) {
   console.log(character);
@@ -11,13 +12,14 @@ export default function CharacterBasic({character}) {
     <div className="col-xxl-3 col-md-4 col-sm-12">
       <div className="card mb-3">
         <div className="card-header text-center">{character.character_name}</div>
-        <div className={"card-body d-flex flex-column flex-lg-row " +css.customFlex}>
+        <div className="card-body">
           <CharacterImage character={character}/>
-          <p className="card-text">
-            <ul className={css.cleanList}>
-              <li>Power : {numFormatter.format(character.power)}</li>
-            </ul>
-          </p>
+          <div className="card-text d-flex justify-content-center pt-1">
+            <div>
+              <Stars rarity={character.rarity}/>
+              {/*Power : {numFormatter.format(character.power)}*/}
+            </div>
+          </div>
         </div>
       </div>
     </div>
