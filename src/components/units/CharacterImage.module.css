@@ -1,0 +1,84 @@
+/*set relative position so we can overlay the images */
+.relative {
+  position: relative;
+  height:80px;
+  width:80px;
+}
+
+/* make the image a circle */
+.characterImage {
+  border-radius: 50%;
+  height:100%;
+  width:100%;
+}
+
+/* relic drop shadow round the image */
+.relicdark {
+  box-shadow: 0px 0px 40px rgb(255, 0, 0);
+}
+.reliclight {
+  box-shadow: 0px 0px 40px rgb(46,103,248);
+}
+.relicneutral {
+  box-shadow: 0px 0px 40px rgb(255, 0, 255);
+}
+
+/* general props for the image overlays */
+.CharacterImageOverlay {
+  position: absolute;
+  color:white;
+  height:24px;
+  width:24px;
+  text-align: center;
+  transform: translate(-50%, 0%);
+  background-size:contain;
+  background-position:center;
+  background-repeat:no-repeat;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+/* normal gear level overlay */
+.levelOverlay { 
+  left: 50%;
+  bottom: -6px;
+  height:40px;
+  width:40px;
+  line-height: 38px;
+}
+.level {
+  height:30px;
+  width:30px;
+  background-image: url("/level_background.webp");
+  line-height: 27px;
+}
+
+/* relic level overlays */
+.dark {
+  background-image: url("/relic_dark.webp");
+}
+.light {
+  background-image: url("/relic_light.webp");
+}
+.neutral {
+  background-image: url("/relic_neutral.webp");
+}
+
+
+/* zeta overlay */
+.zetaOverlay {
+  left: 15%;
+  bottom: 15%;
+  background-image: url("/zeta.png");
+  line-height: 24px;
+}
+
+/* omicron overlay */
+.omicronOverlay {
+  left: 85%;
+  bottom: 12%;
+  height:30px;
+  width:30px;
+  background-image: url("/omicron.png");
+  line-height: 27px;
+}

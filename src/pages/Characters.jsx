@@ -1,6 +1,7 @@
 import React from 'react'
 import { useLoaderData } from 'react-router'
 import { apiRequest } from '../helpers/ApiRequest';
+import CharacterBasic from '../components/units/CharacterBasic';
 
 export function characterLoader({params, request}){
  
@@ -16,9 +17,6 @@ export function characterLoader({params, request}){
 }
 
 export default function Characters() {
-
-
-  //const globalStore = useGlobalContext();
   
   const loader = useLoaderData();
 
@@ -26,12 +24,13 @@ export default function Characters() {
     <div>
       <div>
         <h2>Characters</h2>
-      <ul>
-        {loader.map((character, index) => (
-          <li key={"character_"+index}>{character.character_name} - {character.power}</li>
-        ))}
- 
-      </ul>  
+        <div className='container'>
+          <div className="row">
+            {loader.map((character, itemIndex) => (
+              <CharacterBasic key={"character_"+itemIndex} character={character}/>
+            ))}
+          </div>
+        </div>  
       </div>
     </div>
   )

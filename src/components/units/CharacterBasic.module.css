@@ -1,0 +1,11 @@
+
+
+.cleanList {
+  list-style-type: none;
+}
+
+@media (min-width: 1000px) {
+  .customFlex {
+    flex-direction: row !important; /* Make divs side by side */
+  }
+}
