@@ -1,12 +1,10 @@
 import React from 'react'
-import css from './CharacterBasic.module.css'
 import CharacterImage from './CharacterImage';
 import Stars from './Stars';
 
 export default function CharacterBasic({character}) {
+  
   console.log(character);
-
-  const numFormatter = new Intl.NumberFormat('en-US');
   
   return (
     <div className="col-xxl-3 col-md-4 col-sm-12">
@@ -17,7 +15,6 @@ export default function CharacterBasic({character}) {
           <div className="card-text d-flex justify-content-center pt-1">
             <div>
               <Stars rarity={character.rarity}/>
-              {/*Power : {numFormatter.format(character.power)}*/}
             </div>
           </div>
         </div>

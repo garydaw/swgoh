@@ -51,15 +51,6 @@ export default function Login() {
     }
   };
 
-
-  function usernameChanged(e) {
-    setUsername(e.target.value);
-  }
-
-  function passwordChanged(e) {
-    setPassword(e.target.value);
-  }
-
   return (
     <div className="row">
         <div className="col-4 offset-4 card d-show mt-5 pb-3">
@@ -92,40 +83,4 @@ export default function Login() {
       </div>
   );
   
-  return (
-      <div className="w-full max-w-xs">
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-              Username
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
-              type="text"
-              placeholder="Username"
-              onChange={usernameChanged}/>
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border text-gray-700 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              onChange={passwordChanged}/>
-          </div>
-          <div className="flex items-center justify-between">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="sumbit">
-              Sign In
-            </button>
-          </div>
-          <div className={loginError === "" ? "d-none" : "d-show pb-3 text-danger"}>
-            {loginError}
-          </div>
-        </form>
-      </div>
-    
-  )
 }

@@ -9,7 +9,8 @@ units.get = async (ally_code, combat_type) => {
     sql += "        u.categories, u.unit_image, ";
     sql += "        pu.gear_level, pu.gear_level_plus, pu.gear_level_flags, ";
     sql += "        pu.level, pu.power, pu.rarity, pu.zeta_abilities, pu.omicron_abilities, ";
-    sql += "        pu.relic_tier, pu.has_ultimate, pu.is_galactic_legend "
+    sql += "        pu.relic_tier, pu.has_ultimate, pu.is_galactic_legend, "
+    sql += "        CASE u.alignment WHEN 1 THEN 'neutral' WHEN 2 THEN 'light' ELSE 'dark' END as alignment_label "
     sql += "FROM player_unit pu ";
     sql += "INNER JOIN unit u ";
     sql += "    ON pu.base_id = u.base_id ";
