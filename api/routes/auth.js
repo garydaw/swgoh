@@ -73,4 +73,29 @@ authRouter.get('/check', async (req, res) => {
   
 });
 
+authRouter.post('/changePassword', async (req, res) => {
+  const { currentPassword, password, retypePassword } = req.body;
+
+  // check password
+  const passwordMatch = await auth.checkPassword(req.user.user_name, currentPassword);
+
+  // reject if failure
+  if (!passwordMatch) {
+    return res.json({result:false, message: 'Current password incorrect.' });
+  }
+
+  if(password === ""){
+    return res.json({result:false, message: 'Passwords cannot be blank'});
+  }
+
+  if(password !== retypePassword) {
+    return res.json({result:false, message: 'New Password and Re-typed Password do not match.' });
+  }
+
+  await auth.changePassword(req.user.user_name, password);
+
+  //return basic user data
+  res.json({result:true, message: 'Password successfully changed.' });
+});
+
 export default authRouter;

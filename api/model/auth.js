@@ -50,18 +50,21 @@ auth.verifyAuthToken = async (authToken) => {
         return true;
     })
 }
-/*
-player.setPassword = async (username, password) => {
+
+auth.changePassword = async (username, password) => {
+
+    const hash = await bcrypt.hash(password, 10);
 
     let sql = "UPDATE player ";
     sql += "SET password = ? "
     sql += "WHERE ally_code = ?"
 
-    const this_user = await runSQL(sql, [password, username]);
+    await runSQL(sql, [hash, username]);
     
-    return this_user;
+    return;
 }
 
+/*
 player.get = async (ally_code) => {
 
     let player_details = {};
