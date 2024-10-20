@@ -21,8 +21,11 @@ export default function Login() {
       const check = await apiRequest('auth/check', false, 'GET');
       if(check.auth){
         await login( check);
-        //navigate to characters, need to update this for deep linking
-        navigate("/characters");
+        
+        //navigate to deeplink or default to characters
+        const path = localStorage.getItem("deepLink") ?? '/characters'
+        localStorage.removeItem("deepLink")
+        navigate(path);
       } else {
         localStorage.setItem('isLoggedIn', false);
       }

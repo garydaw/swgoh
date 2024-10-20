@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import css from './ProtectedLayout.module.css'
 import { useAuth } from '../store/useAuth';
-import { Outlet, useNavigate } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import Navigation from '../components/general/Navigation';
 import LogoutButton from '../components/general/LogoutButton';
 import SearchableList from '../components/general/SearchableList';
@@ -10,6 +10,7 @@ import {  useSearchParams } from 'react-router-dom';
 
 export default function ProtectedLayout(props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOverlay, setsidebarOverlay] = useState(false);
   const {isLoggedIn, username} = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,6 +21,7 @@ export default function ProtectedLayout(props) {
   //if user is not logged in navigate back to login
   useEffect(() => {
     if(!isLoggedIn){
+      localStorage.setItem("deepLink", location.pathname);
       navigate("/");
     }
     

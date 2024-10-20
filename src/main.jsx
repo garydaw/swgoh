@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { publicRoutes } from './routes/publicRoutes'
 import { protectedcRoutes } from './routes/protectedRoutes'
@@ -18,11 +17,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-      <AuthProvider>
-        <GlobalContextProvider>
-          <RouterProvider router={router}/>
-        </GlobalContextProvider>
-      </AuthProvider>
-  </StrictMode>
+    <AuthProvider>
+      <GlobalContextProvider>
+        <RouterProvider router={router}/>
+      </GlobalContextProvider>
+    </AuthProvider>
 )
