@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const siteRootURL = 'https://swgoh.gg/';
 const imgRootURL = 'https://game-assets.swgoh.gg/textures/'
-const publicFolder = "C:\\Users\\garyd\\Documents\\code\\swgoh\\public\\images\\units\\";
+const publicFolder = process.env.PUBLIC_FOLDER
 
 let swgoh = {};
 
@@ -45,9 +45,9 @@ swgoh.refreshUnits = async () => {
 swgoh.saveImageFromURL = async (url, path, filename) => {
     try {
     const response = await axios({
-    url: url + filename,
-    method: 'GET',
-    responseType: 'stream',
+        url: url + filename,
+        method: 'GET',
+        responseType: 'stream',
     });
 
     // Create a write stream to save the file
