@@ -94,8 +94,24 @@ authRouter.post('/changePassword', async (req, res) => {
 
   await auth.changePassword(req.user.user_name, password);
 
-  //return basic user data
   res.json({result:true, message: 'Password successfully changed.' });
+});
+
+
+authRouter.post('/passwordReset', async (req, res) => {
+  const { ally_code } = req.body;
+  
+  await auth.changePassword(ally_code, ally_code);
+
+  res.json({result:true, message: 'Password successfully reset.' });
+});
+
+authRouter.post('/changeAdmin', async (req, res) => {
+  const { ally_code, newAccess } = req.body;
+  
+  await auth.changeAdmin(ally_code, newAccess);
+
+  res.json({result:true, message: 'Admin access updated.' });
 });
 
 export default authRouter;

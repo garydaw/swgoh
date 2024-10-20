@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../store/useAuth";
 
 export default function Navigation() {
-
+  const {admin} = useAuth()
   //get the current url params
   const location = useLocation();
   const currentQueryParams = location.search;
@@ -16,9 +17,13 @@ export default function Navigation() {
     { title: "GAC", to: "/gac" },
     { title: "TW", to: "/tw" },
     { title: "RoTE", to: "/rote" },
-    { title: "Tips", to: "/tips" },
-    { title: "Admin", to: "/admin" },
+    { title: "Tips", to: "/tips" }
   ]
+
+  //add admin links for admins
+  if(admin === 1){
+    navItems.push({ title: "User Admin", to: "/userAdmin" });
+  }
 
   return (
     <div className="list-group list-group-flush">

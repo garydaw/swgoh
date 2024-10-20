@@ -14,5 +14,12 @@ generalRouter.get('/', async (req, res) => {
   
 });
 
+generalRouter.get('/allies', async (req, res) => {
+    
+    const allies = await players.getGuildMembers(req.user.user_name)
+    res.json(allies);
+  
+});
+
 
 export default generalRouter;

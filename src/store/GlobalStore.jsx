@@ -27,6 +27,11 @@ export const GlobalContextProvider = props => {
         }
     }, [isLoggedIn]);
 
+    const getAllies = async () => {
+        const allies = await apiRequest('general/allies', true, "GET");
+        setAllies(allies);
+    }
+
     function getUserName(ally_code) {
         const ally = allies.find(item => item.ally_code === parseInt(ally_code));
 
@@ -40,7 +45,8 @@ export const GlobalContextProvider = props => {
               units,
               ships,
               allies,
-              getUserName
+              getUserName,
+              getAllies
             }}
         >
             {props.children}

@@ -31,8 +31,7 @@ export default function Characters() {
 
   return (
     <div>
-      <div>
-        <div className="d-flex justify-content mb-2">
+      <div className="d-flex justify-content mb-2">
         <h2>Characters</h2>
         <input
           type="text"
@@ -42,15 +41,14 @@ export default function Characters() {
           value={searchTerm}
           onChange={handleSearch}
         />
-        </div>
-        <div className='container'>
-          <div className="row">
-            {filteredCharacters.map((character, itemIndex) => (
-              <CharacterBasic key={"character_"+itemIndex} character={character}/>
-            ))}
-          </div>
-        </div>  
       </div>
+      <div className='container'>
+        <div className="row">
+          {filteredCharacters.map((character, itemIndex) => (
+            <CharacterBasic key={"character_"+itemIndex} character={character}/>
+          ))}
+        </div>
+      </div>  
     </div>
   )
 }

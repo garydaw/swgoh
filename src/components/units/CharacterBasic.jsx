@@ -4,8 +4,6 @@ import Stars from './Stars';
 
 export default function CharacterBasic({character}) {
   
-  console.log(character);
-  
   return (
     <div className="col-xxl-3 col-md-4 col-sm-12">
       <div className="card mb-3">

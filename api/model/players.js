@@ -5,7 +5,7 @@ let players = {};
 players.getGuildMembers = async (ally_code) => {
 
     let sql = "";
-    sql += "SELECT p.ally_code, p.ally_name ";
+    sql += "SELECT p.ally_code, p.ally_name, p.access ";
     sql += "FROM player p ";
     sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
     sql += "ORDER BY p.ally_name ";

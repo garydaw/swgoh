@@ -53,13 +53,25 @@ auth.verifyAuthToken = async (authToken) => {
 
 auth.changePassword = async (username, password) => {
 
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password.toString(), 10);
 
     let sql = "UPDATE player ";
     sql += "SET password = ? "
     sql += "WHERE ally_code = ?"
 
     await runSQL(sql, [hash, username]);
+    
+    return;
+}
+
+auth.changeAdmin = async (username, access) => {
+
+
+    let sql = "UPDATE player ";
+    sql += "SET access = ? "
+    sql += "WHERE ally_code = ?"
+
+    await runSQL(sql, [access, username]);
     
     return;
 }

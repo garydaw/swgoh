@@ -7,7 +7,7 @@ import GAC from '../pages/GAC';
 import TW from '../pages/TW';
 import RoTE from '../pages/RoTE';
 import Tips from '../pages/Tips';
-import Admin from '../pages/Admin';
+import UserAdmin from '../pages/UserAdmin';
 
 //all the protected routes
 export const protectedcRoutes = [
@@ -45,8 +45,8 @@ export const protectedcRoutes = [
             element:React.createElement(Tips),
           },
           {
-            path:"/admin",
-            element:React.createElement(Admin),
+            path:"/userAdmin",
+            element:React.createElement(UserAdmin),
           }
         ]
       }
