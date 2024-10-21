@@ -1,13 +1,19 @@
 import express from 'express';
 const swgohRouter = express.Router();
-import swgoh from "../model/swgoh.js";
+import units from "../model/units.js";
+import players from "../model/players.js";
 
 
-//get player details
+//refresh guild
 swgohRouter.get('/guild/:guild_id', async (req, res) => {
 
+    const guild_id = req.params.guild_id;
+
     //get units
-    await swgoh.refreshUnits();
+    //await units.refreshUnits();
+
+    //get allies
+    await players.refreshAllies(guild_id);
 
     res.json({ message:"Guild refreshed"});
   
