@@ -1,11 +1,11 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { useLoaderData } from 'react-router'
 import { apiRequest } from '../helpers/ApiRequest';
 import CharacterBasic from '../components/units/CharacterBasic';
 import { unitSearch } from '../helpers/UnitSearch';
 
 export function characterLoader({params, request}){
- 
+
   const url = new URL(request.url);
   const ally_code = url.searchParams.get('ally_code') || "";
 
@@ -21,6 +21,11 @@ export default function Characters() {
   const loader = useLoaderData();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCharacters, setFilteredCharacters] = useState(loader);
+  
+  useEffect(() => {
+    setFilteredCharacters(loader);
+    setSearchTerm("");
+  }, [loader])
   
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
