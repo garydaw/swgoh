@@ -8,7 +8,7 @@ const siteRootURL = process.env.SWGOH_URL
 
 let units = {};
 
-units.get = async (ally_code, combat_type) => {
+units.get = async (ally_code, base_id, combat_type) => {
 
     let sql = "";
     sql += "SELECT u.base_id, u.character_name, u.alignment, u.role, ";
@@ -22,9 +22,11 @@ units.get = async (ally_code, combat_type) => {
     sql += "    ON pu.base_id = u.base_id ";
     sql += "WHERE pu.ally_code = ? ";
     sql += "AND u.combat_type = ? ";
+    if(base_id != "")
+        sql += "AND u.base_id = ? ";
     sql += "ORDER BY pu.power DESC, u.character_name ";
 
-    const rows= await runSQL(sql, [ally_code, combat_type]);
+    const rows= await runSQL(sql, [ally_code, combat_type, base_id]);
 
     return rows;
 

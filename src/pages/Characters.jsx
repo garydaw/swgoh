@@ -3,6 +3,7 @@ import { useLoaderData, useNavigate } from 'react-router'
 import { apiRequest } from '../helpers/ApiRequest';
 import CharacterBasic from '../components/units/CharacterBasic';
 import { unitSearch } from '../helpers/UnitSearch';
+import CharacterDetails from '../components/units/CharacterDetails';
 
 export function characterLoader({params, request}){
   
@@ -35,6 +36,10 @@ export default function Characters() {
   const [filteredCharacters, setFilteredCharacters] = useState(loader);
   const navigate = useNavigate();
 
+  const currentQueryParams = new URLSearchParams(location.search);
+
+  const char_details = currentQueryParams.has("base_id")
+
   useEffect(() => {
     setFilteredCharacters(loader);
     setSearchTerm("");
@@ -57,26 +62,30 @@ export default function Characters() {
     navigate(`/characters?${currentQueryParams.toString()}`);
   };
 
-  return (
-    <div>
-      <div className="d-flex justify-content mb-2">
-        <h2>Characters</h2>
-        <input
-          type="text"
-          style={{maxWidth:"250px"}}
-          className="form-control ms-2 me-3"
-          placeholder="Filter by name, role, faction, etc"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-      </div>
-      <div className='container'>
-        <div className="row">
-          {filteredCharacters.map((character, itemIndex) => (
-            <CharacterBasic key={"character_"+itemIndex} character={character} onClick={handleCharacterBasicClick}/>
-          ))}
+  if(char_details){
+    return <CharacterDetails character={filteredCharacters[0]} />
+  } else {
+    return (
+      <div>
+        <div className="d-flex justify-content mb-2">
+          <h2>Characters</h2>
+          <input
+            type="text"
+            style={{maxWidth:"250px"}}
+            className="form-control ms-2 me-3"
+            placeholder="Filter by name, role, faction, etc"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
         </div>
-      </div>  
-    </div>
-  )
+        <div className='container'>
+          <div className="row">
+            {filteredCharacters.map((character, itemIndex) => (
+              <CharacterBasic key={"character_"+itemIndex} character={character} onClick={handleCharacterBasicClick}/>
+            ))}
+          </div>
+        </div>  
+      </div>
+    )
+  }
 }
