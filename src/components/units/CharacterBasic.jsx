@@ -2,10 +2,10 @@ import React from 'react'
 import CharacterImage from './CharacterImage';
 import Stars from './Stars';
 
-export default function CharacterBasic({character}) {
+export default function CharacterBasic({character, onClick}) {
   
   return (
-    <div className="col-xxl-3 col-md-4 col-sm-12">
+    <div className="col-xxl-3 col-md-4 col-sm-12" onClick={() => onClick(character.base_id)}>
       <div className="card mb-3">
         <div className="card-header text-center">{character.character_name}</div>
         <div className="card-body">

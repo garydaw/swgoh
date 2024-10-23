@@ -1,19 +1,31 @@
 import React, {useState, useEffect} from 'react'
-import { useLoaderData } from 'react-router'
+import { useLoaderData, useNavigate } from 'react-router'
 import { apiRequest } from '../helpers/ApiRequest';
 import CharacterBasic from '../components/units/CharacterBasic';
 import { unitSearch } from '../helpers/UnitSearch';
 
 export function characterLoader({params, request}){
-
+  
   const url = new URL(request.url);
   const ally_code = url.searchParams.get('ally_code') || "";
-
-  if(ally_code === "" ){
-    return apiRequest("characters", true, "GET");
-  } else {
-    return apiRequest("characters?ally_code=" + ally_code, true, "GET");
+  const base_id = url.searchParams.get('base_id') || "";
+  let queryArray = [];
+  
+  // Add ally_code if not empty
+  if (ally_code !== "") {
+    queryArray.push("ally_code=" + ally_code);
   }
+  
+  // Add base_id if not empty
+  if (base_id !== "") {
+    queryArray.push("base_id=" + base_id);
+  }
+  
+  // Join parameters with '&' and prepend with '?'
+  const queryString = queryArray.length > 0 ? "?" + queryArray.join("&") : "";
+  
+  return apiRequest("characters" + queryString, true, "GET");
+  
   
 }
 
@@ -21,7 +33,8 @@ export default function Characters() {
   const loader = useLoaderData();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCharacters, setFilteredCharacters] = useState(loader);
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     setFilteredCharacters(loader);
     setSearchTerm("");
@@ -32,6 +45,16 @@ export default function Characters() {
     setSearchTerm(value);
 
     setFilteredCharacters(unitSearch(loader, value));
+  };
+
+  const handleCharacterBasicClick = (base_id) => {
+    const currentQueryParams = new URLSearchParams(location.search);
+
+    // Set or update the base_id query param
+    currentQueryParams.set('base_id', base_id);
+
+    // Navigate to the new route with updated query params
+    navigate(`/characters?${currentQueryParams.toString()}`);
   };
 
   return (
@@ -50,7 +73,7 @@ export default function Characters() {
       <div className='container'>
         <div className="row">
           {filteredCharacters.map((character, itemIndex) => (
-            <CharacterBasic key={"character_"+itemIndex} character={character}/>
+            <CharacterBasic key={"character_"+itemIndex} character={character} onClick={handleCharacterBasicClick}/>
           ))}
         </div>
       </div>  
