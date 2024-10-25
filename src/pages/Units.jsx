@@ -1,13 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import { useLoaderData, useNavigate } from 'react-router'
 import { apiRequest } from '../helpers/ApiRequest';
-import CharacterBasic from '../components/units/CharacterBasic';
+import UnitBasic from '../components/units/UnitBasic';
 import { unitSearch } from '../helpers/UnitSearch';
 import CharacterDetails from '../components/units/CharacterDetails';
 
-export function characterLoader({params, request}){
-  
+
+export function unitLoader({params, request}){
   const url = new URL(request.url);
+  const api = url.pathname.slice(1)
+  
   const ally_code = url.searchParams.get('ally_code') || "";
   const base_id = url.searchParams.get('base_id') || "";
   let queryArray = [];
@@ -25,23 +27,23 @@ export function characterLoader({params, request}){
   // Join parameters with '&' and prepend with '?'
   const queryString = queryArray.length > 0 ? "?" + queryArray.join("&") : "";
   
-  return apiRequest("characters" + queryString, true, "GET");
+  return apiRequest(api + queryString, true, "GET");
   
   
 }
 
-export default function Characters() {
+export default function Units({combat_type}) {
   const loader = useLoaderData();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredCharacters, setFilteredCharacters] = useState(loader);
+  const [filteredUnits, setFilteredUnits] = useState(loader);
   const navigate = useNavigate();
-
+  
   const currentQueryParams = new URLSearchParams(location.search);
 
-  const char_details = currentQueryParams.has("base_id")
+  const show_details = currentQueryParams.has("base_id")
 
   useEffect(() => {
-    setFilteredCharacters(loader);
+    setFilteredUnits(loader);
     setSearchTerm("");
   }, [loader])
   
@@ -49,26 +51,26 @@ export default function Characters() {
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
 
-    setFilteredCharacters(unitSearch(loader, value));
+    setFilteredUnits(unitSearch(loader, value));
   };
 
-  const handleCharacterBasicClick = (base_id) => {
+  const handleUnitBasicClick = (base_id) => {
     const currentQueryParams = new URLSearchParams(location.search);
 
     // Set or update the base_id query param
     currentQueryParams.set('base_id', base_id);
 
     // Navigate to the new route with updated query params
-    navigate(`/characters?${currentQueryParams.toString()}`);
+    navigate(`/${combat_type}?${currentQueryParams.toString()}`);
   };
 
-  if(char_details){
-    return <CharacterDetails character={filteredCharacters[0]} />
+  if(show_details){
+    return <CharacterDetails character={filteredUnits[0]} />
   } else {
     return (
       <div>
         <div className="d-flex justify-content mb-2">
-          <h2>Characters</h2>
+          <h2 style={{textTransform: "capitalize"}}>{combat_type}</h2>
           <input
             type="text"
             style={{maxWidth:"250px"}}
@@ -80,8 +82,8 @@ export default function Characters() {
         </div>
         <div className='container'>
           <div className="row">
-            {filteredCharacters.map((character, itemIndex) => (
-              <CharacterBasic key={"character_"+itemIndex} character={character} onClick={handleCharacterBasicClick}/>
+            {filteredUnits.map((unit, itemIndex) => (
+              <UnitBasic key={"unit_"+itemIndex} unit={unit} onClick={handleUnitBasicClick}/>
             ))}
           </div>
         </div>  

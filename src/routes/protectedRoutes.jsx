@@ -1,6 +1,5 @@
 import React from 'react'
-import Characters, {characterLoader} from '../pages/Characters';
-import Ships, {shipLoader} from '../pages/Ships';
+import Units, {unitLoader} from '../pages/Units';
 import ProtectedLayout from '../layouts/ProtectedLayout';
 import JourneyGuide from '../pages/JourneyGuide';
 import GAC from '../pages/GAC';
@@ -16,13 +15,13 @@ export const protectedcRoutes = [
     children:[
           { 
             path:"/characters",
-            element:React.createElement(Characters),
-            loader:characterLoader
+            element:React.createElement(Units, { combat_type: "character" }),
+            loader:unitLoader
           },
           {
             path:"/ships",
-            element:React.createElement(Ships),
-            loader:shipLoader
+            element:React.createElement(Units, { combat_type: "ships" }),
+            loader:unitLoader
           },
           {
             path:"/journey",
