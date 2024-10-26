@@ -13,7 +13,7 @@ export default function Navigation() {
   const navItems = [
     { title: "Characters", to: "/characters" },
     { title: "Ships", to: "/ships" },
-    { title: "Journey Guide", to: "/journey" },
+    { title: "Journey Guides", to: "/journey" },
     { title: "GAC", to: "/gac" },
     { title: "TW", to: "/tw" },
     { title: "RoTE", to: "/rote" },

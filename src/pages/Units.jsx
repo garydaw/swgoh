@@ -29,7 +29,6 @@ export function unitLoader({params, request}){
   
   return apiRequest(api + queryString, true, "GET");
   
-  
 }
 
 export default function Units({combat_type}) {

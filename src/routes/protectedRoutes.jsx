@@ -1,7 +1,7 @@
 import React from 'react'
 import Units, {unitLoader} from '../pages/Units';
 import ProtectedLayout from '../layouts/ProtectedLayout';
-import JourneyGuide from '../pages/JourneyGuide';
+import JourneyGuides, {journeyLoader} from '../pages/JourneyGuides';
 import GAC from '../pages/GAC';
 import TW from '../pages/TW';
 import RoTE from '../pages/RoTE';
@@ -25,7 +25,8 @@ export const protectedcRoutes = [
           },
           {
             path:"/journey",
-            element:React.createElement(JourneyGuide),
+            element:React.createElement(JourneyGuides),
+            loader:journeyLoader
           },
           {
             path:"/gac",

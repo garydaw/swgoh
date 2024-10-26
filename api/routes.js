@@ -6,6 +6,7 @@ import shipsRouter from "./routes/ships.js";
 import authMiddleware from "./middleware/auth.js"
 import generalRouter from './routes/general.js';
 import swgohRouter from './routes/swgoh.js';
+import journeyRouter from './routes/journey.js';
 
 apiRouter.use(authMiddleware);
 
@@ -14,5 +15,6 @@ apiRouter.use("/characters", charactersRouter);
 apiRouter.use("/ships", shipsRouter);
 apiRouter.use("/general", generalRouter);
 apiRouter.use("/swgoh", swgohRouter);
+apiRouter.use("/journey", journeyRouter);
 
 export default apiRouter;
