@@ -21,8 +21,8 @@ export default function ProtectedLayout(props) {
   //if user is not logged in navigate back to login
   useEffect(() => {
     if(!isLoggedIn){
-      localStorage.setItem("deepLink", location.pathname);
-      navigate("/");
+      const redirectPath = `/?redirect=${encodeURIComponent(location.pathname + location.search)}`;
+      navigate(redirectPath);
     }
     
   })

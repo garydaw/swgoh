@@ -5,7 +5,9 @@ export default function Navigation() {
   const {admin} = useAuth()
   //get the current url params
   const location = useLocation();
-  const currentQueryParams = location.search;
+  const searchParams = new URLSearchParams(location.search);
+  const allyCode = searchParams.get('ally_code');
+  const allyQueryParams = allyCode ? "?ally_code="+allyCode : "";
 
   const style = "list-group-item list-group-item-action";
 
@@ -29,7 +31,7 @@ export default function Navigation() {
     <div className="list-group list-group-flush">
       {navItems.map((navItem, index) => (
         <div key={"navItem_"+index} className={style}>
-          <Link to={navItem.to + currentQueryParams} className="nav-link">{navItem.title}</Link>
+          <Link to={navItem.to + allyQueryParams} className="nav-link">{navItem.title}</Link>
         </div>
         ))
         }

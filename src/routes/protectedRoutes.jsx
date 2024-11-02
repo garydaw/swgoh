@@ -15,7 +15,7 @@ export const protectedcRoutes = [
     children:[
           { 
             path:"/characters",
-            element:React.createElement(Units, { combat_type: "character" }),
+            element:React.createElement(Units, { combat_type: "characters" }),
             loader:unitLoader
           },
           {

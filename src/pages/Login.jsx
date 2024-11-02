@@ -22,10 +22,8 @@ export default function Login() {
       if(check.auth){
         await login( check);
         
-        //navigate to deeplink or default to characters
-        const path = localStorage.getItem("deepLink") ?? '/characters'
-        localStorage.removeItem("deepLink")
-        navigate(path);
+        redirect();
+        
       } else {
         localStorage.setItem('isLoggedIn', false);
       }
@@ -36,6 +34,11 @@ export default function Login() {
     checkLoginStatus();
   }, []);
 
+  const redirect = () => {
+    //navigate to deeplink or default to characters
+    const redirectPath = new URLSearchParams(location.search).get('redirect') || '/characters';
+    navigate(redirectPath);
+  }
 
   //call login
   const handleLogin = async (e) => {
@@ -43,11 +46,10 @@ export default function Login() {
     e.preventDefault();
     setLoginError("");
 
-    
     try {
       const userData = await apiRequest('auth/login', false, 'POST', { username, password });
       await login( userData);
-      navigate("/characters");
+      redirect();
     } catch(error) {
       // Handle login failure
       setLoginError(error.message);

@@ -56,7 +56,7 @@ export default function JourneyGuides() {
   return (
     <div>
       <div className="d-flex justify-content mb-2">
-        <h2>Journey Guides {revalidator.state}</h2>
+        <h2>Journey Guides</h2>
         <div style={{maxWidth:"250px"}}>
           <SearchableList
               items={loader}

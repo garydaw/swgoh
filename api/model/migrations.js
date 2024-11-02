@@ -30,7 +30,14 @@ async function versionFour (){
     await runSQL("ALTER TABLE unit ADD IF NOT EXISTS is_galactic_legend boolean NOT NULL DEFAULT false");
 
     console.log("update existing GLs");
-    await runSQL("UPDATE unit SET is_galactic_legend = true WHERE base_id IN ('GLLEIA','GLREY','GRANDMASTERLUKE','JABBATHEHUTT','JEDIMASTERKENOBI','LORDVADER','SITHPALPATINE','SUPREMELEADERKYLOREN')")
+    await runSQL("UPDATE unit SET is_galactic_legend = true WHERE base_id IN ('GLLEIA','GLREY','GRANDMASTERLUKE','JABBATHEHUTT','JEDIMASTERKENOBI','LORDVADER','SITHPALPATINE','SUPREMELEADERKYLOREN')");
+
+    console.log("add history of jounery guides");
+    await runSQL("ALTER TABLE journey_guide ADD IF NOT EXISTS date_added DATETIME NOT NULL DEFAULT now()");
+    await runSQL("ALTER TABLE journey_guide ADD IF NOT EXISTS is_current boolean NOT NULL DEFAULT true");
+
+    await runSQL("ALTER TABLE journey_guide DROP PRIMARY KEY, ADD PRIMARY KEY (base_id, date_added)");
+
 
 }
 
