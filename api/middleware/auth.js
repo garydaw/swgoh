@@ -33,6 +33,7 @@ const authMiddleware = async (req, res, next) => {
     //verify user is an admin for these routes
     if (req.path === '/auth/passwordReset'
       || req.path === '/auth/changeAdmin'
+      || (req.method === "POST" && req.path.slice(0, 8) === '/journey')
     ) {
       if(decoded.access !== 1){
         return res.status(403).json({ message: 'You dont have the required permissions' });

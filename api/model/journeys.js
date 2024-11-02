@@ -16,4 +16,17 @@ journeys.get = async () => {
     return guides;
 }
 
+journeys.set = async (data) => {
+
+    let sql = "DELETE FROM journey_guide WHERE base_id = ?";
+
+    await runSQL(sql, [data.base_id]);
+    
+    sql = "INSERT INTO journey_guide (base_id, list_order, guide) VALUES (?, 1, ?)";
+
+    await runSQL(sql, [data.base_id, data.guide]);
+
+    return;
+} 
+
 export default journeys;

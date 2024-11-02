@@ -12,5 +12,13 @@ journeyRouter.get('', async (req, res) => {
   
 });
 
+journeyRouter.post('/', async (req, res) => {
+    
+    await journeys.set(req.body);
+    
+    res.json({result:true, message: 'Guide successfully changed.' });
+  
+});
+
 
 export default journeyRouter;
