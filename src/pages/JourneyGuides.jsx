@@ -3,6 +3,7 @@ import { apiRequest } from '../helpers/ApiRequest';
 import { useLoaderData } from 'react-router';
 import SearchableList from '../components/general/SearchableList';
 import {  useSearchParams } from 'react-router-dom';
+import CharacterImage from '../components/units/CharacterImage';
 
 export function journeyLoader({params, request}){
   
@@ -11,25 +12,18 @@ export function journeyLoader({params, request}){
 }
 
 export default function JourneyGuides() {
-  const [characterName, setCharacterName] = useState("Search for a guide");
+  const [character, setcharacter] = useState({character_name:"Search for a guide", unit_image:""});
   const [searchParams, setSearchParams] = useSearchParams();
-  const [baseID, setBaseID] = useState(searchParams.get('journey_guide') || "");
   const loader = useLoaderData();
 
   const searchGuideHandleItemClick = (item) => {
 
-    setBaseID(item["base_id"]);
-    setCharacterName(item["character_name"]);
+    setcharacter(loader.find(obj => obj.base_id === item["base_id"]));
 
     // Update the URL query parameter
     setSearchParams({ journey_guide: item["base_id"] });
   };
 
-  let guide;
-  if(baseID !== ""){
-    const foundGuide = loader.find(obj => obj.base_id === baseID);
-    guide = foundGuide.guide;
-  }
   
   return (
     <div>
@@ -40,11 +34,12 @@ export default function JourneyGuides() {
               items={loader}
               item_id="base_id"
               item_name="character_name"
-              placeholder={characterName}
+              placeholder={character.character_name}
               clickHandler={searchGuideHandleItemClick}/>
         </div>
       </div>
-      <div dangerouslySetInnerHTML={{__html: guide}}></div>
+      {character.unit_image !== "" && <CharacterImage character={character} centreImage="false"/>}
+      <div dangerouslySetInnerHTML={{__html: character.guide}}></div>
     </div>
   )
 }

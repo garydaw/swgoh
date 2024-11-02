@@ -15,7 +15,7 @@ units.get = async (ally_code, base_id, combat_type) => {
     sql += "        u.categories, u.unit_image, ";
     sql += "        pu.gear_level, pu.gear_level_plus, pu.gear_level_flags, ";
     sql += "        pu.level, pu.power, pu.rarity, pu.zeta_abilities, pu.omicron_abilities, ";
-    sql += "        pu.relic_tier, pu.has_ultimate, pu.is_galactic_legend, "
+    sql += "        pu.relic_tier, pu.has_ultimate, u.is_galactic_legend, "
     sql += "        CASE u.alignment WHEN 1 THEN 'neutral' WHEN 2 THEN 'light' ELSE 'dark' END as alignment_label "
     sql += "FROM player_unit pu ";
     sql += "INNER JOIN unit u ";
@@ -79,7 +79,7 @@ units.refreshUnits = async () => {
     //loop round allUnits
     for(var u = 0; u < allUnits.length; u++){
         //insert or update
-        let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image) ";
+        let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image, is_galactic_legend) ";
         sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
         sql += "ON DUPLICATE KEY UPDATE ";
         sql += "combat_type = ?, ";
@@ -88,12 +88,14 @@ units.refreshUnits = async () => {
         sql += "alignment = ?, ";
         sql += "role = ?, ";
         sql += "categories = ?, ";
-        sql += "unit_image = ?";
+        sql += "unit_image = ?, ";
+        sql += "is_galactic_legend = ? ";
 
         const imgName = allUnits[u].image.split("/").pop();
         await runSQL(sql, [allUnits[u].base_id,
                             allUnits[u].combat_type, allUnits[u].name, allUnits[u].url, allUnits[u].alignment, allUnits[u].role, allUnits[u].categories.toString(), imgName,
-                            allUnits[u].combat_type, allUnits[u].name, allUnits[u].url, allUnits[u].alignment, allUnits[u].role, allUnits[u].categories.toString(), imgName]);
+                            allUnits[u].combat_type, allUnits[u].name, allUnits[u].url, allUnits[u].alignment, allUnits[u].role, allUnits[u].categories.toString(), imgName,
+                            allUnits[u].is_galactic_legend]);
 
         
 

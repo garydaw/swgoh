@@ -1,15 +1,15 @@
 import React from 'react'
 import css from './CharacterImage.module.css'
 
-export default function CharacterImage({character}) {
+export default function CharacterImage({character, centreImage = "true"}) {
 
   let imgClass = "";
   if(character.relic_tier > 1){
     imgClass += "relic" + character.alignment_label;
   }
-
+  
   return (
-    <div className={css.centreImage}>
+    <div className={centreImage === "true" ? css.centreImage : ''}>
     <div className={css.relative}>
       <img className={`${css.characterImage} ${css[imgClass]}`} src={"../images/units/"+character.unit_image}/>
       {character.relic_tier < 2 && <div className={`${css.CharacterImageOverlay} ${css.levelOverlay} ${css.level}`}>{character.level}</div>}
