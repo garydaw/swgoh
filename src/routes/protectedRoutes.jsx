@@ -2,7 +2,7 @@ import React from 'react'
 import Units, {unitLoader} from '../pages/Units';
 import ProtectedLayout from '../layouts/ProtectedLayout';
 import JourneyGuides, {journeyLoader} from '../pages/JourneyGuides';
-import GAC from '../pages/GAC';
+import GAC, { gacLoader } from '../pages/GAC';
 import TW from '../pages/TW';
 import RoTE from '../pages/RoTE';
 import Tips from '../pages/Tips';
@@ -32,6 +32,7 @@ export const protectedcRoutes = [
           {
             path:"/gac",
             element:React.createElement(GAC),
+            loader:gacLoader
           },
           {
             path:"/tw",

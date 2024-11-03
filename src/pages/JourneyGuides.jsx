@@ -44,9 +44,6 @@ export default function JourneyGuides() {
     const result = await apiRequest('journey', true, 'POST', { base_id:character.base_id, guide:adminGuide })
       if(result.result){
         revalidator.revalidate();
-      } else {
-        //setPasswordError(result.message);
-        console.log("error")
       }
 
     setAdminMode(false);
