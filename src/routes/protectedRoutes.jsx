@@ -6,6 +6,7 @@ import GAC from '../pages/GAC';
 import TW from '../pages/TW';
 import RoTE from '../pages/RoTE';
 import Tips from '../pages/Tips';
+import Relics from '../pages/Relics';
 import UserAdmin from '../pages/UserAdmin';
 
 //all the protected routes
@@ -43,6 +44,10 @@ export const protectedcRoutes = [
           {
             path:"/tips",
             element:React.createElement(Tips),
+          },
+          {
+            path:"/relics",
+            element:React.createElement(Relics),
           },
           {
             path:"/userAdmin",

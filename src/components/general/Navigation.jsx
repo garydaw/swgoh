@@ -19,6 +19,7 @@ export default function Navigation() {
     { title: "GAC", to: "/gac" },
     { title: "TW", to: "/tw" },
     { title: "RoTE", to: "/rote" },
+    { title: "Relics", to: "/relics" },
     { title: "Tips", to: "/tips" }
   ]
 
