@@ -3,7 +3,7 @@ import Units, {unitLoader} from '../pages/Units';
 import ProtectedLayout from '../layouts/ProtectedLayout';
 import JourneyGuides, {journeyLoader} from '../pages/JourneyGuides';
 import GAC, { gacLoader } from '../pages/GAC';
-import TW from '../pages/TW';
+import TW, { twLoader } from '../pages/TW';
 import RoTE from '../pages/RoTE';
 import Tips from '../pages/Tips';
 import Relics from '../pages/Relics';
@@ -37,6 +37,7 @@ export const protectedcRoutes = [
           {
             path:"/tw",
             element:React.createElement(TW),
+            loader:twLoader
           },
           {
             path:"/rote",

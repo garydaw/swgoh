@@ -5,10 +5,15 @@ let teams = {};
 teams.get = async (ally_code, team_type) => {
 
     let all_teams = {}
-    all_teams.defenceThree = await teams.getTeams(ally_code, team_type, false, 3);
     all_teams.defenceFive = await teams.getTeams(ally_code, team_type, false, 5);
-    all_teams.offenceThree = await teams.getTeams(ally_code, team_type, true, 3);
     all_teams.offenceFive = await teams.getTeams(ally_code, team_type, true, 5);
+
+    if(team_type === "gac"){
+        all_teams.offenceThree = await teams.getTeams(ally_code, team_type, true, 3);
+        all_teams.defenceThree = await teams.getTeams(ally_code, team_type, false, 3);
+    } else {
+        all_teams.overviewFive = [];
+    }
 
     return all_teams;
 
