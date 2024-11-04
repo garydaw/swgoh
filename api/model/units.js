@@ -80,7 +80,7 @@ units.refreshUnits = async () => {
     for(var u = 0; u < allUnits.length; u++){
         //insert or update
         let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image, is_galactic_legend) ";
-        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
+        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
         sql += "ON DUPLICATE KEY UPDATE ";
         sql += "combat_type = ?, ";
         sql += "character_name = ?, ";
@@ -94,6 +94,7 @@ units.refreshUnits = async () => {
         const imgName = allUnits[u].image.split("/").pop();
         await runSQL(sql, [allUnits[u].base_id,
                             allUnits[u].combat_type, allUnits[u].name, allUnits[u].url, allUnits[u].alignment, allUnits[u].role, allUnits[u].categories.toString(), imgName,
+                            allUnits[u].is_galactic_legend,
                             allUnits[u].combat_type, allUnits[u].name, allUnits[u].url, allUnits[u].alignment, allUnits[u].role, allUnits[u].categories.toString(), imgName,
                             allUnits[u].is_galactic_legend]);
 
