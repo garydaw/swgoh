@@ -63,6 +63,7 @@ export default function UserAdmin() {
         <table className="table table-hover">
           <thead className="table-light">
             <tr>
+              <th scope="col">No.</th>
               <th scope="col">Ally Name</th>
               <th scope="col">Admin</th>
               <th scope="col">Reset Password</th>
@@ -71,7 +72,8 @@ export default function UserAdmin() {
           <tbody className='table-group-divider'>
             {data.allies.map((ally, itemIndex) => (
               <tr key={"ally_"+itemIndex}>
-                <td scope="row">{ally.ally_name}</td>
+                <td scope="row">{itemIndex+1}</td>
+                <td>{ally.ally_name}</td>
                 <td>
                   <input
                     className="form-check-input"
