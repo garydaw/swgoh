@@ -12,10 +12,57 @@ teams.get = async (ally_code, team_type) => {
         all_teams.offenceThree = await teams.getTeams(ally_code, team_type, true, 3);
         all_teams.defenceThree = await teams.getTeams(ally_code, team_type, false, 3);
     } else {
-        all_teams.overviewFive = [];
+        all_teams.overviewFive = await teams.getTWOverview(ally_code);
     }
 
     return all_teams;
+
+}
+
+teams.getTWOverview = async (ally_code) => {
+
+    let sql = "SELECT guild_id FROM player WHERE ally_code = ?";
+    
+    const guild_id = await runSQL(sql, [ally_code]);
+
+    sql = "SELECT u.base_id, u.alignment, u.unit_image, 2 AS relic_tier, 7 AS rarity, ";
+    sql += "     13 AS gear_level, 0 AS gear_level_plus, 85 AS level, 0 AS zeta_abilities, 0 AS omicron_abilities, "
+    sql += "    CASE u.alignment WHEN 1 THEN 'neutral' WHEN 2 THEN 'light' ELSE 'dark' END as alignment_label, ";
+    sql += "    CONCAT(u.character_name, ' (', CAST(COUNT(*) AS varchar(3)), ')') AS character_name "; //cast to string BigInt json issue
+    sql += "    FROM team t ";
+    sql += "    CROSS JOIN player p ";
+    sql += "    INNER JOIN unit u ";
+    sql += "        ON u.base_id = t.base_id_1 ";
+    sql += "    INNER JOIN player_unit pu1 ";
+    sql += "        ON	pu1.base_id = t.base_id_1 ";
+    sql += "        AND pu1.ally_code = p.ally_code ";
+    sql += "        AND pu1.relic_tier > 1 ";
+    sql += "    INNER JOIN player_unit pu2 ";
+    sql += "        ON	pu2.base_id = t.base_id_2 ";
+    sql += "        AND pu2.ally_code = p.ally_code ";
+    sql += "        AND pu2.relic_tier > 1 ";
+    sql += "    INNER JOIN player_unit pu3 ";
+    sql += "        ON	pu3.base_id = t.base_id_3 ";
+    sql += "        AND pu3.ally_code = p.ally_code ";
+    sql += "        AND pu3.relic_tier > 1 ";
+    sql += "    INNER JOIN player_unit pu4 ";
+    sql += "        ON	pu4.base_id = t.base_id_4 ";
+    sql += "        AND pu4.ally_code = p.ally_code ";
+    sql += "        AND pu4.relic_tier > 1 ";
+    sql += "    INNER JOIN player_unit pu5 ";
+    sql += "        ON	pu5.base_id = t.base_id_5 ";
+    sql += "        AND pu5.ally_code = p.ally_code ";
+    sql += "        AND pu5.relic_tier > 1 ";
+    sql += "    WHERE t.team_type = 'tw' ";
+    sql += "    AND	t.defense = 1 ";
+    sql += "    AND p.guild_id = ? "
+    sql += "    GROUP BY u.base_id, u.alignment, u.unit_image, u.character_name ";
+
+    const rows = await runSQL(sql, [guild_id[0].guild_id]);
+    
+    console.log(rows);
+    return rows;
+
 
 }
 

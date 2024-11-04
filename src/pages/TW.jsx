@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useLoaderData } from 'react-router';
 import { apiRequest } from '../helpers/ApiRequest';
 import Team from '../components/teams/Team';
+import UnitBasic from '../components/units/UnitBasic';
 
 export function twLoader({params, request}){
   
@@ -53,11 +54,22 @@ export default function TW() {
         </div>
       </div>
 
-      <div>
-        {teams.map((team, itemIndex) => (
-            <Team key={"tw_" + teamSelection + "_" + itemIndex} team={team} teamType="tw"/>
-          ))}
-      </div>
+      
+        {viewTeam !== "overview" ?
+          <div>
+            {teams.map((team, itemIndex) => (
+              <Team key={"tw_" + teamSelection + "_" + itemIndex} team={team} teamType="tw"/>
+            ))}
+          </div>
+          :
+          <div className='container'>
+            <div className="row">
+              {teams.map((team, itemIndex) => (
+                <UnitBasic key={"tw_" + teamSelection + "_" + itemIndex} unit={team}/>
+              ))}
+            </div>
+          </div>
+        }
     </div>
   )
 }
