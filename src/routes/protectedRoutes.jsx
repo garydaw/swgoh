@@ -8,6 +8,8 @@ import RoTE from '../pages/RoTE';
 import Tips from '../pages/Tips';
 import Relics from '../pages/Relics';
 import UserAdmin from '../pages/UserAdmin';
+import TeamAdmin from '../pages/TeamAdmin';
+import TWCounters from '../pages/TWCounters';
 
 //all the protected routes
 export const protectedcRoutes = [
@@ -40,6 +42,10 @@ export const protectedcRoutes = [
             loader:twLoader
           },
           {
+            path:"/twcounters",
+            element:React.createElement(TWCounters),
+          },
+          {
             path:"/rote",
             element:React.createElement(RoTE),
           },
@@ -54,6 +60,10 @@ export const protectedcRoutes = [
           {
             path:"/userAdmin",
             element:React.createElement(UserAdmin),
+          },
+          {
+            path:"/teamAdmin",
+            element:React.createElement(TeamAdmin),
           }
         ]
       }

@@ -3,6 +3,7 @@ import { useLoaderData } from 'react-router';
 import { apiRequest } from '../helpers/ApiRequest';
 import Team from '../components/teams/Team';
 import UnitBasic from '../components/units/UnitBasic';
+import { useSearchParams } from 'react-router-dom';
 
 export function twLoader({params, request}){
   
@@ -23,7 +24,8 @@ export function twLoader({params, request}){
 }
 
 export default function TW() {
-  const [viewTeam, setviewTeam] = useState("offence")
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [viewTeam, setviewTeam] = useState(searchParams.get('tw_view') || "offence")
   const loader = useLoaderData();
 
   const teamSize = "Five";
@@ -31,6 +33,7 @@ export default function TW() {
   const teams = loader[teamSelection];
   
   const viewTeamChanged = (e) => {
+    setSearchParams({ tw_view: e.target.value });
     setviewTeam(e.target.value);
   }
 
