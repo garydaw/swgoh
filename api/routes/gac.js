@@ -12,5 +12,15 @@ gacRouter.get('', async (req, res) => {
   
 });
 
+gacRouter.post('', async (req, res) => {
+
+    const { teamType, teamPost, offence, defence } = req.body;
+    //set team
+    await teams.set('gac', teamType.substring(3), teamPost, offence, defence);
+
+    res.json([]);
+  
+});
+
 
 export default gacRouter;

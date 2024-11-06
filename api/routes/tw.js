@@ -12,5 +12,15 @@ twRouter.get('', async (req, res) => {
   
 });
 
+twRouter.post('', async (req, res) => {
+
+    const { teamType, teamPost, offence, defence } = req.body;
+    //set team
+    await teams.set('tw', teamType.substring(3), teamPost, offence, defence);
+
+    res.json([]);
+  
+});
+
 
 export default twRouter;

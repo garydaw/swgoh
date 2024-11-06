@@ -19,6 +19,20 @@ teams.get = async (ally_code, team_type) => {
 
 }
 
+teams.set = async (teamType, teamSize, teamPost, offence, defence) => {
+
+    for(var t = teamPost.length; t < 5; t++){
+        teamPost[t] = null;
+    }
+    
+    const teamSql = "INSERT INTO team (base_id_1, base_id_2, base_id_3, base_id_4, base_id_5, list_order, defense, offense, team_size, team_type)" +
+                "SELECT ?, ?, ?, ?, ?, IFNULL(MAX(list_order), 0) + 1, ?, ?, ?, ? FROM team";
+    
+    await runSQL(teamSql, [teamPost[0], teamPost[1], teamPost[2], teamPost[3], teamPost[4], 
+            defence, offence, teamSize === "Three" ? 3 : 5, teamType]);
+            
+}
+
 teams.getTWOverview = async (ally_code) => {
 
     let sql = "SELECT guild_id FROM player WHERE ally_code = ?";
@@ -60,7 +74,6 @@ teams.getTWOverview = async (ally_code) => {
 
     const rows = await runSQL(sql, [guild_id[0].guild_id]);
     
-    console.log(rows);
     return rows;
 
 

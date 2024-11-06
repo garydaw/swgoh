@@ -35,7 +35,12 @@ units.get = async (ally_code, base_id, combat_type) => {
 units.getGeneric = async (combat_type) => {
 
     let sql = "";
-    sql += "SELECT u.base_id, u.character_name ";
+    sql += "SELECT u.base_id, u.character_name, u.alignment, u.role, ";
+    sql += "        u.categories, u.unit_image, ";
+    sql += "        13 AS gear_level, 0 AS gear_level_plus, ";
+    sql += "        85 AS level, 0 AS power, 7 AS rarity, 0 AS zeta_abilities, 0 AS omicron_abilities, ";
+    sql += "        11 AS relic_tier, u.is_galactic_legend AS has_ultimate, u.is_galactic_legend, "
+    sql += "        CASE u.alignment WHEN 1 THEN 'neutral' WHEN 2 THEN 'light' ELSE 'dark' END as alignment_label "
     sql += "FROM unit u ";
     sql += "WHERE u.combat_type = ? ";
     sql += "ORDER BY u.character_name ";

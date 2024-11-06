@@ -65,7 +65,7 @@ export default function GAC() {
 
       <div>
         {teams.map((team, itemIndex) => (
-            <Team key={"gac_" + teamSelection + "_" + itemIndex} team={team} teamType="gac"/>
+            <Team key={"gac_" + teamSelection + "_" + itemIndex} team={team} teamType={"gac"+teamSize}/>
           ))}
       </div>
     </div>
