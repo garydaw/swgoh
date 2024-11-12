@@ -9,6 +9,7 @@ import swgohRouter from './routes/swgoh.js';
 import journeyRouter from './routes/journey.js';
 import gacRouter from './routes/gac.js';
 import twRouter from './routes/tw.js';
+import roteRouter from './routes/rote.js';
 import migrationRouter from './routes/migrations.js';
 
 apiRouter.use(authMiddleware);
@@ -21,6 +22,7 @@ apiRouter.use("/swgoh", swgohRouter);
 apiRouter.use("/journey", journeyRouter);
 apiRouter.use("/gac", gacRouter);
 apiRouter.use("/tw", twRouter);
+apiRouter.use("/rote", roteRouter);
 apiRouter.use("/migrations", migrationRouter);
 
 export default apiRouter;

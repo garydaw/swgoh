@@ -38,6 +38,34 @@ async function versionFour (){
 
     await runSQL("ALTER TABLE journey_guide DROP PRIMARY KEY, ADD PRIMARY KEY (base_id, date_added)");
 
+    console.log("creating rote_planets");
+    await runSQL("CREATE TABLE IF NOT EXISTS rote_planets ("+
+        "path VARCHAR(64) NOT NULL, "+
+        "phase int NOT NULL, "+
+        "planet VARCHAR(64) NOT NULL, "+
+        "primary key(path, phase) "+
+        ");");
+
+    console.log("add rote_planets data");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'light', 1, 'Coruscant' WHERE 'light' NOT IN (SELECT path FROM rote_planets WHERE phase = 1)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'light', 2, 'Bracca' WHERE 'light' NOT IN (SELECT path FROM rote_planets WHERE phase = 2)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'light', 3, 'Kashyyyk' WHERE 'light' NOT IN (SELECT path FROM rote_planets WHERE phase = 3)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'light', 4, 'Lothal' WHERE 'light' NOT IN (SELECT path FROM rote_planets WHERE phase = 4)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'light', 5, 'Ring of Kafrene' WHERE 'light' NOT IN (SELECT path FROM rote_planets WHERE phase = 5)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'light', 6, 'Scarif' WHERE 'light' NOT IN (SELECT path FROM rote_planets WHERE phase = 6)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'dark', 1, 'Mustafar' WHERE 'dark' NOT IN (SELECT path FROM rote_planets WHERE phase = 1)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'dark', 2, 'Geonosis' WHERE 'dark' NOT IN (SELECT path FROM rote_planets WHERE phase = 2)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'dark', 3, 'Dathomir' WHERE 'dark' NOT IN (SELECT path FROM rote_planets WHERE phase = 3)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'dark', 4, 'Haven Medical Station' WHERE 'dark' NOT IN (SELECT path FROM rote_planets WHERE phase = 4)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'dark', 5, 'Malachor' WHERE 'dark' NOT IN (SELECT path FROM rote_planets WHERE phase = 5)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'dark', 6, 'Death Star' WHERE 'dark' NOT IN (SELECT path FROM rote_planets WHERE phase = 6)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 1, 'Corellia' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 1)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 2, 'Felucia' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 2)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 3, 'Tatooine' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 3)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 4, 'Kessel' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 4)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 5, 'Vandor' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 5)");
+    await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 6, 'Hoth' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 6)");
+
 
 }
 

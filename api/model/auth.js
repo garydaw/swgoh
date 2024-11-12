@@ -25,9 +25,10 @@ auth.login = async (username) => {
 
     let sql = "SELECT ally_code, password, access ";
     sql += "FROM player ";
-    sql += "WHERE ally_code = ?"
+    sql += "WHERE ally_code = ? "
+    sql += "OR ally_name = ? "
 
-    const this_user = await runSQL(sql, [username]);
+    const this_user = await runSQL(sql, [username, username]);
     
     return this_user;
 }
