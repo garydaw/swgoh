@@ -37,7 +37,7 @@ rote.getOperations = async (path, phase) => {
   let operations = [];
   for(let i = 1; i < 7; i++){
       let sql = "SELECT ro.path, ro.phase, rp.planet, ro.operation, "
-      sql += "ro.unit_index, ro.base_id, u.character_name, "
+      sql += "ro.unit_index, ro.base_id, u.character_name, u.unit_image, "
       sql += "p.ally_code, p.ally_name "
       sql += "FROM rote_operation ro "
       sql += "INNER JOIN rote_planets rp "
@@ -317,4 +317,37 @@ rote.minNumbersToAddUpToTarget = (arr, target) => {
   return usedNumbers; // If no combination of numbers adds up to the target
 }
 
+rote.swapOperations = async (path, phase, operation, team_index, ally_code) => {
+
+  //get base_id
+  let sql = "SELECT base_id "
+  + "FROM rote_operation "
+  + "WHERE path = ? "
+  + "AND phase = ? "
+  + "AND operation = ? "
+  + "AND unit_index = ? "
+
+  const base_id_result = await runSQL(sql, [path, phase, operation, team_index]);
+
+  const base_id = base_id_result[0].base_id;
+
+  sql = "UPDATE rote_operation "
+  + "SET ally_code = null "
+  + "WHERE path = ? "
+  + "AND phase = ? "
+  + "AND base_id = ? "
+  + "AND ally_code = ?";
+
+  await runSQL(sql, [path, phase, base_id, ally_code]);
+
+  sql = "UPDATE rote_operation "
+  + "SET ally_code = ? "
+  + "WHERE path = ? "
+  + "AND phase = ? "
+  + "AND operation = ? "
+  + "AND unit_index = ? ";
+
+  await runSQL(sql, [ally_code, path, phase, operation, team_index]);
+  
+}
 export default rote;

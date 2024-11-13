@@ -60,10 +60,8 @@ export default function RoTE() {
   }
 
   const swapOperations  = async (path, phase, operation, unit_index, ally_code) => {
-    console.log("swap "+unit_index);
-    console.log("swap "+ally_code);
-    //const result = await apiRequest('rote/operations/swap'+rotePath+'/'+rotePlanet, false, 'GET');
-    //operationsReceived(result);
+    const result = await apiRequest('rote/operations/swap/'+path+'/'+phase+'/'+operation+'/'+unit_index+'/'+ally_code, false, 'POST');
+    operationsReceived(result);
   }
 
 
@@ -75,14 +73,14 @@ export default function RoTE() {
       <div className="d-flex justify-content mb-2">
         <h2>RotE</h2>
         <div style={{maxWidth:"250px"}} className='px-2'>
-          <select className="form-select" aria-label="Rote Path" onChange={handleRotePathChange} defaultValue={rotePath}>
+          <select className="form-select" aria-label="Rote Path" name="Rote Path" onChange={handleRotePathChange} defaultValue={rotePath}>
             <option value="light">Light</option>
             <option value="neutral">Neutral</option>
             <option value="dark">Dark</option>
             </select>
         </div>
         <div style={{maxWidth:"250px"}} className='px-2'>
-          <select className="form-select" aria-label="Rote Planet" onChange={handleRotePlanetChange} defaultValue={rotePlanet}>
+          <select className="form-select" aria-label="Rote Planet" name="Rote Planet" onChange={handleRotePlanetChange} defaultValue={rotePlanet}>
             {rotePlanets[rotePath].map((planet, itemIndex) => (
               <option key={"rote_planet"+itemIndex} value={itemIndex+1}>{itemIndex+1}-{planet}</option>
             ))}

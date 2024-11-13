@@ -21,7 +21,7 @@ export default function Operations({operation, swaps, swapOperations}) {
         </div>
         <div className="card-body">
           {operationChunks.map((chunk, rowIndex) => (
-            <div className="row" key={"row_" + rowIndex}>
+            <div className="row mb-3" key={"row_" + rowIndex}>
               {chunk.map((allocation, itemIndex) => (
                 <Operation
                   key={"rote_" + allocation.path + "_" + allocation.phase + "_allocation_" + itemIndex}
