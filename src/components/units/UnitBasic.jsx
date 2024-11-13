@@ -5,8 +5,8 @@ import Stars from './Stars';
 export default function UnitBasic({unit, onClick}) {
   
   return (
-    <div className="col-xxl-3 col-md-4 col-sm-12" onClick={() => onClick(unit.base_id)}>
-      <div className="card mb-3">
+    <div className="col-xxl-3 col-md-4 col-sm-12 mb-3" onClick={() => onClick(unit.base_id)}>
+      <div className="card h-100">
         <div className="card-header text-center">{unit.character_name}</div>
         <div className="card-body">
           <CharacterImage character={unit}/>

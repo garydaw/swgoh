@@ -74,6 +74,7 @@ export default function Units({combat_type}) {
             type="text"
             style={{maxWidth:"250px"}}
             className="form-control ms-2 me-3"
+            name="Unit Search"
             placeholder="Filter by name, role, faction, etc"
             value={searchTerm}
             onChange={handleSearch}

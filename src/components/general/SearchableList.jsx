@@ -36,6 +36,7 @@ const SearchableList = ({items, item_id, item_name, placeholder, clickHandler}) 
         <input
           type="text"
           className="form-control"
+          name="Search"
           placeholder={placeholder}
           value={searchTerm}
           onChange={handleSearch}

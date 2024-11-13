@@ -80,6 +80,7 @@ export default function UserAdmin() {
                     type="checkbox"
                     value=""
                     checked={ally.access === 1}
+                    name="Admin"
                     onChange={() => changeAdmin(ally.ally_name, ally.ally_code, ally.access)}/>
                 </td>
                 <td>
