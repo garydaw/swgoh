@@ -10,6 +10,9 @@ export default function RoTE() {
   const [rotePlanet, setRotePlanet] = useState(searchParams.get('rote_planet') || "1");
   const [roteOperations, setRoteOperations] = useState([]);
   const [roteSwaps, setRoteSwaps] = useState([]);
+  const [canWork, setCanWork] = useState([]);
+
+  const updatedSearchParams = new URLSearchParams(searchParams);
 
   useEffect(() => {
     // Send a request to the backend to check if the user is logged in
@@ -18,7 +21,11 @@ export default function RoTE() {
       
       if(rotePlanets.length === 0){
         const planets = await apiRequest('rote/planets', false, 'GET');
-        setRotePlanets(planets)
+        setRotePlanets(planets);
+
+        if(searchParams.get('rote_path') && searchParams.get('rote_planet')){
+          getOperations();
+        }
       }
       
     };
@@ -28,16 +35,21 @@ export default function RoTE() {
   }, []);
   
   const handleRotePathChange = (event) => {
+    updatedSearchParams.set("rote_path", event.target.value);
+    setSearchParams(updatedSearchParams);
     setRotePath(event.target.value);
   }
 
   const handleRotePlanetChange = (event) => {
+    updatedSearchParams.set("rote_planet", event.target.value);
+    setSearchParams(updatedSearchParams);
     setRotePlanet(event.target.value);
   }
 
   const operationsReceived = (result) => {
     setRoteOperations(result.operations);
     createSwaps(result.swaps);
+    createCanWork(result.canWork);
   }
 
   const getOperations = async () => {
@@ -54,6 +66,14 @@ export default function RoTE() {
     setRoteSwaps(operationSwaps);
   }
 
+  const createCanWork = (swaps) => {
+    let canWorkUnits = {};
+    for(let s = 0; s < swaps.length; s++){
+      (canWorkUnits[swaps[s].base_id] ??= []).push(swaps[s]);
+    }
+    setCanWork(canWorkUnits);
+  }
+
   const allocateOperations  = async () => {
     const result = await apiRequest('rote/operations/auto/'+rotePath+'/'+rotePlanet, false, 'POST');
     operationsReceived(result);
@@ -61,6 +81,11 @@ export default function RoTE() {
 
   const swapOperations  = async (path, phase, operation, unit_index, ally_code) => {
     const result = await apiRequest('rote/operations/swap/'+path+'/'+phase+'/'+operation+'/'+unit_index+'/'+ally_code, false, 'POST');
+    operationsReceived(result);
+  }
+
+  const WorkOperations  = async (path, phase, operation, unit_index, ally_code) => {
+    const result = await apiRequest('rote/operations/working/'+path+'/'+phase+'/'+operation+'/'+unit_index+'/'+ally_code, false, 'POST');
     operationsReceived(result);
   }
 
@@ -97,11 +122,18 @@ export default function RoTE() {
       </div>
       
       {roteOperations.map((operation, itemIndex) => (
+        operation.length > 0 ?
+          
           <Operations
             key={"rote_"+rotePath+"_"+rotePlanet+"_"+itemIndex}
             operation={operation}
             swaps={roteSwaps}
-            swapOperations={swapOperations}/>
+            canWork={canWork}
+            swapOperations={swapOperations}
+            WorkOperations={WorkOperations}/>
+          :
+          <div>Operation {itemIndex+1} not found</div>
+        
         ))}
     </div>
   )

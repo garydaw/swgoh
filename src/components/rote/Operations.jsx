@@ -1,7 +1,7 @@
 import React from 'react'
 import Operation from './Operation'
 
-export default function Operations({operation, swaps, swapOperations}) {
+export default function Operations({operation, swaps, swapOperations, canWork, WorkOperations}) {
 
   const chunkArray = (array, size) => {
     const result = [];
@@ -28,6 +28,8 @@ export default function Operations({operation, swaps, swapOperations}) {
                   allocation={allocation}
                   swaps={swaps}
                   swapOperations={swapOperations}
+                  canWork={canWork}
+                  WorkOperations={WorkOperations}
                 />
               ))}
             </div>

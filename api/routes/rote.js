@@ -37,9 +37,23 @@ roteRouter.post('/operations/swap/:path/:planet/:operation/:unit_index/:ally_cod
     const operation = req.params.operation;
     const unit_index = req.params.unit_index;
     const ally_code = req.params.ally_code;
-    await rote.allocateOperations(path, planet);
     
     await rote.swapOperations(path, planet, operation, unit_index, ally_code);
+    
+    const ops = await rote.getOperations(path, planet);
+    res.json(ops);
+  
+});
+
+roteRouter.post('/operations/working/:path/:planet/:operation/:unit_index/:ally_code', async (req, res) => {
+
+    const path = req.params.path;
+    const planet = req.params.planet;
+    const operation = req.params.operation;
+    const unit_index = req.params.unit_index;
+    const ally_code = req.params.ally_code;
+    
+    await rote.workingOperations(path, planet, operation, unit_index, ally_code);
     
     const ops = await rote.getOperations(path, planet);
     res.json(ops);

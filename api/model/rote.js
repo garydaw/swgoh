@@ -35,10 +35,16 @@ rote.getPlanets = async () => {
 rote.getOperations = async (path, phase) => {
 
   let operations = [];
+  let sql = "";
   for(let i = 1; i < 7; i++){
-      let sql = "SELECT ro.path, ro.phase, rp.planet, ro.operation, "
+      sql = "SELECT ro.path, ro.phase, rp.planet, ro.operation, "
       sql += "ro.unit_index, ro.base_id, u.character_name, u.unit_image, "
-      sql += "p.ally_code, p.ally_name "
+      sql += "p.ally_code, p.ally_name, "
+      sql += "CASE WHEN u.combat_type = 2 THEN CONCAT('(', pu.rarity, ' star)') WHEN pu.relic_tier > 2 THEN CONCAT('(R',CAST(pu.relic_tier - 2  AS VARCHAR(2)),')') ELSE CONCAT('(G', CAST(pu.gear_level AS VARCHAR(4)),')') END AS working_level, ";
+      sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' "
+      sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Allocated' "
+      sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Allocated' "
+      sql += "ELSE 'Working' END AS allocation_type "
       sql += "FROM rote_operation ro "
       sql += "INNER JOIN rote_planets rp "
       sql += "    ON rp.phase = ro.phase "
@@ -47,6 +53,9 @@ rote.getOperations = async (path, phase) => {
       sql += "    ON u.base_id = ro.base_id "
       sql += "LEFT OUTER JOIN player p "
       sql += "    ON  ro.ally_code = p.ally_code "
+      sql += "LEFT OUTER JOIN player_unit pu "
+      sql += "    ON  pu.ally_code = p.ally_code "
+      sql += "    AND  pu.base_id = ro.base_id "
       sql += "WHERE ro.path = ? ";
       sql += "AND ro.phase = ? ";
       sql += "AND ro.operation = ? ";
@@ -55,7 +64,7 @@ rote.getOperations = async (path, phase) => {
       const operation = await runSQL(sql, [path, phase, i]);
       operations.push(operation);
   }
-
+/*
   let sql = "SELECT ro.path, ro.phase, ro.operation, "
       sql += "ro.unit_index, ro.base_id, u.character_name, "
       sql += "p.ally_code, IFNULL(p.ally_name, 'To Farm') AS label_ally_name, ally_name "
@@ -68,7 +77,7 @@ rote.getOperations = async (path, phase) => {
       sql += "AND ro.phase = ? ";
       sql += "ORDER BY p.ally_name,  ro.operation, ro.unit_index";
   const ally = await runSQL(sql, [path, phase]);
-
+*/
   sql = "SELECT DISTINCT ro.base_id, p.ally_code, p.ally_name, u.character_name ";
   sql += "FROM rote_operation ro ";
   sql += "INNER JOIN unit u "
@@ -87,10 +96,34 @@ rote.getOperations = async (path, phase) => {
 
   const swaps = await runSQL(sql, [path, phase]);
 
+  sql = "SELECT DISTINCT ro.base_id, p.ally_code, u.character_name, CONCAT(p.ally_name, ' ',  "
+  sql += "	CASE WHEN u.combat_type = 2 THEN CONCAT('(', pu.rarity, ' star)') WHEN pu.relic_tier > 2 THEN CONCAT('(R',CAST(pu.relic_tier - 2  AS VARCHAR(2)),')') ELSE CONCAT('(G', CAST(pu.gear_level AS VARCHAR(4)),')') END) AS ally_name ";
+  sql += "FROM rote_operation ro ";
+  sql += "INNER JOIN unit u ";
+  sql += "	ON u.base_id = ro.base_id ";
+  sql += "INNER JOIN player_unit pu ";
+  sql += "	ON u.base_id = pu.base_id ";
+  sql += "INNER JOIN player p ";
+  sql += "ON p.ally_code = pu.ally_code ";
+  sql += "LEFT OUTER JOIN  ";
+  sql += "(SELECT * FROM rote_operation WHERE ally_code IS NOT NULL) ro2 ";
+  sql += "   ON ro2.path = ro.path  ";
+  sql += "    AND ro2.phase = ro.phase  ";
+  sql += "    AND ro2.base_id = ro.base_id  ";
+  sql += "    AND ro2.ally_code = pu.ally_code ";
+  sql += "WHERE ro.path = ? ";
+  sql += "AND ro.phase = ? ";
+  sql += "AND ro.ally_code IS NULL  ";
+  sql += "AND ro2.ally_code IS NULL ";
+  sql += "ORDER BY ro.base_id, pu.relic_tier DESC, pu.rarity DESC, pu.gear_level DESC, pu.gear_level_plus DESC, pu.`power` DESC";
+
+  const canWork = await runSQL(sql, [path, phase]);
+
   let view = {};
   view.operations = operations;
-  view.ally = ally;
+ // view.ally = ally;
   view.swaps = swaps;
+  view.canWork = canWork;
 
   return view;
 }
@@ -349,5 +382,16 @@ rote.swapOperations = async (path, phase, operation, team_index, ally_code) => {
 
   await runSQL(sql, [ally_code, path, phase, operation, team_index]);
   
+}
+
+rote.workingOperations = async (path, phase, operation, team_index, ally_code) => {
+  let sql = "UPDATE rote_operation "
+  + "SET ally_code = ? "
+  + "WHERE path = ? "
+  + "AND phase = ? "
+  + "AND operation = ? "
+  + "AND unit_index = ? ";
+
+  await runSQL(sql, [ally_code, path, phase, operation, team_index]);
 }
 export default rote;
