@@ -36,48 +36,42 @@ rote.getOperations = async (path, phase) => {
 
   let operations = [];
   let sql = "";
+  let rote_sql = "SELECT ro.path, ro.phase, rp.planet, ro.operation, "
+  rote_sql += "ro.unit_index, ro.base_id, u.character_name, u.unit_image, "
+  rote_sql += "p.ally_code, p.ally_name, "
+  rote_sql += "CASE WHEN u.combat_type = 2 THEN CONCAT('(', pu.rarity, ' star)') WHEN pu.relic_tier > 2 THEN CONCAT('(R',CAST(pu.relic_tier - 2  AS VARCHAR(2)),')') ELSE CONCAT('(G', CAST(pu.gear_level AS VARCHAR(4)),')') END AS working_level, ";
+  rote_sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' "
+  rote_sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Allocated' "
+  rote_sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Allocated' "
+  rote_sql += "ELSE 'Working' END AS allocation_type "
+  rote_sql += "FROM rote_operation ro "
+  rote_sql += "INNER JOIN rote_planets rp "
+  rote_sql += "    ON rp.phase = ro.phase "
+  rote_sql += "    AND rp.path = ro.path "
+  rote_sql += "INNER JOIN unit u "
+  rote_sql += "    ON u.base_id = ro.base_id "
+  rote_sql += "LEFT OUTER JOIN player p "
+  rote_sql += "    ON  ro.ally_code = p.ally_code "
+  rote_sql += "LEFT OUTER JOIN player_unit pu "
+  rote_sql += "    ON  pu.ally_code = p.ally_code "
+  rote_sql += "    AND  pu.base_id = ro.base_id "
+  rote_sql += "WHERE ro.path = ? ";
+  rote_sql += "AND ro.phase = ? ";
+
   for(let i = 1; i < 7; i++){
-      sql = "SELECT ro.path, ro.phase, rp.planet, ro.operation, "
-      sql += "ro.unit_index, ro.base_id, u.character_name, u.unit_image, "
-      sql += "p.ally_code, p.ally_name, "
-      sql += "CASE WHEN u.combat_type = 2 THEN CONCAT('(', pu.rarity, ' star)') WHEN pu.relic_tier > 2 THEN CONCAT('(R',CAST(pu.relic_tier - 2  AS VARCHAR(2)),')') ELSE CONCAT('(G', CAST(pu.gear_level AS VARCHAR(4)),')') END AS working_level, ";
-      sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' "
-      sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Allocated' "
-      sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Allocated' "
-      sql += "ELSE 'Working' END AS allocation_type "
-      sql += "FROM rote_operation ro "
-      sql += "INNER JOIN rote_planets rp "
-      sql += "    ON rp.phase = ro.phase "
-      sql += "    AND rp.path = ro.path "
-      sql += "INNER JOIN unit u "
-      sql += "    ON u.base_id = ro.base_id "
-      sql += "LEFT OUTER JOIN player p "
-      sql += "    ON  ro.ally_code = p.ally_code "
-      sql += "LEFT OUTER JOIN player_unit pu "
-      sql += "    ON  pu.ally_code = p.ally_code "
-      sql += "    AND  pu.base_id = ro.base_id "
-      sql += "WHERE ro.path = ? ";
-      sql += "AND ro.phase = ? ";
+      sql = rote_sql
       sql += "AND ro.operation = ? ";
       sql += "ORDER BY ro.unit_index ";
 
       const operation = await runSQL(sql, [path, phase, i]);
       operations.push(operation);
   }
-/*
-  let sql = "SELECT ro.path, ro.phase, ro.operation, "
-      sql += "ro.unit_index, ro.base_id, u.character_name, "
-      sql += "p.ally_code, IFNULL(p.ally_name, 'To Farm') AS label_ally_name, ally_name "
-      sql += "FROM rote_operation ro "
-      sql += "INNER JOIN unit u "
-      sql += "    ON u.base_id = ro.base_id "
-      sql += "LEFT OUTER JOIN player p "
-      sql += "    ON  ro.ally_code = p.ally_code "
-      sql += "WHERE ro.path = ? ";
-      sql += "AND ro.phase = ? ";
-      sql += "ORDER BY p.ally_name,  ro.operation, ro.unit_index";
+
+  sql = rote_sql
+  sql += "ORDER BY p.ally_name,  ro.operation, ro.unit_index";
+
   const ally = await runSQL(sql, [path, phase]);
-*/
+
   sql = "SELECT DISTINCT ro.base_id, p.ally_code, p.ally_name, u.character_name ";
   sql += "FROM rote_operation ro ";
   sql += "INNER JOIN unit u "
@@ -121,7 +115,7 @@ rote.getOperations = async (path, phase) => {
 
   let view = {};
   view.operations = operations;
- // view.ally = ally;
+  view.ally = ally;
   view.swaps = swaps;
   view.canWork = canWork;
 

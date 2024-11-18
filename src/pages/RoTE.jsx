@@ -11,6 +11,7 @@ export default function RoTE() {
   const [roteOperations, setRoteOperations] = useState([]);
   const [roteSwaps, setRoteSwaps] = useState([]);
   const [canWork, setCanWork] = useState([]);
+  const [roteView, setRoteView] = useState(searchParams.get('rote_view') ||"planet");
 
   const updatedSearchParams = new URLSearchParams(searchParams);
 
@@ -53,6 +54,9 @@ export default function RoTE() {
   }
 
   const getOperations = async () => {
+    updatedSearchParams.set("rote_path", rotePath);
+    updatedSearchParams.set("rote_planet", rotePlanet);
+    setSearchParams(updatedSearchParams);
     const result = await apiRequest('rote/operations/'+rotePath+'/'+rotePlanet, false, 'GET');
     operationsReceived(result);
     
@@ -89,6 +93,12 @@ export default function RoTE() {
     operationsReceived(result);
   }
 
+  const roteViewChanged = (event) => {
+    updatedSearchParams.set("rote_view", event.target.value);
+    setSearchParams(updatedSearchParams);
+    setRoteView(event.target.value);
+  }
+
 
   if(rotePlanets.length === 0){
     return <></>
@@ -114,6 +124,22 @@ export default function RoTE() {
         <div style={{maxWidth:"250px"}} className='px-2'>
           <button className='btn btn-primary' onClick={getOperations}>View</button>
         </div>
+        {roteOperations.length > 0 &&
+          <div style={{maxWidth:"250px"}} className='px-2'>
+            <div className="form-check">
+              <input className="form-check-input" type="radio" name="roteView" id="roteViewPlanet" value="planet" checked={roteView === "planet"} onChange={roteViewChanged}/>
+              <label className="form-check-label" htmlFor="roteViewPlanet">Planet</label>
+            </div>
+            <div className="form-check">
+              <input className="form-check-input" type="radio" name="roteView" id="roteViewAllies" value="allies" checked={roteView === "allies"} onChange={roteViewChanged}/>
+              <label className="form-check-label" htmlFor="roteView5">Allies</label>
+            </div>
+            <div className="form-check">
+              <input className="form-check-input" type="radio" name="roteView" id="roteViewMe" value="me" checked={roteView === "me"} onChange={roteViewChanged}/>
+              <label className="form-check-label" htmlFor="roteView5">Me</label>
+            </div>
+          </div>
+        }
         {roteOperations.length > 0 &&
           <div style={{maxWidth:"250px"}} className='px-2'>
             <button className='btn btn-primary' onClick={allocateOperations}>Auto Allocate</button>
