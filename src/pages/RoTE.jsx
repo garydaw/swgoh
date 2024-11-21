@@ -16,12 +16,11 @@ export default function RoTE() {
   const [canWork, setCanWork] = useState([]);
   const [roteView, setRoteView] = useState(searchParams.get('rote_view') ||"planet");
 
-  const {username} = useAuth();
+  const {username, admin} = useAuth();
 
   const updatedSearchParams = new URLSearchParams(searchParams);
 
   useEffect(() => {
-    // Send a request to the backend to check if the user is logged in
     
     const checkPlanets = async () => {
       
@@ -36,7 +35,7 @@ export default function RoTE() {
       
     };
 
-    //check if use is still logged in
+    //check if we have the planets list
     checkPlanets();
   }, []);
   
@@ -146,7 +145,7 @@ export default function RoTE() {
             </div>
           </div>
         }
-        {roteOperations.length > 0 &&
+        {roteOperations.length > 0 && admin === 1 &&
           <div style={{maxWidth:"250px"}} className='px-2'>
             <button className='btn btn-primary' onClick={allocateOperations}>Auto Allocate</button>
           </div>

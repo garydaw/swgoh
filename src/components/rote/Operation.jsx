@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import CharacterImage from '../units/CharacterImage';
+import { useAuth } from '../../store/useAuth';
 
 export default function Operation({allocation, swaps, swapOperations, canWork, WorkOperations}) {
   const [selectedSwapAlly, setSelectedSwapAlly] = useState("");
   const [selectedWorkAlly, setSelectedWorkAlly] = useState("");
   const [editing, setEditing] = useState(false);
 
-  //const background = allocation.ally_name === null ? "rgba(255,0,0,0.25)" : "rgba(0,255,0,0.25)";
+  const {admin} = useAuth();
+  
   const background = allocation.allocation_type === "Allocated" ? "rgba(0,255,0,0.25)"
                        : allocation.allocation_type === "Working" ? "rgba(255,255,0,0.25)" 
                        : "rgba(255,0,0,0.25)";
@@ -41,11 +43,11 @@ export default function Operation({allocation, swaps, swapOperations, canWork, W
             <CharacterImage character={allocation}/>
             {allocation.ally_name !== null ? <b>{allocation.ally_name} {working_append}</b>
               : 
-              <button className="btn btn-primary" onClick={setEdit}>Edit</button>
+              admin === 1 && <button className="btn btn-primary" onClick={setEdit}>Edit</button>
             }
           </div>
           }
-          {editing && allocation.ally_name === null && swaps.hasOwnProperty(allocation.base_id) &&
+          {admin === 1 && editing && allocation.ally_name === null && swaps.hasOwnProperty(allocation.base_id) &&
             <div>
               <select className="form-select mb-2" aria-label="Operation swap" onChange={swapAllyChanged} name="Operation Swap">
                 <option value="">Select</option>
@@ -56,7 +58,7 @@ export default function Operation({allocation, swaps, swapOperations, canWork, W
               <button className="btn btn-primary mb-2" onClick={swapRote} disabled={selectedSwapAlly === ""}>Swap</button>
             </div>
           }
-          {editing && allocation.ally_name === null && canWork.hasOwnProperty(allocation.base_id) &&
+          {admin === 1 && editing && allocation.ally_name === null && canWork.hasOwnProperty(allocation.base_id) &&
             <div>
               <select className="form-select mb-2" aria-label="Working On" onChange={canWorkAllyChanged} name="Working On">
                 <option value="">Select</option>

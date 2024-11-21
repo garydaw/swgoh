@@ -35,9 +35,6 @@ export default function AllyOperations({allies, username}) {
             swapOperations={[]}
             WorkOperations={[]}
             header={operation.ally_name}/>
-          
-          
-        
         ))}
       </div>
   )

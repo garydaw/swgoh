@@ -34,6 +34,7 @@ const authMiddleware = async (req, res, next) => {
     if (req.path === '/auth/passwordReset'
       || req.path === '/auth/changeAdmin'
       || (req.method === "POST" && req.path.slice(0, 8) === '/journey')
+      || (req.method === "POST" && req.path.slice(0, 5) === '/rote')
     ) {
       if(decoded.access !== 1){
         return res.status(403).json({ message: 'You dont have the required permissions' });
@@ -41,38 +42,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     return next();
-  });  
-  
-  
-  //verify the token
-  /*const valid = await auth.verifyAuthToken(authToken);
-
-  jwt.verify(token.replace('Bearer ', ''), process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ message: 'Failed to authenticate token' });
-    }
-    if (decoded.exp < Math.floor(Date.now() / 1000)) {
-      return res.status(401).json({ message: 'Session Expired' });
-    }
-    //must have access
-    if (
-        req.path === '/swgoh/units' 
-        || req.path === '/swgoh/bestmods'
-        || (req.method === "DELETE" && req.path.slice(0, 6) === '/team/')
-        || (req.method === "POST" && req.path.slice(0, 6) === '/team/')
-        || req.path.slice(0, 7) === '/users/' 
-        || req.path.slice(0, 25) === '/rote/operation/allocate/' 
-        || req.path.slice(0, 20) === '/rote/operation/swap'
-        || (req.method === "POST" && req.path.slice(0, 6) === '/journeyGuide/')
-        
-      ) {
-      if (decoded.access === 0) {
-        return res.status(401).json({ message: 'Insuffient access' });
-      }
-    }
-  });*/
-   
-  
+  }); 
 };
 
 export default authMiddleware;
