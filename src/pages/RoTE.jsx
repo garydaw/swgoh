@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import Operations from '../components/rote/Operations'
 import { useSearchParams } from 'react-router-dom';
 import { apiRequest } from '../helpers/ApiRequest';
+import AllyOperations from '../components/rote/AllyOperations';
+import { useAuth } from '../store/useAuth';
 
 export default function RoTE() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -9,9 +11,12 @@ export default function RoTE() {
   const [rotePlanets, setRotePlanets] = useState([]);
   const [rotePlanet, setRotePlanet] = useState(searchParams.get('rote_planet') || "1");
   const [roteOperations, setRoteOperations] = useState([]);
+  const [roteAllies, setRoteAllies] = useState([]);
   const [roteSwaps, setRoteSwaps] = useState([]);
   const [canWork, setCanWork] = useState([]);
   const [roteView, setRoteView] = useState(searchParams.get('rote_view') ||"planet");
+
+  const {username} = useAuth();
 
   const updatedSearchParams = new URLSearchParams(searchParams);
 
@@ -49,6 +54,7 @@ export default function RoTE() {
 
   const operationsReceived = (result) => {
     setRoteOperations(result.operations);
+    setRoteAllies(result.ally);
     createSwaps(result.swaps);
     createCanWork(result.canWork);
   }
@@ -132,11 +138,11 @@ export default function RoTE() {
             </div>
             <div className="form-check">
               <input className="form-check-input" type="radio" name="roteView" id="roteViewAllies" value="allies" checked={roteView === "allies"} onChange={roteViewChanged}/>
-              <label className="form-check-label" htmlFor="roteView5">Allies</label>
+              <label className="form-check-label" htmlFor="roteViewAllies">Allies</label>
             </div>
             <div className="form-check">
               <input className="form-check-input" type="radio" name="roteView" id="roteViewMe" value="me" checked={roteView === "me"} onChange={roteViewChanged}/>
-              <label className="form-check-label" htmlFor="roteView5">Me</label>
+              <label className="form-check-label" htmlFor="roteViewMe">Me</label>
             </div>
           </div>
         }
@@ -147,20 +153,26 @@ export default function RoTE() {
         }
       </div>
       
-      {roteOperations.map((operation, itemIndex) => (
-        operation.length > 0 ?
+      {roteView === "planet"  &&
+        roteOperations.map((operation, itemIndex) => (
+          operation.length > 0 ?
+            
+            <Operations
+              key={"rote_planet_"+rotePath+"_"+rotePlanet+"_"+itemIndex}
+              operation={operation}
+              swaps={roteSwaps}
+              canWork={canWork}
+              swapOperations={swapOperations}
+              WorkOperations={WorkOperations}
+              header={`${operation[0].path}, ${operation[0].phase} - ${operation[0].planet}, Operation ${operation[0].operation}`}/>
+            :
+            <div>Operation {itemIndex+1} not found</div>
           
-          <Operations
-            key={"rote_"+rotePath+"_"+rotePlanet+"_"+itemIndex}
-            operation={operation}
-            swaps={roteSwaps}
-            canWork={canWork}
-            swapOperations={swapOperations}
-            WorkOperations={WorkOperations}/>
-          :
-          <div>Operation {itemIndex+1} not found</div>
-        
-        ))}
+          ))
+      }
+      {roteView !== "planet" &&
+        <AllyOperations allies={roteAllies} username={roteView === "me" ? username : ""} />
+      }
     </div>
   )
 }

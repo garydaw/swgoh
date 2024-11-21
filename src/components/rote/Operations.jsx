@@ -1,7 +1,7 @@
 import React from 'react'
 import Operation from './Operation'
 
-export default function Operations({operation, swaps, swapOperations, canWork, WorkOperations}) {
+export default function Operations({operation, swaps, swapOperations, canWork, WorkOperations, header}) {
 
   const chunkArray = (array, size) => {
     const result = [];
@@ -17,7 +17,7 @@ export default function Operations({operation, swaps, swapOperations, canWork, W
     <div>
       <div className="card mb-3">
         <div className="card-header text-center text-capitalize ">
-          {operation[0].path}, {operation[0].phase} - {operation[0].planet}, Operation {operation[0].operation}
+          {header}
         </div>
         <div className="card-body">
           {operationChunks.map((chunk, rowIndex) => (
