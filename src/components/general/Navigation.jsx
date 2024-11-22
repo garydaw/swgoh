@@ -20,8 +20,7 @@ export default function Navigation() {
     { title: "TW", to: "/tw" },
     { title: "TW Counters", to: "/twcounters" },
     { title: "RoTE", to: "/rote" },
-    { title: "Relics", to: "/relics" },
-    { title: "Tips", to: "/tips" }
+    { title: "Relics", to: "/relics" }
   ]
 
   //add admin links for admins

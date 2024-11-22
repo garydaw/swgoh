@@ -51,10 +51,6 @@ export const protectedcRoutes = [
             element:React.createElement(RoTE),
           },
           {
-            path:"/tips",
-            element:React.createElement(Tips),
-          },
-          {
             path:"/relics",
             element:React.createElement(Relics),
           },
