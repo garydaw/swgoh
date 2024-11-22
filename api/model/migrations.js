@@ -66,6 +66,21 @@ async function versionFour (){
     await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 5, 'Vandor' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 5)");
     await runSQL("INSERT INTO rote_planets (path, phase, planet) SELECT 'neutral', 6, 'Hoth' WHERE 'neutral' NOT IN (SELECT path FROM rote_planets WHERE phase = 6)");
 
+    console.log("creating tw counters");
+    await runSQL("CREATE TABLE IF NOT EXISTS tw_counters ("+
+        "base_id VARCHAR(64) NOT NULL, "+
+        "counter text, " +
+        "primary key(base_id), "+
+        "CONSTRAINT fk_tw_counters__unit "+
+        "FOREIGN KEY (base_id) REFERENCES unit (base_id) "+
+        "ON DELETE CASCADE "+
+        "ON UPDATE RESTRICT);");
+        
+    console.log("add history of tw_counters");
+    await runSQL("ALTER TABLE tw_counters ADD IF NOT EXISTS date_added DATETIME NOT NULL DEFAULT now()");
+    await runSQL("ALTER TABLE tw_counters ADD IF NOT EXISTS is_current boolean NOT NULL DEFAULT true");
+
+    await runSQL("ALTER TABLE tw_counters DROP PRIMARY KEY, ADD PRIMARY KEY (base_id, date_added)");
 
 }
 

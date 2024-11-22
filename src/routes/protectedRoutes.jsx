@@ -9,7 +9,7 @@ import Tips from '../pages/Tips';
 import Relics from '../pages/Relics';
 import UserAdmin from '../pages/UserAdmin';
 import TeamAdmin from '../pages/TeamAdmin';
-import TWCounters from '../pages/TWCounters';
+import TWCounters, {twcountersLoader} from '../pages/TWCounters';
 
 //all the protected routes
 export const protectedcRoutes = [
@@ -44,6 +44,7 @@ export const protectedcRoutes = [
           {
             path:"/twcounters",
             element:React.createElement(TWCounters),
+            loader:twcountersLoader
           },
           {
             path:"/rote",

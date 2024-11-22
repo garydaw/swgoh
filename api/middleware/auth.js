@@ -35,6 +35,7 @@ const authMiddleware = async (req, res, next) => {
       || req.path === '/auth/changeAdmin'
       || (req.method === "POST" && req.path.slice(0, 8) === '/journey')
       || (req.method === "POST" && req.path.slice(0, 5) === '/rote')
+      || (req.method === "POST" && req.path.slice(0, 11) === '/twcounters')
     ) {
       if(decoded.access !== 1){
         return res.status(403).json({ message: 'You dont have the required permissions' });
