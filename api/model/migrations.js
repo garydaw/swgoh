@@ -81,6 +81,21 @@ async function versionFour (){
     await runSQL("ALTER TABLE tw_counters ADD IF NOT EXISTS is_current boolean NOT NULL DEFAULT true");
 
     await runSQL("ALTER TABLE tw_counters DROP PRIMARY KEY, ADD PRIMARY KEY (base_id, date_added)");
+    
+    console.log("creating log table");
+    await runSQL("CREATE TABLE IF NOT EXISTS log ("+
+        "id int NOT NULL AUTO_INCREMENT, "+
+        "ally_code int NOT NULL, "+
+        "url VARCHAR(512) NOT NULL, "+
+        "date_visited DATETIME NOT NULL DEFAULT now(), "+
+        "primary key(id));");
+
+        
+    console.log("add history of tw_counters");
+    await runSQL("ALTER TABLE tw_counters ADD IF NOT EXISTS date_added DATETIME NOT NULL DEFAULT now()");
+    await runSQL("ALTER TABLE tw_counters ADD IF NOT EXISTS is_current boolean NOT NULL DEFAULT true");
+
+    await runSQL("ALTER TABLE tw_counters DROP PRIMARY KEY, ADD PRIMARY KEY (base_id, date_added)");
 
 }
 

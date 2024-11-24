@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import log from "../model/log.js";
 
 const authMiddleware = async (req, res, next) => {
   
@@ -26,6 +27,10 @@ const authMiddleware = async (req, res, next) => {
       return res.status(403).json({ message: 'Token expired or invalid' });
     }
     req.user = {user_name:decoded.username};
+    
+    if(req.path.slice(0,11) !== '/migrations')
+      log.addLog(decoded.username, req.originalUrl);
+    
     if(!req.query.hasOwnProperty("ally_code")){
       req.query.ally_code = decoded.username;
     }
