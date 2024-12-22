@@ -14,12 +14,15 @@ import { AuthProvider } from './store/useAuth'
 const router = createBrowserRouter([
   ...publicRoutes,
   ...protectedcRoutes
-]);
+],
+{
+  basename: "/swgoh", // Set the base path here
+});
 
 createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <GlobalContextProvider>
-        <RouterProvider router={router}/>
+        <RouterProvider router={router} />
       </GlobalContextProvider>
     </AuthProvider>
 )

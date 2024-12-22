@@ -8,7 +8,7 @@ import CharacterDetails from '../components/units/CharacterDetails';
 
 export function unitLoader({params, request}){
   const url = new URL(request.url);
-  const api = url.pathname.slice(1)
+  const api = url.pathname.slice(6)
   
   const ally_code = url.searchParams.get('ally_code') || "";
   const base_id = url.searchParams.get('base_id') || "";
