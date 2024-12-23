@@ -54,19 +54,19 @@
 .level {
   height:30px;
   width:30px;
-  background-image: url("../swgoh/images/portrait/level_background.webp");
+  background-image: url("/swgoh/images/portrait/level_background.webp");
   line-height: 27px;
 }
 
 /* relic level overlays */
 .dark {
-  background-image: url("../swgoh/images/portrait/relic_dark.webp");
+  background-image: url("/swgoh/images/portrait/relic_dark.webp");
 }
 .light {
-  background-image: url("../swgoh/images/portrait/relic_light.webp");
+  background-image: url("/swgoh/images/portrait/relic_light.webp");
 }
 .neutral {
-  background-image: url("../swgoh/images/portrait/relic_neutral.webp");
+  background-image: url("/swgoh/images/portrait/relic_neutral.webp");
 }
 
 
@@ -74,7 +74,7 @@
 .zetaOverlay {
   left: 15%;
   bottom: 15%;
-  background-image: url("../swgoh/images/portrait/zeta.png");
+  background-image: url("/swgoh/images/portrait/zeta.png");
   line-height: 24px;
 }
 
@@ -84,6 +84,6 @@
   bottom: 12%;
   height:30px;
   width:30px;
-  background-image: url("../swgoh/images/portrait/omicron.png");
+  background-image: url("/swgoh/images/portrait/omicron.png");
   line-height: 27px;
 }
