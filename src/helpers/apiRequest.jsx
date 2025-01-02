@@ -1,6 +1,6 @@
 const API_URL= import.meta.env.VITE_API_URL;
 
-export const apiRequest = async (endpoint, auth, method, data = null) => {
+export const apiRequest = async (endpoint, auth, method, data = null, responseType = 'json') => {
   
   if(auth && !JSON.parse(localStorage.getItem('isLoggedIn'))){
     return [];
@@ -23,6 +23,9 @@ export const apiRequest = async (endpoint, auth, method, data = null) => {
         const errorData = await response.json();
         const errorMessage = errorData.message;
         throw new Error(errorMessage || 'Request failed');
+      }
+      if (responseType === 'blob') {
+        return await response.blob();
       }
       return await response.json();
     } catch (error) {

@@ -67,6 +67,20 @@ export default function RoTE() {
     
   }
 
+  const getExport = async () => {
+    const blob = await apiRequest('rote/export', true, 'GET', null, 'blob');
+     // Create a link element to download the file
+     const url = window.URL.createObjectURL(blob);
+     const a = document.createElement('a');
+     a.href = url;
+     a.download = 'example.xlsx'; // Set file name
+     document.body.appendChild(a);
+     a.click();
+     a.remove();
+     window.URL.revokeObjectURL(url);
+    
+  }
+
   const createSwaps = (swaps) => {
     let operationSwaps = {};
     for(let s = 0; s < swaps.length; s++){
@@ -148,6 +162,11 @@ export default function RoTE() {
         {roteOperations.length > 0 && admin === 1 &&
           <div style={{maxWidth:"250px"}} className='px-2'>
             <button className='btn btn-primary' onClick={allocateOperations}>Auto Allocate</button>
+          </div>
+        }
+        {roteOperations.length > 0 &&
+          <div style={{maxWidth:"250px"}} className='px-2'>
+            <button className='btn btn-primary' onClick={getExport}>Export</button>
           </div>
         }
       </div>

@@ -1,4 +1,5 @@
 import runSQL from "./database.js";
+import excel from "exceljs";
 
 let rote = {};
 
@@ -9,6 +10,23 @@ rote.get = async () => {
 
     return operation;
 
+}
+
+rote.getExcel = async () => {
+  let workbook = new excel.Workbook();
+  let worksheet = workbook.addWorksheet("Tutorials");
+
+  worksheet.columns = [
+    { header: "Id", key: "id", width: 5 },
+    { header: "Title", key: "title", width: 25 },
+    { header: "Description", key: "description", width: 25 },
+    { header: "Published", key: "published", width: 10 },
+  ];
+
+  // Add Array Rows
+  //worksheet.addRows(tutorials);
+
+  return workbook;
 }
 
 rote.getPlanets = async () => {
