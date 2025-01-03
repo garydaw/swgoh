@@ -5,6 +5,13 @@ import players from "./players.js";
 let rote = {};
 const green = "FF93C47D";
 const light_green = "FFD9EAD3";
+const blue = "FF6FA8DC";
+const light_blue = "FFCFE2F3";
+const red = "FFE06666";
+const light_red = "FFF4CCCC";
+const grey = "FFCCCCCC";
+const light_grey = "FFEFEFEF";
+
 let row_count = 1;
 
 rote.get = async () => {
@@ -41,13 +48,12 @@ rote.getExcel = async (ally_code) => {
     row_count++;
  
 
-    worksheet.getColumn(1).width = 20;
+    worksheet.getColumn(1).width = 40;
     worksheet.getColumn(2).width = 20;
     worksheet.getColumn(3).width = 30;
     worksheet.getColumn(4).width = 40;
 
     for(let p = 0; p < allies.length; p++){
-      console.log(allies[p]);
       worksheet = await rote.addExcelPlayerPhase(worksheet, i, allies[p].ally_code);
     }
   }
@@ -68,6 +74,7 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
         fgColor:{argb:light_green}
       };
       cell.font = { size: 14, bold: true };
+      cell.alignment = { horizontal: 'center' };
     }
   });
   row_count++;
@@ -82,6 +89,33 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
     row.push(playerOperations[i].character_name);
     row.push(playerOperations[i].operation);
     worksheet.addRow(row);
+    
+    worksheet.getCell('B' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('B' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('B' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:blue}
+    };
+
+    
+    worksheet.getCell('C' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('C' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('C' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:light_blue}
+    };
+
+    
+    worksheet.getCell('D' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('D' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('D' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:light_blue}
+    };
+
     row_count++;
   }
 
@@ -94,6 +128,33 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
     row.push(playerOperations[i].character_name);
     row.push(playerOperations[i].operation);
     worksheet.addRow(row);
+    
+    worksheet.getCell('B' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('B' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('B' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:red}
+    };
+
+    
+    worksheet.getCell('C' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('C' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('C' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:light_red}
+    };
+
+    
+    worksheet.getCell('D' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('D' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('D' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:light_red}
+    };
+
     row_count++;
   }
 
@@ -106,6 +167,33 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
     row.push(playerOperations[i].character_name);
     row.push(playerOperations[i].operation);
     worksheet.addRow(row);
+    
+    worksheet.getCell('B' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('B' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('B' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:grey}
+    };
+
+    
+    worksheet.getCell('C' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('C' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('C' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:light_grey}
+    };
+
+    
+    worksheet.getCell('D' + row_count).font = { size: 14, bold: true };
+    worksheet.getCell('D' + row_count).alignment = { horizontal: 'center' };
+    worksheet.getCell('D' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:light_grey}
+    };
+
     row_count++;
   }
   
