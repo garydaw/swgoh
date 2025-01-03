@@ -73,7 +73,7 @@ export default function RoTE() {
      const url = window.URL.createObjectURL(blob);
      const a = document.createElement('a');
      a.href = url;
-     a.download = 'example.xlsx'; // Set file name
+     a.download = 'rote.xlsx'; // Set file name
      document.body.appendChild(a);
      a.click();
      a.remove();

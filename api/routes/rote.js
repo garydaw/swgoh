@@ -13,16 +13,16 @@ roteRouter.get('/planets', async (req, res) => {
 roteRouter.get('/export', async (req, res) => {
 
    
-    const excel = await rote.getExcel();
+    const excel = await rote.getExcel(req.user.user_name);
 
     res.setHeader(
     "Content-Type",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    
+
     res.setHeader(
     "Content-Disposition",
-    "attachment; filename=" + "tutorials.xlsx"
+    "attachment; filename=" + "rote.xlsx"
     );
 
     return excel.xlsx.write(res).then(function () {

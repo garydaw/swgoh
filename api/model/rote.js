@@ -1,7 +1,11 @@
 import runSQL from "./database.js";
 import excel from "exceljs";
+import players from "./players.js";
 
 let rote = {};
+const green = "FF93C47D";
+const light_green = "FFD9EAD3";
+let row_count = 1;
 
 rote.get = async () => {
 
@@ -12,21 +16,111 @@ rote.get = async () => {
 
 }
 
-rote.getExcel = async () => {
+rote.getExcel = async (ally_code) => {
+
+  //get allies
+  const allies = await players.getGuildMembers(ally_code);
+
   let workbook = new excel.Workbook();
-  let worksheet = workbook.addWorksheet("Tutorials");
 
-  worksheet.columns = [
-    { header: "Id", key: "id", width: 5 },
-    { header: "Title", key: "title", width: 25 },
-    { header: "Description", key: "description", width: 25 },
-    { header: "Published", key: "published", width: 10 },
-  ];
+  for(let i = 1; i < 2; i++){
+    
+    let worksheet = workbook.addWorksheet("RoTE - Phase " + i);
 
-  // Add Array Rows
-  //worksheet.addRows(tutorials);
+    //Title
+    worksheet.getCell('A' + row_count).value = 'ROTE OPERATION REQUIREMENTS PHASE ' + i;
+    worksheet.getCell('A' + row_count).font = { size: 24, bold: true };
+    worksheet.getCell('A' + row_count).fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:green}
+    };
+    //merge cells
+    worksheet.mergeCells(row_count,1,row_count,4);
+
+    row_count++;
+
+
+    worksheet.getColumn(1).width = 20;
+    worksheet.getColumn(2).width = 20;
+    worksheet.getColumn(3).width = 30;
+    worksheet.getColumn(4).width = 40;
+
+    for(let p = 0; p < allies.length; p++){
+      console.log(allies[p]);
+      worksheet = await rote.addExcelPlayerPhase(worksheet, i, allies[p].ally_code);
+    }
+  }
 
   return workbook;
+}
+
+rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => { 
+  //header
+  worksheet.addRow(['PLAYER','LOCATION','CHARACTER','OPERATION NO']);
+  const row = worksheet.getRow(row_count);
+
+  row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+    if (colNumber >= 1 && colNumber <= 4) { // Columns A to D are 1 to 4
+      cell.fill = {
+        type: 'pattern',
+        pattern:'solid',
+        fgColor:{argb:light_green}
+      };
+      cell.font = { size: 14, bold: true };
+    }
+  });
+  row_count++;
+  const start_row = row_count;
+
+  const playerOperations = await rote.getAllyOperationsExcel(phase, ally_code);
+  for(let i = 0; i < playerOperations.length; i++){
+    let row = [];
+    row.push(playerOperations[i].ally_name);
+    row.push(playerOperations[i].path);
+    row.push(playerOperations[i].character_name);
+    row.push(playerOperations[i].operation);
+    worksheet.addRow(row);
+    row_count++;
+  }
+  
+  worksheet.mergeCells(start_row,1,row_count-1,1);
+
+  worksheet.getCell('A' + start_row).font = { size: 20, bold: true };
+  worksheet.getCell('A' + start_row).fill = {
+      type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:green}
+  };
+  worksheet.getCell('A' + start_row).alignment = { vertical: 'middle', horizontal: 'center' };
+  return worksheet;
+}
+
+rote.getAllyOperationsExcel = async (phase, ally_code) => {
+  let sql = "";
+  sql += "SELECT ro.path, ro.phase, rp.planet, ro.operation, ";
+  sql += "ro.unit_index, u.character_name, ";
+  sql += "p.ally_name, ";
+  sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' ";
+  sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Allocated' ";
+  sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Allocated' ";
+  sql += "ELSE 'Working' END AS allocation_type ";
+  sql += "FROM	player p ";
+  sql += "LEFT OUTER JOIN rote_operation ro ";
+  sql += "	ON ro.ally_code = p.ally_code ";
+  sql += "  AND ro.phase = ? ";
+  sql += "LEFT OUTER JOIN  rote_planets rp ";
+  sql += "    ON rp.phase = ro.phase ";
+  sql += "    AND rp.path = ro.path ";
+  sql += "LEFT OUTER JOIN player_unit pu ";
+  sql += "    ON  pu.ally_code = p.ally_code ";
+  sql += "    AND  pu.base_id = ro.base_id ";
+  sql += "LEFT OUTER JOIN unit u ";
+  sql += "    ON u.base_id = ro.base_id ";
+  sql += "WHERE p.ally_code = ? ";
+  sql += "ORDER BY rp.planet, ro.operation, ro.unit_index ";
+
+  return await runSQL(sql, [phase, ally_code]);
 }
 
 rote.getPlanets = async () => {
