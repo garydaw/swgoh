@@ -3,14 +3,12 @@ import excel from "exceljs";
 import players from "./players.js";
 
 let rote = {};
-const green = "FF93C47D";
-const light_green = "FFD9EAD3";
-const blue = "FF6FA8DC";
-const light_blue = "FFCFE2F3";
-const red = "FFE06666";
-const light_red = "FFF4CCCC";
-const grey = "FFCCCCCC";
-const light_grey = "FFEFEFEF";
+let fills = {
+              headers:["FF93C47D", "FFD9EAD3"],
+              light:["FF6FA8DC", "FFCFE2F3"], 
+              dark:["FFE06666", "FFF4CCCC"],
+              neutral:["FFCCCCCC", "FFEFEFEF"]
+            };
 
 let row_count = 1;
 
@@ -18,7 +16,6 @@ rote.get = async () => {
 
     let operation = {}
     
-
     return operation;
 
 }
@@ -34,24 +31,21 @@ rote.getExcel = async (ally_code) => {
     
     let worksheet = workbook.addWorksheet("RoTE - Phase " + i);
     row_count = 1;
+
     //Title
     worksheet.getCell('A' + row_count).value = 'ROTE OPERATION REQUIREMENTS PHASE ' + i;
-    worksheet.getCell('A' + row_count).font = { size: 24, bold: true };
-    worksheet.getCell('A' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:green}
-    };
+    setCellStyle(worksheet.getCell('A' + row_count), 24, true, 'center', fills.headers[0]);
+    
+    
     //merge cells
     worksheet.mergeCells(row_count,1,row_count,4);
 
     row_count++;
  
-
     worksheet.getColumn(1).width = 40;
     worksheet.getColumn(2).width = 20;
-    worksheet.getColumn(3).width = 30;
-    worksheet.getColumn(4).width = 40;
+    worksheet.getColumn(3).width = 50;
+    worksheet.getColumn(4).width = 30;
 
     for(let p = 0; p < allies.length; p++){
       worksheet = await rote.addExcelPlayerPhase(worksheet, i, allies[p].ally_code);
@@ -61,6 +55,16 @@ rote.getExcel = async (ally_code) => {
   return workbook;
 }
 
+const setCellStyle = (cell, fontSize, bold, alignment, fillColor) => {
+  cell.font = { size: fontSize, bold: bold };
+  cell.alignment = { horizontal: alignment };
+  cell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: fillColor }
+  };
+};
+
 rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => { 
   //header
   worksheet.addRow(['PLAYER','LOCATION','CHARACTER','OPERATION NO']);
@@ -68,150 +72,42 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
 
   row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
     if (colNumber >= 1 && colNumber <= 4) { // Columns A to D are 1 to 4
-      cell.fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:light_green}
-      };
-      cell.font = { size: 14, bold: true };
-      cell.alignment = { horizontal: 'center' };
+      setCellStyle(cell, 14, true, 'center', fills.headers[1]); 
     }
   });
   row_count++;
   const start_row = row_count;
 
-  let path = 'light';
-  let playerOperations = await rote.getAllyOperationsExcel(phase,path, ally_code);
-  for(let i = 0; i < playerOperations.length; i++){
-    let row = [];
-    row.push(playerOperations[i].ally_name);
-    row.push(path);
-    row.push(playerOperations[i].character_name);
-    row.push(playerOperations[i].operation);
-    worksheet.addRow(row);
-    
-    worksheet.getCell('B' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('B' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('B' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:blue}
-    };
+  const paths = ['light', 'dark', 'neutral'];
+  for (const path of paths) {
+    const playerOperations = await rote.getAllyOperationsExcel(phase, path, ally_code);
+    for (let i = 0; i < playerOperations.length; i++) {
+      let row = [];
+      row.push(playerOperations[i].ally_name);
+      row.push(playerOperations[i].path);
+      row.push(playerOperations[i].character_name);
+      row.push(playerOperations[i].operation);
+      worksheet.addRow(row);
 
-    
-    worksheet.getCell('C' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('C' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('C' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:light_blue}
-    };
+      setCellStyle(worksheet.getCell('B' + row_count), 14, true, 'center', fills[path][0]); 
+      setCellStyle(worksheet.getCell('C' + row_count), 14, true, 'center', fills[path][1]); 
+      setCellStyle(worksheet.getCell('D' + row_count), 14, true, 'center', fills[path][1]); 
 
-    
-    worksheet.getCell('D' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('D' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('D' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:light_blue}
-    };
-
-    row_count++;
-  }
-
-  path = 'dark';
-  playerOperations = await rote.getAllyOperationsExcel(phase,path, ally_code);
-  for(let i = 0; i < playerOperations.length; i++){
-    let row = [];
-    row.push(playerOperations[i].ally_name);
-    row.push(path);
-    row.push(playerOperations[i].character_name);
-    row.push(playerOperations[i].operation);
-    worksheet.addRow(row);
-    
-    worksheet.getCell('B' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('B' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('B' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:red}
-    };
-
-    
-    worksheet.getCell('C' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('C' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('C' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:light_red}
-    };
-
-    
-    worksheet.getCell('D' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('D' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('D' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:light_red}
-    };
-
-    row_count++;
-  }
-
-  path = 'neutral';
-  playerOperations = await rote.getAllyOperationsExcel(phase,path, ally_code);
-  for(let i = 0; i < playerOperations.length; i++){
-    let row = [];
-    row.push(playerOperations[i].ally_name);
-    row.push(path);
-    row.push(playerOperations[i].character_name);
-    row.push(playerOperations[i].operation);
-    worksheet.addRow(row);
-    
-    worksheet.getCell('B' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('B' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('B' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:grey}
-    };
-
-    
-    worksheet.getCell('C' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('C' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('C' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:light_grey}
-    };
-
-    
-    worksheet.getCell('D' + row_count).font = { size: 14, bold: true };
-    worksheet.getCell('D' + row_count).alignment = { horizontal: 'center' };
-    worksheet.getCell('D' + row_count).fill = {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:light_grey}
-    };
-
-    row_count++;
+      row_count++;
+    }
   }
   
-  worksheet.mergeCells(start_row,1,row_count-1,1);
+  worksheet.mergeCells(start_row, 1, row_count - 1, 1);
 
-  worksheet.getCell('A' + start_row).font = { size: 20, bold: true };
-  worksheet.getCell('A' + start_row).fill = {
-      type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:green}
-  };
+  setCellStyle(worksheet.getCell('A' + start_row), 20, true, 'center', fills.headers[0]);
   worksheet.getCell('A' + start_row).alignment = { vertical: 'middle', horizontal: 'center' };
+
   return worksheet;
-}
+};
 
 rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
   let sql = "";
-  sql += "SELECT ro.path, ro.phase, rp.planet, CASE WHEN ro.operation IS NULL THEN 'N/A' ELSE 'OP '+ro.operation END as operation, ";
+  sql += "SELECT IFNULL(ro.path, ?) AS path, ro.phase, rp.planet, CASE WHEN ro.operation IS NULL THEN 'N/A' ELSE 'OP '+ro.operation END as operation, ";
   sql += "ro.unit_index, IFNULL(u.character_name, 'N/A') AS character_name, ";
   sql += "p.ally_name, ";
   sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' ";
@@ -234,7 +130,7 @@ rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
   sql += "WHERE p.ally_code = ? ";
   sql += "ORDER BY rp.planet, ro.operation, ro.unit_index ";
 
-  return await runSQL(sql, [phase, path, ally_code]);
+  return await runSQL(sql, [path, phase, path, ally_code]);
 }
 
 rote.getPlanets = async () => {
