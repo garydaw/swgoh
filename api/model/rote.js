@@ -23,10 +23,10 @@ rote.getExcel = async (ally_code) => {
 
   let workbook = new excel.Workbook();
 
-  for(let i = 1; i < 2; i++){
+  for(let i = 1; i < 7; i++){
     
     let worksheet = workbook.addWorksheet("RoTE - Phase " + i);
-
+    row_count = 1;
     //Title
     worksheet.getCell('A' + row_count).value = 'ROTE OPERATION REQUIREMENTS PHASE ' + i;
     worksheet.getCell('A' + row_count).font = { size: 24, bold: true };
@@ -39,7 +39,7 @@ rote.getExcel = async (ally_code) => {
     worksheet.mergeCells(row_count,1,row_count,4);
 
     row_count++;
-
+ 
 
     worksheet.getColumn(1).width = 20;
     worksheet.getColumn(2).width = 20;
@@ -73,11 +73,36 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
   row_count++;
   const start_row = row_count;
 
-  const playerOperations = await rote.getAllyOperationsExcel(phase, ally_code);
+  let path = 'light';
+  let playerOperations = await rote.getAllyOperationsExcel(phase,path, ally_code);
   for(let i = 0; i < playerOperations.length; i++){
     let row = [];
     row.push(playerOperations[i].ally_name);
-    row.push(playerOperations[i].path);
+    row.push(path);
+    row.push(playerOperations[i].character_name);
+    row.push(playerOperations[i].operation);
+    worksheet.addRow(row);
+    row_count++;
+  }
+
+  path = 'dark';
+  playerOperations = await rote.getAllyOperationsExcel(phase,path, ally_code);
+  for(let i = 0; i < playerOperations.length; i++){
+    let row = [];
+    row.push(playerOperations[i].ally_name);
+    row.push(path);
+    row.push(playerOperations[i].character_name);
+    row.push(playerOperations[i].operation);
+    worksheet.addRow(row);
+    row_count++;
+  }
+
+  path = 'neutral';
+  playerOperations = await rote.getAllyOperationsExcel(phase,path, ally_code);
+  for(let i = 0; i < playerOperations.length; i++){
+    let row = [];
+    row.push(playerOperations[i].ally_name);
+    row.push(path);
     row.push(playerOperations[i].character_name);
     row.push(playerOperations[i].operation);
     worksheet.addRow(row);
@@ -96,10 +121,10 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
   return worksheet;
 }
 
-rote.getAllyOperationsExcel = async (phase, ally_code) => {
+rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
   let sql = "";
-  sql += "SELECT ro.path, ro.phase, rp.planet, ro.operation, ";
-  sql += "ro.unit_index, u.character_name, ";
+  sql += "SELECT ro.path, ro.phase, rp.planet, CASE WHEN ro.operation IS NULL THEN 'N/A' ELSE 'OP '+ro.operation END as operation, ";
+  sql += "ro.unit_index, IFNULL(u.character_name, 'N/A') AS character_name, ";
   sql += "p.ally_name, ";
   sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' ";
   sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Allocated' ";
@@ -109,6 +134,7 @@ rote.getAllyOperationsExcel = async (phase, ally_code) => {
   sql += "LEFT OUTER JOIN rote_operation ro ";
   sql += "	ON ro.ally_code = p.ally_code ";
   sql += "  AND ro.phase = ? ";
+  sql += "  AND ro.path = ? ";
   sql += "LEFT OUTER JOIN  rote_planets rp ";
   sql += "    ON rp.phase = ro.phase ";
   sql += "    AND rp.path = ro.path ";
@@ -120,7 +146,7 @@ rote.getAllyOperationsExcel = async (phase, ally_code) => {
   sql += "WHERE p.ally_code = ? ";
   sql += "ORDER BY rp.planet, ro.operation, ro.unit_index ";
 
-  return await runSQL(sql, [phase, ally_code]);
+  return await runSQL(sql, [phase, path, ally_code]);
 }
 
 rote.getPlanets = async () => {
