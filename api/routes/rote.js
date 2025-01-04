@@ -10,6 +10,27 @@ roteRouter.get('/planets', async (req, res) => {
   
 });
 
+roteRouter.get('/export', async (req, res) => {
+
+   
+    const excel = await rote.getExcel(req.user.user_name);
+
+    res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=" + "rote.xlsx"
+    );
+
+    return excel.xlsx.write(res).then(function () {
+    res.status(200).end();
+    });
+  
+});
+
 roteRouter.get('/operations/:path/:planet', async (req, res) => {
 
     const path = req.params.path;

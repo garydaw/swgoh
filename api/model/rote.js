@@ -1,14 +1,161 @@
 import runSQL from "./database.js";
+import excel from "exceljs";
+import players from "./players.js";
 
 let rote = {};
+let fills = {
+              headers:["FF93C47D", "FFD9EAD3"],
+              light:["FF6FA8DC", "FFCFE2F3"], 
+              dark:["FFE06666", "FFF4CCCC"],
+              neutral:["FFCCCCCC", "FFEFEFEF"]
+            };
+
+let row_count = 1;
 
 rote.get = async () => {
 
     let operation = {}
     
-
     return operation;
 
+}
+
+rote.getExcel = async (ally_code) => {
+
+  //get allies
+  const allies = await players.getGuildMembers(ally_code);
+
+  let workbook = new excel.Workbook();
+
+  for(let i = 1; i < 7; i++){
+    
+    let worksheet = workbook.addWorksheet("RoTE - Phase " + i);
+    row_count = 1;
+
+    //Title
+    worksheet.getCell('A' + row_count).value = 'ROTE OPERATION REQUIREMENTS PHASE ' + i;
+    setCellStyle(worksheet.getCell('A' + row_count), 24, true, 'center', fills.headers[0]);
+    
+    
+    //merge cells
+    worksheet.mergeCells(row_count,1,row_count,5);
+
+    row_count++;
+ 
+    worksheet.getColumn(1).width = 40;
+    worksheet.getColumn(2).width = 20;
+    worksheet.getColumn(3).width = 50;
+    worksheet.getColumn(4).width = 30;
+    worksheet.getColumn(5).width = 40;
+
+    for(let p = 0; p < allies.length; p++){
+      worksheet.addRow(['','','','','']);
+      worksheet.getRow(row_count).eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        if (colNumber >= 1 && colNumber <= 5) { 
+          setCellStyle(cell, 14, true, 'center', 'FF000000'); 
+        }
+      });
+      worksheet.getRow(row_count).height = 10;
+      row_count++;
+      worksheet = await rote.addExcelPlayerPhase(worksheet, i, allies[p].ally_code);
+    }
+  }
+
+  return workbook;
+}
+
+const capitalize = (s) =>{
+    return s && String(s[0]).toUpperCase() + String(s).slice(1);
+}
+
+const setCellStyle = (cell, fontSize, bold, alignment, fillColor) => {
+  cell.font = { size: fontSize, bold: bold };
+  cell.alignment = { horizontal: alignment };
+  cell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: fillColor }
+  };
+  cell.border = {
+    top: {style:'thick', color: {argb:'FF000000'}},
+    left: {style:'thick', color: {argb:'FF000000'}},
+    bottom: {style:'thick', color: {argb:'FF000000'}},
+    right: {style:'thick', color: {argb:'FF000000'}}
+  };
+};
+
+rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => { 
+  //header
+  worksheet.addRow(['PLAYER','LOCATION','CHARACTER','OPERATION NO','COMPLETED']);
+  const row = worksheet.getRow(row_count);
+
+  row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+    if (colNumber >= 1 && colNumber <= 5) { 
+      setCellStyle(cell, 14, true, 'center', fills.headers[1]); 
+    }
+  });
+  row_count++;
+  const start_row = row_count;
+
+  const paths = ['light', 'dark', 'neutral'];
+  for (const path of paths) {
+    const playerOperations = await rote.getAllyOperationsExcel(phase, path, ally_code);
+    for (let i = 0; i < playerOperations.length; i++) {
+      let row = [];
+      row.push(playerOperations[i].ally_name);
+      row.push(capitalize(playerOperations[i].path));
+      row.push(playerOperations[i].character_name);
+      row.push(playerOperations[i].operation);
+      row.push(playerOperations[i].progress);
+      worksheet.addRow(row);
+
+      setCellStyle(worksheet.getCell('B' + row_count), 14, true, 'center', fills[path][0]); 
+      setCellStyle(worksheet.getCell('C' + row_count), 14, true, 'center', fills[path][1]); 
+      setCellStyle(worksheet.getCell('D' + row_count), 14, true, 'center', fills[path][1]);
+      if(playerOperations[i].progress === 'Complete' || playerOperations[i].progress === 'N/A')
+        setCellStyle(worksheet.getCell('E' + row_count), 14, true, 'center', fills[path][1]);
+      else
+        setCellStyle(worksheet.getCell('E' + row_count), 14, true, 'center', fills[path][0]); 
+
+      row_count++;
+    }
+  }
+  
+  worksheet.mergeCells(start_row, 1, row_count - 1, 1);
+
+  setCellStyle(worksheet.getCell('A' + start_row), 20, true, 'center', fills.headers[0]);
+  worksheet.getCell('A' + start_row).alignment = { vertical: 'middle', horizontal: 'center' };
+
+  return worksheet;
+};
+
+rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
+  let sql = "";
+  sql += "SELECT IFNULL(ro.path, ?) AS path, ro.phase, rp.planet, CASE WHEN ro.operation IS NULL THEN 'N/A' ELSE 'OP '+ro.operation END as operation, ";
+  sql += "ro.unit_index, IFNULL(u.character_name, 'N/A') AS character_name, ";
+  sql += "p.ally_name, ";
+  sql += "CASE WHEN pu.ally_code IS NULL THEN 'N/A' ";
+  sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Complete' ";
+  sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Complete' ";
+  sql += "ELSE CONCAT("
+  sql += "	CASE WHEN u.combat_type = 2 THEN CONCAT( pu.rarity, ' star') WHEN pu.relic_tier > 2 THEN CONCAT('R',CAST(pu.relic_tier - 2  AS VARCHAR(2))) ELSE CONCAT('G', CAST(pu.gear_level AS VARCHAR(4))) END) END AS progress ";
+  sql += "FROM	player p ";
+  sql += "LEFT OUTER JOIN rote_operation ro ";
+  sql += "	ON ro.ally_code = p.ally_code ";
+  sql += "  AND ro.phase = ? ";
+  sql += "  AND ro.path = ? ";
+  sql += "LEFT OUTER JOIN  rote_planets rp ";
+  sql += "    ON rp.phase = ro.phase ";
+  sql += "    AND rp.path = ro.path ";
+  sql += "LEFT OUTER JOIN player_unit pu ";
+  sql += "    ON  pu.ally_code = p.ally_code ";
+  sql += "    AND  pu.base_id = ro.base_id ";
+  sql += "LEFT OUTER JOIN unit u ";
+  sql += "    ON u.base_id = ro.base_id ";
+  sql += "WHERE p.ally_code = ? ";
+  sql += "ORDER BY rp.planet, ro.operation, ro.unit_index ";
+
+  return await runSQL(sql, [path, phase, path, ally_code]);
 }
 
 rote.getPlanets = async () => {
