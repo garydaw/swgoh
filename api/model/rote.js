@@ -38,7 +38,7 @@ rote.getExcel = async (ally_code) => {
     
     
     //merge cells
-    worksheet.mergeCells(row_count,1,row_count,4);
+    worksheet.mergeCells(row_count,1,row_count,5);
 
     row_count++;
  
@@ -46,11 +46,12 @@ rote.getExcel = async (ally_code) => {
     worksheet.getColumn(2).width = 20;
     worksheet.getColumn(3).width = 50;
     worksheet.getColumn(4).width = 30;
+    worksheet.getColumn(5).width = 40;
 
     for(let p = 0; p < allies.length; p++){
-      worksheet.addRow(['','','','']);
+      worksheet.addRow(['','','','','']);
       worksheet.getRow(row_count).eachCell({ includeEmpty: true }, (cell, colNumber) => {
-        if (colNumber >= 1 && colNumber <= 4) { // Columns A to D are 1 to 4
+        if (colNumber >= 1 && colNumber <= 5) { 
           setCellStyle(cell, 14, true, 'center', 'FF000000'); 
         }
       });
@@ -85,11 +86,11 @@ const setCellStyle = (cell, fontSize, bold, alignment, fillColor) => {
 
 rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => { 
   //header
-  worksheet.addRow(['PLAYER','LOCATION','CHARACTER','OPERATION NO']);
+  worksheet.addRow(['PLAYER','LOCATION','CHARACTER','OPERATION NO','COMPLETED']);
   const row = worksheet.getRow(row_count);
 
   row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
-    if (colNumber >= 1 && colNumber <= 4) { // Columns A to D are 1 to 4
+    if (colNumber >= 1 && colNumber <= 5) { 
       setCellStyle(cell, 14, true, 'center', fills.headers[1]); 
     }
   });
@@ -105,11 +106,16 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
       row.push(capitalize(playerOperations[i].path));
       row.push(playerOperations[i].character_name);
       row.push(playerOperations[i].operation);
+      row.push(playerOperations[i].progress);
       worksheet.addRow(row);
 
       setCellStyle(worksheet.getCell('B' + row_count), 14, true, 'center', fills[path][0]); 
       setCellStyle(worksheet.getCell('C' + row_count), 14, true, 'center', fills[path][1]); 
-      setCellStyle(worksheet.getCell('D' + row_count), 14, true, 'center', fills[path][1]); 
+      setCellStyle(worksheet.getCell('D' + row_count), 14, true, 'center', fills[path][1]);
+      if(playerOperations[i].progress === 'Complete' || playerOperations[i].progress === 'N/A')
+        setCellStyle(worksheet.getCell('E' + row_count), 14, true, 'center', fills[path][1]);
+      else
+        setCellStyle(worksheet.getCell('E' + row_count), 14, true, 'center', fills[path][0]); 
 
       row_count++;
     }
@@ -128,10 +134,11 @@ rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
   sql += "SELECT IFNULL(ro.path, ?) AS path, ro.phase, rp.planet, CASE WHEN ro.operation IS NULL THEN 'N/A' ELSE 'OP '+ro.operation END as operation, ";
   sql += "ro.unit_index, IFNULL(u.character_name, 'N/A') AS character_name, ";
   sql += "p.ally_name, ";
-  sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' ";
-  sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Allocated' ";
-  sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Allocated' ";
-  sql += "ELSE 'Working' END AS allocation_type ";
+  sql += "CASE WHEN pu.ally_code IS NULL THEN 'N/A' ";
+  sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Complete' ";
+  sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Complete' ";
+  sql += "ELSE CONCAT("
+  sql += "	CASE WHEN u.combat_type = 2 THEN CONCAT( pu.rarity, ' star') WHEN pu.relic_tier > 2 THEN CONCAT('R',CAST(pu.relic_tier - 2  AS VARCHAR(2))) ELSE CONCAT('G', CAST(pu.gear_level AS VARCHAR(4))) END) END AS progress ";
   sql += "FROM	player p ";
   sql += "LEFT OUTER JOIN rote_operation ro ";
   sql += "	ON ro.ally_code = p.ally_code ";
