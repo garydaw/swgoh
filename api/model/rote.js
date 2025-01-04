@@ -48,11 +48,23 @@ rote.getExcel = async (ally_code) => {
     worksheet.getColumn(4).width = 30;
 
     for(let p = 0; p < allies.length; p++){
+      worksheet.addRow(['','','','']);
+      worksheet.getRow(row_count).eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        if (colNumber >= 1 && colNumber <= 4) { // Columns A to D are 1 to 4
+          setCellStyle(cell, 14, true, 'center', 'FF000000'); 
+        }
+      });
+      worksheet.getRow(row_count).height = 10;
+      row_count++;
       worksheet = await rote.addExcelPlayerPhase(worksheet, i, allies[p].ally_code);
     }
   }
 
   return workbook;
+}
+
+const capitalize = (s) =>{
+    return s && String(s[0]).toUpperCase() + String(s).slice(1);
 }
 
 const setCellStyle = (cell, fontSize, bold, alignment, fillColor) => {
@@ -62,6 +74,12 @@ const setCellStyle = (cell, fontSize, bold, alignment, fillColor) => {
     type: 'pattern',
     pattern: 'solid',
     fgColor: { argb: fillColor }
+  };
+  cell.border = {
+    top: {style:'thick', color: {argb:'FF000000'}},
+    left: {style:'thick', color: {argb:'FF000000'}},
+    bottom: {style:'thick', color: {argb:'FF000000'}},
+    right: {style:'thick', color: {argb:'FF000000'}}
   };
 };
 
@@ -84,7 +102,7 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
     for (let i = 0; i < playerOperations.length; i++) {
       let row = [];
       row.push(playerOperations[i].ally_name);
-      row.push(playerOperations[i].path);
+      row.push(capitalize(playerOperations[i].path));
       row.push(playerOperations[i].character_name);
       row.push(playerOperations[i].operation);
       worksheet.addRow(row);
