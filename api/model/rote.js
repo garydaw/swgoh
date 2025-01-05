@@ -24,6 +24,9 @@ rote.getExcel = async (ally_code) => {
 
   //get allies
   const allies = await players.getGuildMembers(ally_code);
+  
+  //add blank ally for missing operations
+  allies.unshift({ally_code: -1, ally_name: 'Unallocated'});
 
   let workbook = new excel.Workbook();
 
@@ -100,6 +103,7 @@ rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => {
   const paths = ['light', 'dark', 'neutral'];
   for (const path of paths) {
     const playerOperations = await rote.getAllyOperationsExcel(phase, path, ally_code);
+    
     for (let i = 0; i < playerOperations.length; i++) {
       let row = [];
       row.push(playerOperations[i].ally_name);
@@ -139,9 +143,13 @@ rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
   sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Complete' ";
   sql += "ELSE CONCAT("
   sql += "	CASE WHEN u.combat_type = 2 THEN CONCAT( pu.rarity, ' star') WHEN pu.relic_tier > 2 THEN CONCAT('R',CAST(pu.relic_tier - 2  AS VARCHAR(2))) ELSE CONCAT('G', CAST(pu.gear_level AS VARCHAR(4))) END) END AS progress ";
-  sql += "FROM	player p ";
+  if(ally_code === -1){
+    sql += "FROM (SELECT -1 AS ally_code, 'Unallocated' AS ally_name) p ";
+  }  else {
+    sql += "FROM	player p ";
+  }
   sql += "LEFT OUTER JOIN rote_operation ro ";
-  sql += "	ON ro.ally_code = p.ally_code ";
+  sql += "	ON IFNULL(ro.ally_code, -1) = p.ally_code ";
   sql += "  AND ro.phase = ? ";
   sql += "  AND ro.path = ? ";
   sql += "LEFT OUTER JOIN  rote_planets rp ";
@@ -154,7 +162,7 @@ rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
   sql += "    ON u.base_id = ro.base_id ";
   sql += "WHERE p.ally_code = ? ";
   sql += "ORDER BY rp.planet, ro.operation, ro.unit_index ";
-
+  
   return await runSQL(sql, [path, phase, path, ally_code]);
 }
 
