@@ -22,13 +22,45 @@ rote.get = async () => {
 
 rote.getExcel = async (ally_code) => {
 
+  let workbook = new excel.Workbook();
+
   //get allies
   const allies = await players.getGuildMembers(ally_code);
   
   //add blank ally for missing operations
   allies.unshift({ally_code: -1, ally_name: 'Unallocated'});
 
-  let workbook = new excel.Workbook();
+  /*****Cal Cere*****/
+  let worksheet = workbook.addWorksheet("RoTE - Cal and Cere");
+  row_count = 1;
+  worksheet.getCell("A" + row_count).value = 'ROTE CAL AND CERE REQUIREMENTS';
+  setCellStyle(worksheet.getCell("A" + row_count), 24, true, 'center', fills.headers[0], false);
+
+  //merge cells
+  worksheet.mergeCells(row_count,1,row_count,8);
+
+  row_count++;
+
+  worksheet.getColumn(1).width = 10;
+  worksheet.getColumn(2).width = 30;
+  worksheet.getColumn(3).width = 30;
+  worksheet.getColumn(4).width = 15;
+  worksheet.getColumn(5).width = 15;
+  worksheet.getColumn(6).width = 30;
+  worksheet.getColumn(7).width = 15;
+  worksheet.getColumn(8).width = 15;
+
+  //header
+  worksheet.addRow(['Count','Player','Character','Gear','Relic','Character','Gear','Relic']);
+  worksheet.getRow(row_count).eachCell({ includeEmpty: true }, (cell, colNumber) => {
+    if (colNumber >= 1 && colNumber <= 8) { 
+      setCellStyle(cell, 14, true, 'center', fills.headers[1], false); 
+    }
+  });
+  
+  row_count++;
+
+  worksheet = await rote.addExcelCalCere(worksheet, ally_code);
 
   for(let i = 1; i < 7; i++){
     
@@ -125,6 +157,38 @@ const setCellStyle = (cell, fontSize, bold, alignment, fillColor, wrapText) => {
     bottom: {style:'thick', color: {argb:'FF000000'}},
     right: {style:'thick', color: {argb:'FF000000'}}
   };
+};
+
+rote.addExcelCalCere = async (worksheet, ally_code) => { 
+ 
+  const playerCharacters = await rote.getCalCere(ally_code);
+    
+  for (let i = 0; i < playerCharacters.length; i++) {
+    let row = [];
+    row.push(i+1);
+    row.push(playerCharacters[i].ally_name);
+    row.push(playerCharacters[i].cal_name);
+    row.push(playerCharacters[i].cal_gear);
+    row.push(playerCharacters[i].cal_relic);
+    row.push(playerCharacters[i].cere_name);
+    row.push(playerCharacters[i].cere_gear);
+    row.push(playerCharacters[i].cere_relic);
+    worksheet.addRow(row);
+
+    let path = "light";
+    setCellStyle(worksheet.getCell('A' + row_count), 14, true, 'center', playerCharacters[i].cal_relic > 6 && playerCharacters[i].cere_relic > 6 ? fills.headers[0] : fills.headers[1], false);
+    setCellStyle(worksheet.getCell('B' + row_count), 14, true, 'center', fills.headers[0], false);  
+    setCellStyle(worksheet.getCell('C' + row_count), 14, true, 'center', fills.neutral[0], false);
+    setCellStyle(worksheet.getCell('D' + row_count), 14, true, 'center', playerCharacters[i].cal_gear == 13 ? fills[path][0] : fills[path][1], false);
+    setCellStyle(worksheet.getCell('E' + row_count), 14, true, 'center', playerCharacters[i].cal_relic > 6 ? fills[path][0] : fills[path][1], false);
+    setCellStyle(worksheet.getCell('F' + row_count), 14, true, 'center', fills.neutral[0], false); 
+    setCellStyle(worksheet.getCell('G' + row_count), 14, true, 'center', playerCharacters[i].cere_gear == 13 ? fills[path][0] : fills[path][1], false); 
+    setCellStyle(worksheet.getCell('H' + row_count), 14, true, 'center', playerCharacters[i].cere_relic > 6 ? fills[path][0] : fills[path][1], false);
+
+    row_count++;
+  }
+
+  return worksheet;
 };
 
 rote.addExcelPlayerPhase = async (worksheet, phase, ally_code) => { 
@@ -252,6 +316,33 @@ const getOperationValues = (ally_name, allocation_type, working_level, path) => 
   }
   return op_values;
 };
+
+rote.getCalCere = async (ally_code) => {
+
+  let sql = "";
+    sql += "SELECT p.ally_name, "
+    sql += "cal_u.character_name AS cal_name, CAST(cal_pu.gear_level AS VARCHAR(4)) AS cal_gear, CASE WHEN cal_pu.relic_tier <= 2 THEN '' ELSE CAST(cal_pu.relic_tier - 2  AS VARCHAR(2)) END AS cal_relic, ";
+    sql += "cere_u.character_name AS cere_name, CAST(cere_pu.gear_level AS VARCHAR(4)) AS cere_gear, CASE WHEN cere_pu.relic_tier <= 2 THEN '' ELSE CAST(cere_pu.relic_tier - 2  AS VARCHAR(2)) END AS cere_relic ";
+    sql += "FROM player p ";
+    sql += "LEFT OUTER JOIN player_unit cal_pu ";
+    sql += " ON cal_pu.base_id = 'JEDIKNIGHTCAL' ";
+    sql += " AND cal_pu.ally_code = p.ally_code ";
+    sql += "LEFT OUTER JOIN unit cal_u ";
+    sql += " ON cal_pu.base_id = cal_u.base_id ";
+    sql += "LEFT OUTER JOIN player_unit cere_pu ";
+    sql += " ON cere_pu.base_id = 'CEREJUNDA' ";
+    sql += " AND cere_pu.ally_code = p.ally_code ";
+    sql += "LEFT OUTER JOIN unit cere_u ";
+    sql += " ON cere_pu.base_id = cere_u.base_id ";
+    sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
+    sql += "ORDER BY CASE WHEN cal_pu.relic_tier > 8 AND cere_pu.relic_tier > 8 THEN 1 ELSE 0 END DESC, "
+    sql += " CASE WHEN cal_pu.relic_tier > 8 THEN 1 ELSE 0 END DESC, "
+    sql += " CASE WHEN cere_pu.relic_tier > 8 THEN 1 ELSE 0 END DESC, "
+    sql += " cal_pu.relic_tier DESC, cere_pu.relic_tier DESC, ";
+    sql += " cal_pu.gear_level DESC, cere_pu.gear_level DESC ";
+
+  return await runSQL(sql, [ally_code]);
+}
 
 rote.getAllyOperationsExcel = async (phase, path, ally_code) => {
   let sql = "";
