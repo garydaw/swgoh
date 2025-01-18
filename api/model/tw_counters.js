@@ -19,6 +19,7 @@ tw_counters.get = async (includeEmpty=true) => {
     sql += "AND IFNULL(twc.is_current,1) = 1 "
     if(!includeEmpty){
       sql += "AND IFNULL(twc.counter, 'No counters available') <> 'No counters available' "
+      sql += "AND IFNULL(twc.counter, 'No counters available') <> '' "
     }
     sql += "ORDER BY u.character_name";
 
@@ -66,7 +67,7 @@ tw_counters.getExcel = async (ally_code) => {
 
   //get counters
   const counters = await tw_counters.get(false);
-  console.log(counters);
+  
   /*****Header*****/
   let worksheet = workbook.addWorksheet("TW Counters");
   let row_count = 1;
