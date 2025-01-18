@@ -94,6 +94,7 @@ tw_counters.getExcel = async (ally_code) => {
     }
     let this_counter = counters[i].counters.replace(/<strong>/g, "");
     this_counter = this_counter.replace(/<\/strong>/g, '');
+    this_counter = this_counter.replace(/&nbsp;/g, " ");
     this_counter = this_counter.replace(/<p>/g, "");
     this_counter = this_counter.replace(/<\/p>/g, "\n");
     worksheet.addRow([this_counter]);
