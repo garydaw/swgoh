@@ -33,6 +33,20 @@ export default function TWCounters() {
     // Update the URL query parameter
     setSearchParams({ tw_counter: item["base_id"] });
   };
+  
+  const getExport = async () => {
+    const blob = await apiRequest('twcounters/export', true, 'GET', null, 'blob');
+      // Create a link element to download the file
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'tw_counter.xlsx'; // Set file name
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    
+  }
 
   
   let character = loader.find(obj => obj.base_id === searchParams.get('tw_counter')) || {character_name:"Search for a counter", base_id:""};
@@ -61,6 +75,9 @@ export default function TWCounters() {
               placeholder={character.character_name}
               clickHandler={searchCounterHandleItemClick}/>
         </div>
+        <div style={{maxWidth:"250px"}} className='px-2'>
+            <button className='btn btn-primary' onClick={getExport}>Export</button>
+          </div>
       </div>
       {character.base_id !== "" && <CharacterImage character={character} centreImage="false"/>}
       {adminMode == false && <div dangerouslySetInnerHTML={{__html: character.counters}}></div>}
