@@ -186,8 +186,7 @@ players.refreshAllies = async (guild_id) => {
     let sql = "";
     sql += "SELECT p.ally_code ";
     sql += "FROM player p ";
-    sql += "WHERE p.guild_id = ? ";
-    sql += "AND p.ally_code NOT IN (?) ";
+    sql += "WHERE p.ally_code NOT IN (?) ";
 
     const rows= await runSQL(sql, [guild_id, guild_ally_codes]);
     
