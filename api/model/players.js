@@ -188,7 +188,7 @@ players.refreshAllies = async (guild_id) => {
     sql += "FROM player p ";
     sql += "WHERE p.ally_code NOT IN (?) ";
 
-    const rows= await runSQL(sql, [guild_id, guild_ally_codes]);
+    const rows= await runSQL(sql, [guild_ally_codes]);
     
     for(var i = 0; i < rows.length; i++){
         players.delete(rows[i].ally_code);
