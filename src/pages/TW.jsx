@@ -37,6 +37,21 @@ export default function TW() {
     setviewTeam(e.target.value);
   }
 
+  
+  const getTeams = async () => {
+    const blob = await apiRequest('tw/export', true, 'GET', null, 'blob');
+      // Create a link element to download the file
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'TW.xlsx'; // Set file name
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    
+  }
+
   return (
     <div>
       <div className="d-flex justify-content mb-2">
@@ -55,6 +70,9 @@ export default function TW() {
             <label className="form-check-label" htmlFor="viewTeamRadioOverview">Overview</label>
           </div>
         </div>
+        <div style={{maxWidth:"250px"}} className='px-2'>
+            <button className='btn btn-primary' onClick={getTeams}>Get Teams</button>
+          </div>
       </div>
 
       

@@ -22,5 +22,26 @@ twRouter.post('', async (req, res) => {
   
 });
 
+twRouter.get('/export', async (req, res) => {
+
+   
+    const excel = await teams.getExcel(req.user.user_name, 'tw');
+
+    res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=" + "TW.xlsx"
+    );
+
+    return excel.xlsx.write(res).then(function () {
+    res.status(200).end();
+    });
+  
+});
+
 
 export default twRouter;

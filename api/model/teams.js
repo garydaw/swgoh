@@ -1,4 +1,6 @@
 import runSQL from "./database.js";
+import excel from "exceljs";
+import units from "./units.js";
 
 let teams = {};
 
@@ -142,6 +144,150 @@ teams.getTeams = async (ally_code, team_type, offence_team, team_size) => {
     
     return rows;
 }
+
+const fills = {
+              headers:["FF93C47D", "FFD9EAD3"],
+              light:["FF6FA8DC", "FFCFE2F3"], 
+              dark:["FFE06666", "FFF4CCCC"],
+              neutral:["FFCCCCCC", "FFEFEFEF"]
+            };
+let row_count = 1;
+
+const capitalize = (s) =>{
+    return s && String(s[0]).toUpperCase() + String(s).slice(1);
+}
+
+const setCellStyle = (cell, fontSize, bold, alignment, fillColor, wrapText) => {
+  cell.font = { size: fontSize, bold: bold };
+  cell.alignment = { 
+    horizontal: alignment, 
+    wrapText: wrapText
+  };
+  cell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: fillColor }
+  };
+  cell.border = {
+    top: {style:'thick', color: {argb:'FF000000'}},
+    left: {style:'thick', color: {argb:'FF000000'}},
+    bottom: {style:'thick', color: {argb:'FF000000'}},
+    right: {style:'thick', color: {argb:'FF000000'}}
+  };
+};
+
+teams.getExcel = async (ally_code, team_type) => {
+
+  let workbook = new excel.Workbook();
+
+  let twTeams = [
+    { name: "Rey with Ben", units:[{base_id: "GLREY"},
+                                   {base_id: "BENSOLO"}] },
+    { name: "Rey", units:[{base_id: "GLREY"}] },
+    { name: "Jabba", units:[{base_id: "JABBATHEHUTT"}] },
+    { name: "Geos", units:[{base_id: "GEONOSIANBROODALPHA"},
+                          {base_id: "GEONOSIANSOLDIER"},
+                          {base_id: "GEONOSIANSPY"},
+                          {base_id: "POGGLETHELESSER"},
+                          {base_id: "SUNFAC"}] }
+  ]
+
+  /*****Teams*****/
+  for (let t = 0; t < twTeams.length; t++) {
+    let worksheet = workbook.addWorksheet(twTeams[t].name);
+    row_count = 1;
+    worksheet.getCell("A" + row_count).value = twTeams[t].name;
+    setCellStyle(worksheet.getCell("A" + row_count), 24, true, 'center', fills.headers[0], false);
+
+    //merge cells
+    worksheet.mergeCells(row_count,1,row_count,2 + twTeams[t].units.length);
+
+    row_count++;
+
+    //set the column headers
+    let thisRowHeader = ['Count','Player'];
+    worksheet.getColumn(1).width = 10;
+    worksheet.getColumn(2).width = 30;
+    for (let u = 0; u < twTeams[t].units.length; u++) { 
+      worksheet.getColumn(3+u).width = 20;
+      let thisUnit = await units.getUnit(twTeams[t].units[u].base_id);
+      thisRowHeader.push(thisUnit[0].character_name);
+    }
+
+    //header
+    worksheet.addRow(thisRowHeader);
+    worksheet.getRow(row_count).eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      if (colNumber >= 1 && colNumber <= (2 + twTeams[t].units.length)) { 
+        setCellStyle(cell, 14, true, 'center', fills.headers[1], false); 
+      }
+    });
+    
+    row_count++;
+
+    const playerCharacters = await teams.getFixedTeam(ally_code, twTeams[t].units);
+
+    for (let i = 0; i < playerCharacters.length; i++) {
+      let row = [];
+      row.push(i+1);
+      row.push(playerCharacters[i].ally_name);
+      for (let u = 0; u < twTeams[t].units.length; u++) { 
+        row.push(playerCharacters[i][`unit_${u}_relic`]); 
+      }
+      worksheet.addRow(row);
+
+      // Fixed styles for A and B
+      setCellStyle(worksheet.getCell('A' + row_count), 14, true, 'center', fills.headers[1], false);
+      setCellStyle(worksheet.getCell('B' + row_count), 14, true, 'center', fills.headers[0], false);
+
+      const startColCode = 'C'.charCodeAt(0); // Starting at column C
+
+      for (let i = 0; i < twTeams[t].units.length; i++) {
+        const colLetter = String.fromCharCode(startColCode + i); // E.g., C, D, E, etc.
+        setCellStyle(worksheet.getCell(colLetter + row_count), 14, true, 'center', fills.neutral[0], false);
+      }
+
+
+      row_count++;
+    }
+  }
+
+
+  return workbook;
+}
+
+
+
+teams.getFixedTeam = async (ally_code, units) => {
+
+  let base_ids = [];
+  let sql = "";
+  sql += "SELECT p.ally_name "
+  for (let i = 0; i < units.length; i++) {
+    base_ids.push(units[i].base_id);
+    sql += ", unit_"+i+"_u.character_name AS unit_"+i+"_name, CAST(unit_"+i+"_pu.gear_level AS VARCHAR(4)) AS unit_"+i+"_gear, CASE WHEN unit_"+i+"_pu.relic_tier <= 2 THEN '' ELSE CAST(unit_"+i+"_pu.relic_tier - 2  AS VARCHAR(2)) END AS unit_"+i+"_relic ";
+  }
+  sql += "FROM player p ";
+  for (let i = 0; i < units.length; i++) {
+    sql += "INNER JOIN player_unit unit_"+i+"_pu ";
+    sql += " ON unit_"+i+"_pu.ally_code = p.ally_code ";
+    sql += " AND unit_"+i+"_pu.base_id = ? ";
+    sql += "INNER JOIN unit unit_"+i+"_u ";
+    sql += " ON unit_"+i+"_u.base_id =  unit_"+i+"_pu.base_id ";
+  }
+  sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
+  for (let i = 0; i < units.length; i++) {
+    sql += "AND unit_"+i+"_pu.relic_tier > 2 ";
+  }
+  sql += "ORDER BY  ";
+  for (let i = 0; i < units.length; i++) {
+    sql += "unit_"+i+"_pu.relic_tier DESC ,";
+  }
+  sql += "p.ally_name ";
+  base_ids.push(ally_code);
+
+  return await runSQL(sql, base_ids);
+}
+
 
 
 export default teams;

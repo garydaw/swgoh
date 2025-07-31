@@ -80,7 +80,7 @@ units.refreshUnits = async () => {
     const response = await axios.get(siteRootURL + 'api/units');
 
     const allUnits = response.data.data;
-
+    
     //loop round allUnits
     for(var u = 0; u < allUnits.length; u++){
         //insert or update
@@ -110,6 +110,16 @@ units.refreshUnits = async () => {
 
     return;
 
-} 
+}
+
+units.getUnit = (base_id) => {
+  let sql = "";
+    sql += "SELECT * "
+    sql += "FROM unit p ";
+    sql += "WHERE base_id = ? ";
+
+  const row =  runSQL(sql, [base_id]);
+  return row;
+}
 
 export default units;
