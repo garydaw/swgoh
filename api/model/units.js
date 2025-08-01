@@ -1,5 +1,5 @@
 import runSQL from "./database.js";
-import axios from "axios";
+import axios, { all } from "axios";
 import fs from "fs";
 
 const imgRootURL = 'https://game-assets.swgoh.gg/textures/'
@@ -75,12 +75,13 @@ units.saveImageFromURL = async (url, path, filename) => {
     }
 }
 
-units.refreshUnits = async () => {
+units.refreshUnits = async (data) => {
 
-    const response = await axios.get(siteRootURL + 'api/units');
+    //console.log(response);
+    //const response = await axios.get(siteRootURL + 'api/units');
 
-    const allUnits = response.data.data;
-    
+   const allUnits = data.units;
+   
     //loop round allUnits
     for(var u = 0; u < allUnits.length; u++){
         //insert or update

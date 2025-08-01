@@ -5,10 +5,10 @@ import JourneyGuides, {journeyLoader} from '../pages/JourneyGuides';
 import GAC, { gacLoader } from '../pages/GAC';
 import TW, { twLoader } from '../pages/TW';
 import RoTE from '../pages/RoTE';
-import Tips from '../pages/Tips';
 import Relics from '../pages/Relics';
 import UserAdmin from '../pages/UserAdmin';
 import TeamAdmin from '../pages/TeamAdmin';
+import SwgohAdmin from '../pages/SwgohAdmin';
 import TWCounters, {twcountersLoader} from '../pages/TWCounters';
 
 //all the protected routes
@@ -61,6 +61,10 @@ export const protectedcRoutes = [
           {
             path:"/teamAdmin",
             element:React.createElement(TeamAdmin),
+          },
+          {
+            path:"/swgohAdmin",
+            element:React.createElement(SwgohAdmin),
           }
         ]
       }

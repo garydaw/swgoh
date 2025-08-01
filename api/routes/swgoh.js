@@ -20,5 +20,13 @@ swgohRouter.get('/guild/:guild_id', async (req, res) => {
   
 });
 
+swgohRouter.post('/units', async (req, res) => {
+    
+    await units.refreshUnits(req.body);
+    
+    res.json({result:true, message: 'Guide successfully changed.' });
+  
+});
+
 
 export default swgohRouter;
