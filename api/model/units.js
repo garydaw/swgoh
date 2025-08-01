@@ -77,13 +77,11 @@ units.saveImageFromURL = async (url, path, filename) => {
 
 units.refreshUnits = async (data) => {
 
-    //console.log(response);
-    //const response = await axios.get(siteRootURL + 'api/units');
-
-   const allUnits = data.units;
+    const allUnits = data.units.data;
    
     //loop round allUnits
     for(var u = 0; u < allUnits.length; u++){
+        
         //insert or update
         let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image, is_galactic_legend) ";
         sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";

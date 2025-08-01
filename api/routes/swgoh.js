@@ -24,7 +24,7 @@ swgohRouter.post('/units', async (req, res) => {
     
     await units.refreshUnits(req.body);
     
-    res.json({result:true, message: 'Guide successfully changed.' });
+    res.json({result:true, message: 'Units successfully updated.' });
   
 });
 

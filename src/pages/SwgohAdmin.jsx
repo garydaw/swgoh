@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { Link } from "react-router-dom";
 import { apiRequest } from '../helpers/ApiRequest';
 
 export default function SwgohAdmin() {
@@ -10,8 +11,9 @@ export default function SwgohAdmin() {
     try {
       const parsedArray = JSON.parse(jsonText);
       
-      await apiRequest('swgoh/units', true, 'POST', { units: parsedArray });
-      setMessage('Units uploaded successfully!');
+      const result = await apiRequest('swgoh/units', true, 'POST', { units: parsedArray });
+      setMessage(result.message);
+      setJsonText("");
     } catch (error) {
       setMessage(`Error: ${error.message}`);
     }
@@ -19,11 +21,9 @@ export default function SwgohAdmin() {
 
   return (
     <div className="unit-uploader">
-      <p>https://swgoh.gg/api/units/</p>
-      <h2>Paste Unit JSON</h2>
+      <p><Link to="https://swgoh.gg/api/units/" target="_blank" rel="noopener noreferrer" >Units</Link></p>
+      <h2>Paste JSON</h2>
       <textarea
-        rows="20"
-        cols="80"
         value={jsonText}
         onChange={(e) => setJsonText(e.target.value)}
         placeholder="Paste JSON content here..."
