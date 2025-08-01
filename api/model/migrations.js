@@ -18,11 +18,18 @@ migrations.run = async (version) => {
         case "4":
             await versionFour();
             break;
+        case "5":
+            await versionFive();
+            break;
         default:
             console.log("doh!");
     }
 
 } 
+async function versionFive (){
+    console.log("add refresh date to player");
+    await runSQL("ALTER TABLE player ADD IF NOT EXISTS refreshed DATE NOT NULL DEFAULT '1900-01-01'");
+}
 
 async function versionFour (){
 

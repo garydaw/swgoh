@@ -28,5 +28,24 @@ swgohRouter.post('/units', async (req, res) => {
   
 });
 
+swgohRouter.post('/allies', async (req, res) => {
+    
+    await players.refreshAllies(req.body);
+    const allies =  await players.getGuildMembersRefresh(req.query.ally_code);
+    
+    res.json(allies);
+  
+});
+
+swgohRouter.post('/player', async (req, res) => {
+    
+    await players.update(req.body);
+    
+    const allies =  await players.getGuildMembersRefresh(req.query.ally_code);
+    
+    res.json(allies);
+  
+});
+
 
 export default swgohRouter;

@@ -23,7 +23,7 @@ auth.checkPassword = async (username, password) => {
 //get basic user data
 auth.login = async (username) => {
 
-    let sql = "SELECT ally_code, password, access ";
+    let sql = "SELECT ally_code, password, access, guild_id ";
     sql += "FROM player ";
     sql += "WHERE ally_code = ? "
     sql += "OR ally_name = ? "
