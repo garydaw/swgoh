@@ -188,7 +188,7 @@ teams.getExcel = async (ally_code, team_type) => {
     { name: "Geos", units:[{base_id: "GEONOSIANBROODALPHA"},
                           {base_id: "GEONOSIANSOLDIER"},
                           {base_id: "GEONOSIANSPY"},
-                          {base_id: "POGGLETHELESSER"},
+                          {base_id: "POGGLETHELESSER", omi: ["uniqueskill_POGGLETHELESSER01"]},
                           {base_id: "SUNFAC"}] }
   ]
 
@@ -259,11 +259,11 @@ teams.getExcel = async (ally_code, team_type) => {
 
 teams.getFixedTeam = async (ally_code, units) => {
 
-  let base_ids = [];
+  let query_params = [];
   let sql = "";
   sql += "SELECT p.ally_name "
   for (let i = 0; i < units.length; i++) {
-    base_ids.push(units[i].base_id);
+    query_params.push(units[i].base_id);
     sql += ", unit_"+i+"_u.character_name AS unit_"+i+"_name, CAST(unit_"+i+"_pu.gear_level AS VARCHAR(4)) AS unit_"+i+"_gear, CASE WHEN unit_"+i+"_pu.relic_tier <= 2 THEN '' ELSE CAST(unit_"+i+"_pu.relic_tier - 2  AS VARCHAR(2)) END AS unit_"+i+"_relic ";
   }
   sql += "FROM player p ";
@@ -275,17 +275,22 @@ teams.getFixedTeam = async (ally_code, units) => {
     sql += " ON unit_"+i+"_u.base_id =  unit_"+i+"_pu.base_id ";
   }
   sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
+  query_params.push(ally_code);
   for (let i = 0; i < units.length; i++) {
     sql += "AND unit_"+i+"_pu.relic_tier > 2 ";
+    if (units[i].omi !== undefined) {
+      for (let o = 0; i < units[i].omi; o++) {
+        sql += "AND unit_"+i+"_pu.omicron_abilities LIKE '%" + units[i].omi[o] + "%' ";
+      }
+    }
   }
   sql += "ORDER BY  ";
   for (let i = 0; i < units.length; i++) {
     sql += "unit_"+i+"_pu.relic_tier DESC ,";
   }
   sql += "p.ally_name ";
-  base_ids.push(ally_code);
 
-  return await runSQL(sql, base_ids);
+  return await runSQL(sql, query_params);
 }
 
 
