@@ -42,7 +42,7 @@ teams.getTWOverview = async (ally_code) => {
     const guild_id = await runSQL(sql, [ally_code]);
 
     sql = "SELECT u.base_id, u.alignment, u.unit_image, 2 AS relic_tier, 7 AS rarity, ";
-    sql += "     13 AS gear_level, 0 AS gear_level_plus, 85 AS level, 0 AS zeta_abilities, 0 AS omicron_abilities, "
+    sql += "     13 AS gear_level, '' AS gear_level_plus, 85 AS level, '' AS zeta_abilities, 0 AS omicron_abilities, "
     sql += "    CASE u.alignment WHEN 1 THEN 'neutral' WHEN 2 THEN 'light' ELSE 'dark' END as alignment_label, ";
     sql += "    CONCAT(u.character_name, ' (', CAST(COUNT(*) AS varchar(3)), ')') AS character_name "; //cast to string BigInt json issue
     sql += "    FROM team t ";

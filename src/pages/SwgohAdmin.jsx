@@ -7,8 +7,8 @@ export default function SwgohAdmin() {
   const [message, setMessage] = useState('');
   const [players, setPlayers] = React.useState([]);
 
-  const handleUnitUpload = async () => {
-    setMessage('');
+  const importUnits = async () => {
+    setMessage('Imports units...');
     try {
       const parsedArray = JSON.parse(jsonText);
       
@@ -20,11 +20,23 @@ export default function SwgohAdmin() {
     }
   };
 
-  const getMembers = async () => {
-    setMessage('');
+  const importMembers = async () => {
+    setMessage('Imports guild members...');
     try {
       
       const result = await apiRequest('swgoh/allies', true, 'POST', { data: jsonText });
+      setPlayers(result);
+      
+    } catch (error) {
+      setMessage(`Error: ${error.message}`);
+    }
+  };
+
+  const getMembers = async () => {
+    setMessage('getting guild members...');
+    try {
+      
+      const result = await apiRequest('swgoh/allies', true, 'GET',);
       setPlayers(result);
       
     } catch (error) {
@@ -37,8 +49,8 @@ export default function SwgohAdmin() {
     return date.toLocaleDateString(); // e.g. "1/1/1900"
   };
 
-  const handleSetUser = async () => {
-    setMessage('');
+  const importUser = async () => {
+    setMessage('Setting user...');
     try {
       const parsedArray = JSON.parse(jsonText);
       
@@ -61,9 +73,10 @@ export default function SwgohAdmin() {
         placeholder="Paste JSON content here..."
       />
       <br />
-      <button onClick={handleUnitUpload}>Upload Units</button>
+      <button onClick={importUnits}>Import Units</button>
+      <button onClick={importMembers}>Import Members</button>
       <button onClick={getMembers}>Get Members</button>
-      <button onClick={handleSetUser}>Set User</button>
+      <button onClick={importUser}>Import User</button>
       {message && <p>{message}</p>}
 
       <ul>

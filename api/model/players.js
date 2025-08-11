@@ -27,7 +27,6 @@ players.getGuildMembersRefresh = async (ally_code) => {
     let sql = "";
     sql += "SELECT  CONCAT(?, p.ally_code) AS url, p.refreshed, p.ally_name ";
     sql += "FROM player p ";
-    sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
     sql += "ORDER BY p.refreshed ";
 
     const rows= await runSQL(sql, [url, ally_code]);
@@ -155,9 +154,9 @@ players.addUnit = async (ally_code, unit_data) => {
 
     await runSQL(sql, [ally_code, unit_data.base_id,
         unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
-        unit_data.zeta_abilities.length, unit_data.omicron_abilities.length, unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend, 
+        unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend, 
         unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
-        unit_data.zeta_abilities.length, unit_data.omicron_abilities.length, unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend]);
+        unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend]);
 }
 
 players.add = async (ally_code) => {
