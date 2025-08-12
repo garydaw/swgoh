@@ -105,7 +105,7 @@ units.refreshUnits = async (data) => {
                             allUnits[u].is_galactic_legend]);
 
         
-        if(isLocal){}
+        if(isLocal){
            await units.saveImageFromURL(imgRootURL, publicFolder, imgName);
         }
     }
