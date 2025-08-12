@@ -8,8 +8,7 @@ journeys.get = async () => {
     sql += "FROM unit u ";
     sql += "LEFT OUTER JOIN journey_guide jg ";
     sql += " ON jg.base_id = u.base_id ";
-    sql += "WHERE u.is_galactic_legend = 1 "
-    sql += "AND IFNULL(jg.is_current,1) = 1 "
+    sql += "WHERE IFNULL(jg.is_current,1) = 1 "
     sql += "ORDER BY u.character_name";
 
     const guides = await runSQL(sql, []);

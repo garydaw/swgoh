@@ -4,12 +4,14 @@ const AuthContext = createContext();
 export const AuthProvider = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
+    const [guildID, setGuildID] = useState('');
     const [admin, setAdmin] = useState(false);
 
     const login = async (userData) => {
         localStorage.setItem('isLoggedIn', true);
         setIsLoggedIn(true);
         setUsername(userData.user.ally_code);
+        setGuildID(userData.user.guild_id);
         setAdmin(userData.user.access);
     };
 
@@ -17,6 +19,7 @@ export const AuthProvider = ({children}) => {
         localStorage.setItem('isLoggedIn', false);
         setIsLoggedIn(false);
         setUsername(null);
+        setGuildID('');
         setAdmin(null);
     };
 
@@ -24,6 +27,7 @@ export const AuthProvider = ({children}) => {
         () => ({
             isLoggedIn,
             username,
+            guildID,
             admin,
             login,
             logout,

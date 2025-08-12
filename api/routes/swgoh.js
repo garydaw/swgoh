@@ -20,5 +20,40 @@ swgohRouter.get('/guild/:guild_id', async (req, res) => {
   
 });
 
+swgohRouter.post('/units', async (req, res) => {
+    
+    await units.refreshUnits(req.body);
+    
+    res.json({result:true, message: 'Units successfully updated.' });
+  
+});
+
+swgohRouter.post('/allies', async (req, res) => {
+    
+    await players.refreshAllies(req.body);
+    const allies =  await players.getGuildMembersRefresh();
+    
+    res.json(allies);
+  
+});
+
+swgohRouter.get('/allies', async (req, res) => {
+    
+    const allies =  await players.getGuildMembersRefresh();
+    
+    res.json(allies);
+  
+});
+
+swgohRouter.post('/player', async (req, res) => {
+    
+    await players.update(req.body);
+    
+    const allies =  await players.getGuildMembersRefresh();
+    
+    res.json(allies);
+  
+});
+
 
 export default swgohRouter;

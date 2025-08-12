@@ -9,6 +9,7 @@ let players = {};
 
 players.getGuildMembers = async (ally_code) => {
 
+    
     let sql = "";
     sql += "SELECT p.ally_code, p.ally_name, p.access ";
     sql += "FROM player p ";
@@ -18,8 +19,33 @@ players.getGuildMembers = async (ally_code) => {
     const rows= await runSQL(sql, [ally_code]);
 
     return rows;
-
 }
+
+players.getGuildMembersRefresh = async (ally_code) => {
+
+    const url = siteRootURL + 'api/player/';
+    let sql = "";
+    sql += "SELECT  CONCAT(?, p.ally_code) AS url, p.refreshed, p.ally_name ";
+    sql += "FROM player p ";
+    sql += "ORDER BY p.refreshed ";
+
+    const rows= await runSQL(sql, [url, ally_code]);
+
+    return rows;
+}
+
+players.getPlayerGuild = async (ally_code) => {
+
+    let sql = "";
+    sql += "SELECT p.guild_id ";
+    sql += "FROM player p ";
+    sql += "WHERE ally_code = ? ";
+
+    const rows= await runSQL(sql, [ally_code]);
+
+    return rows[0].guild_id;
+}
+
 
 players.playerExists = async (ally_code) => {
 
@@ -33,17 +59,18 @@ players.playerExists = async (ally_code) => {
     return rows.length === 1;
 }
 
-players.update = async (ally_code) => {
+players.update = async (user_response) => {
 
-    const user_response = await axios.get(siteRootURL + 'api/player/'+ally_code);
-
+    const ally_code = user_response.data.data.ally_code;
+    
     let sql = "";
     sql += "UPDATE player SET ";
     sql += "ally_name = ?, ";
     sql += "character_galactic_power = ?, ";
     sql += "ship_galactic_power = ?, ";
     sql += "guild_id = ?, ";
-    sql += "guild_name = ? ";
+    sql += "guild_name = ?, ";
+    sql += "refreshed = Now() ";
     sql += "WHERE ally_code = ?"
 
     await runSQL(sql, [user_response.data.data.name, user_response.data.data.character_galactic_power, user_response.data.data.ship_galactic_power, 
@@ -127,9 +154,9 @@ players.addUnit = async (ally_code, unit_data) => {
 
     await runSQL(sql, [ally_code, unit_data.base_id,
         unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
-        unit_data.zeta_abilities.length, unit_data.omicron_abilities.length, unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend, 
+        unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend, 
         unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
-        unit_data.zeta_abilities.length, unit_data.omicron_abilities.length, unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend]);
+        unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend]);
 }
 
 players.add = async (ally_code) => {
@@ -166,9 +193,7 @@ players.delete = async (ally_code) => {
     await runSQL(sql, [ally_code]);
 }
 
-players.refreshAllies = async (guild_id) => {
-
-    const response = await axios.get(siteRootURL + 'g/'+guild_id);
+players.refreshAllies = async (response) => {
 
     //find guild members
     let text_start = 0;
@@ -181,15 +206,19 @@ players.refreshAllies = async (guild_id) => {
         guild_ally_codes.push(response.data.substr(text_start, 9))
         text_start = response.data.indexOf(text, text_start) + text.length;
     }
-
-    //delete missing members
+    
+    if(guild_ally_codes.length === 0){
+        return;
+    }
+    
+    //delete missing members    
     let sql = "";
     sql += "SELECT p.ally_code ";
     sql += "FROM player p ";
     sql += "WHERE p.ally_code NOT IN (?) ";
 
     const rows= await runSQL(sql, [guild_ally_codes]);
-    
+   
     for(var i = 0; i < rows.length; i++){
         players.delete(rows[i].ally_code);
     }
@@ -202,7 +231,6 @@ players.refreshAllies = async (guild_id) => {
             players.add(guild_ally_codes[i])
         }
 
-        await players.update(guild_ally_codes[i]);
     }
 }
 

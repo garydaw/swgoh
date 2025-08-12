@@ -1,5 +1,5 @@
 import runSQL from "./database.js";
-import axios from "axios";
+import axios, { all } from "axios";
 import fs from "fs";
 
 const imgRootURL = 'https://game-assets.swgoh.gg/textures/'
@@ -75,14 +75,13 @@ units.saveImageFromURL = async (url, path, filename) => {
     }
 }
 
-units.refreshUnits = async () => {
+units.refreshUnits = async (data) => {
 
-    const response = await axios.get(siteRootURL + 'api/units');
-
-    const allUnits = response.data.data;
-
+    const allUnits = data.units.data;
+   
     //loop round allUnits
     for(var u = 0; u < allUnits.length; u++){
+        
         //insert or update
         let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image, is_galactic_legend) ";
         sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
@@ -110,6 +109,16 @@ units.refreshUnits = async () => {
 
     return;
 
-} 
+}
+
+units.getUnit = (base_id) => {
+  let sql = "";
+    sql += "SELECT * "
+    sql += "FROM unit p ";
+    sql += "WHERE base_id = ? ";
+
+  const row =  runSQL(sql, [base_id]);
+  return row;
+}
 
 export default units;

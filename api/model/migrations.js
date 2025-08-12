@@ -18,11 +18,23 @@ migrations.run = async (version) => {
         case "4":
             await versionFour();
             break;
+        case "5":
+            await versionFive();
+            break;
         default:
             console.log("doh!");
     }
 
 } 
+async function versionFive (){
+    console.log("add refresh date to player");
+    await runSQL("ALTER TABLE player ADD IF NOT EXISTS refreshed DATE NOT NULL DEFAULT '1900-01-01'");
+
+    console.log("change player_unit zeta_abilities and omicron_abilities to text");
+    await runSQL("ALTER TABLE player_unit MODIFY COLUMN zeta_abilities VARCHAR(255) DEFAULT '' NOT NULL");
+    await runSQL("ALTER TABLE player_unit MODIFY COLUMN omicron_abilities VARCHAR(255) DEFAULT '' NOT NULL");
+
+}
 
 async function versionFour (){
 
