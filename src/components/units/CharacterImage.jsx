@@ -7,7 +7,7 @@ export default function CharacterImage({character, centreImage = "true"}) {
   if(character.relic_tier > 1){
     imgClass += "relic" + character.alignment_label;
   }
-  console.log(character);
+
   return (
     <div className={centreImage === "true" ? css.centreImage : ''}>
     <div className={css.relative}>
