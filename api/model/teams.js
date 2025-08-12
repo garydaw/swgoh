@@ -184,13 +184,62 @@ teams.getExcel = async (ally_code, team_type) => {
     { name: "Rey with Ben", units:[{base_id: "GLREY"},
                                    {base_id: "BENSOLO"}] },
     { name: "Rey", units:[{base_id: "GLREY"}] },
-    { name: "Jabba", units:[{base_id: "JABBATHEHUTT"}] },
+    { name: "Jabba", units:[{base_id: "JABBATHEHUTT"},
+                          {base_id: "BOUSHH"},
+                          {base_id: "KRRSANTAN"},
+                          {base_id: "UNDERCOVERLANDO"},
+    ] },
+    { name: "Malgus", units:[{base_id: "DARTHMALGUS"},
+                          {base_id: "DARTHREVAN"},
+                          {base_id: "DARTHMALAK"},
+                          {base_id: "BASTILASHANDARK"},
+    ]},
+    { name: "Phoenix", units:[{base_id: "HERASYNDULLAS3", omi: ["leaderskill_HERASYNDULLAS3"]},
+                              {base_id: "CAPTAINREX"},
+    ]},
+    { name: "GAS", units:[{base_id: "GENERALSKYWALKER"},
+    ]},
+    { name: "GG", units:[{base_id: "GRIEVOUS"},
+                          {base_id: "DROIDEKA", omi: ["uniqueskill_DROIDEKA01"]},
+                          {base_id: "B2SUPERBATTLEDROID"},
+                          {base_id: "MAGNAGUARD"},
+    ]},
+    { name: "Cere", units:[{base_id: "CEREJUNDA"},
+                          {base_id: "FULCRUMAHSOKA", omi: ["uniqueskill_FULCRUMAHSOKA01"]},
+                          {base_id: "CALKESTIS", omi: ["uniqueskill_CALKESTIS01"]},
+    ]},
+    { name: "Beq", units:[{base_id: "KELLERANBEQ"},
+                          {base_id: "MACEWINDU", omi: ["uniqueskill_MACEWINDU02"]},
+                          {base_id: "ANAKINKNIGHT"},
+    ]},
+    { name: "Finn with Zorii", units:[{base_id: "FINN"},
+                              {base_id: "ZORIIBLISS_V2"},
+    ]},
+    { name: "Jawas", units:[{base_id: "CHIEFNEBIT", omi: ["leaderskill_CHIEFNEBIT"]},
+                          {base_id: "DATHCHA"},
+                          {base_id: "JAWA"},
+                          {base_id: "JAWAENGINEER"},
+                          {base_id: "JAWASCAVENGER"},
+    ]},
     { name: "Geos", units:[{base_id: "GEONOSIANBROODALPHA"},
                           {base_id: "GEONOSIANSOLDIER"},
                           {base_id: "GEONOSIANSPY"},
                           {base_id: "POGGLETHELESSER", omi: ["uniqueskill_POGGLETHELESSER01"]},
-                          {base_id: "SUNFAC"}] }
-  ]
+                          {base_id: "SUNFAC"},
+    ]},
+    { name: "Phasma", units:[{base_id: "PHASMA", omi: ["leaderskill_PHASMA"]},
+    ]},
+    { name: "Quadme", units:[{base_id: "QUEENAMIDALA"},
+                          {base_id: "MASTERQUIGON"},
+                          {base_id: "PADAWANOBIWAN"},
+    ]},
+    { name: "LV", units:[{base_id: "LORDVADER"},
+                          {base_id: "APPO"},
+                          {base_id: "DISGUISEDCLONETROOPER"},
+                          {base_id: "SCORCH"},
+                          {base_id: "OPERATIVE"},
+    ]},
+  ];
 
   /*****Teams*****/
   for (let t = 0; t < twTeams.length; t++) {
@@ -217,12 +266,16 @@ teams.getExcel = async (ally_code, team_type) => {
     let thisRowHeader = ['Count','Player'];
     worksheet.getColumn(1).width = 10;
     worksheet.getColumn(2).width = 30;
+    let column_count = 2;
     for (let u = 0; u < twTeams[t].units.length; u++) { 
-      worksheet.getColumn(3+u).width = 20;
+      column_count++;
+      worksheet.getColumn(column_count).width = 30;
       let thisUnit = await units.getUnit(twTeams[t].units[u].base_id);
       thisRowHeader.push(thisUnit[0].character_name);
       if (twTeams[t].units[u].omi !== undefined) {
         for (let o = 0; o < twTeams[t].units[u].omi.length; o++) { 
+          column_count++;
+          worksheet.getColumn(column_count).width = 30;
           thisRowHeader.push(thisUnit[0].character_name + " Omicron " + (o+1));
         }
       }
