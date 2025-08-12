@@ -6,6 +6,8 @@ const imgRootURL = 'https://game-assets.swgoh.gg/textures/'
 const publicFolder = process.env.PUBLIC_FOLDER
 const siteRootURL = process.env.SWGOH_URL
 
+const isLocal = process.env.DB_HOST === "localhost" ? true : false;
+
 let units = {};
 
 units.get = async (ally_code, base_id, combat_type) => {
@@ -103,8 +105,9 @@ units.refreshUnits = async (data) => {
                             allUnits[u].is_galactic_legend]);
 
         
-
-        await units.saveImageFromURL(imgRootURL, publicFolder, imgName);
+        if(isLocal){}
+           await units.saveImageFromURL(imgRootURL, publicFolder, imgName);
+        }
     }
 
     return;
