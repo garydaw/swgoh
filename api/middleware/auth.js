@@ -8,7 +8,7 @@ const authMiddleware = async (req, res, next) => {
         req.path === '/auth/login'
         || req.path === '/auth/check'
         || req.path.slice(0, 18) === '/database/migrate/' 
-        || req.path.slice(0, 13) === '/swgoh/' 
+        || req.path.slice(0, 7) === '/swgoh/' 
       ) {
     return next(); // Skip middleware for excluded routes
   }
