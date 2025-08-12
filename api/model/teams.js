@@ -199,8 +199,17 @@ teams.getExcel = async (ally_code, team_type) => {
     worksheet.getCell("A" + row_count).value = twTeams[t].name;
     setCellStyle(worksheet.getCell("A" + row_count), 24, true, 'center', fills.headers[0], false);
 
-    //merge cells
-    worksheet.mergeCells(row_count,1,row_count,2 + twTeams[t].units.length);
+    //get the number of columns based on the units and their omicron abilities
+    let columns = 2;
+    for (let u = 0; u < twTeams[t].units.length; u++) {
+      columns += 1;
+      if (twTeams[t].units[u].omi !== undefined) {
+        columns += twTeams[t].units[u].omi.length;
+      }
+    }
+
+    //merge the header cell
+    worksheet.mergeCells(row_count,1,row_count,columns);
 
     row_count++;
 
@@ -212,12 +221,17 @@ teams.getExcel = async (ally_code, team_type) => {
       worksheet.getColumn(3+u).width = 20;
       let thisUnit = await units.getUnit(twTeams[t].units[u].base_id);
       thisRowHeader.push(thisUnit[0].character_name);
+      if (twTeams[t].units[u].omi !== undefined) {
+        for (let o = 0; o < twTeams[t].units[u].omi.length; o++) { 
+          thisRowHeader.push(thisUnit[0].character_name + " Omicron " + (o+1));
+        }
+      }
     }
 
     //header
     worksheet.addRow(thisRowHeader);
     worksheet.getRow(row_count).eachCell({ includeEmpty: true }, (cell, colNumber) => {
-      if (colNumber >= 1 && colNumber <= (2 + twTeams[t].units.length)) { 
+      if (colNumber >= 1 && colNumber <= (columns)) { 
         setCellStyle(cell, 14, true, 'center', fills.headers[1], false); 
       }
     });
@@ -231,7 +245,12 @@ teams.getExcel = async (ally_code, team_type) => {
       row.push(i+1);
       row.push(playerCharacters[i].ally_name);
       for (let u = 0; u < twTeams[t].units.length; u++) { 
-        row.push(playerCharacters[i][`unit_${u}_relic`]); 
+        row.push(playerCharacters[i][`unit_${u}_relic`]);
+        if (twTeams[t].units[u].omi !== undefined) {
+          for (let o = 0; o < twTeams[t].units[u].omi.length; o++) { 
+            row.push(playerCharacters[i][`unit_${u}_omi_${o}`]);
+          }
+        }
       }
       worksheet.addRow(row);
 
@@ -241,7 +260,7 @@ teams.getExcel = async (ally_code, team_type) => {
 
       const startColCode = 'C'.charCodeAt(0); // Starting at column C
 
-      for (let i = 0; i < twTeams[t].units.length; i++) {
+      for (let i = 0; i < columns - 2; i++) {
         const colLetter = String.fromCharCode(startColCode + i); // E.g., C, D, E, etc.
         setCellStyle(worksheet.getCell(colLetter + row_count), 14, true, 'center', fills.neutral[0], false);
       }
@@ -265,6 +284,11 @@ teams.getFixedTeam = async (ally_code, units) => {
   for (let i = 0; i < units.length; i++) {
     query_params.push(units[i].base_id);
     sql += ", unit_"+i+"_u.character_name AS unit_"+i+"_name, CAST(unit_"+i+"_pu.gear_level AS VARCHAR(4)) AS unit_"+i+"_gear, CASE WHEN unit_"+i+"_pu.relic_tier <= 2 THEN '' ELSE CAST(unit_"+i+"_pu.relic_tier - 2  AS VARCHAR(2)) END AS unit_"+i+"_relic ";
+    if (units[i].omi !== undefined) {
+      for (let o = 0; o < units[i].omi.length; o++) {
+        sql += ", CASE WHEN unit_"+i+"_pu.omicron_abilities LIKE '%" + units[i].omi[o] + "%' THEN 'Yes' ELSE 'No' END AS unit_"+i+"_omi_"+o+" ";
+      }
+    }
   }
   sql += "FROM player p ";
   for (let i = 0; i < units.length; i++) {
@@ -279,7 +303,7 @@ teams.getFixedTeam = async (ally_code, units) => {
   for (let i = 0; i < units.length; i++) {
     sql += "AND unit_"+i+"_pu.relic_tier > 2 ";
     if (units[i].omi !== undefined) {
-      for (let o = 0; i < units[i].omi; o++) {
+      for (let o = 0; o < units[i].omi.length; o++) {
         sql += "AND unit_"+i+"_pu.omicron_abilities LIKE '%" + units[i].omi[o] + "%' ";
       }
     }
