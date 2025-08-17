@@ -4,7 +4,8 @@ let journeys = {};
 
 journeys.get = async () => {
 
-    let sql = "SELECT u.base_id, IFNULL(jg.guide, 'No guide available') AS guide, u.character_name, u.unit_image ";
+    let sql = "SELECT u.base_id, IFNULL(jg.guide, 'No guide available') AS guide, u.character_name, u.unit_image, ";
+    sql += "  '' AS zeta_abilities, '' AS omicron_abilities ";
     sql += "FROM unit u ";
     sql += "LEFT OUTER JOIN journey_guide jg ";
     sql += " ON jg.base_id = u.base_id ";
