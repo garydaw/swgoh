@@ -6,7 +6,7 @@ const imgRootURL = 'https://game-assets.swgoh.gg/textures/'
 const publicFolder = process.env.PUBLIC_FOLDER
 const siteRootURL = process.env.SWGOH_URL
 
-const isLocal = process.env.DB_HOST === "localhost" ? true : false;
+const isLocal = process.env.FRONTEND_DOMAIN === 'http://localhost:5173' ? true : false;
 
 let units = {};
 
