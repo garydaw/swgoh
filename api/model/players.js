@@ -61,7 +61,7 @@ players.playerExists = async (ally_code) => {
 
 players.update = async (user_response) => {
 
-    const ally_code = user_response.data.data.ally_code;
+    const ally_code = user_response.data.ally_code;
     
     let sql = "";
     sql += "UPDATE player SET ";
@@ -73,20 +73,20 @@ players.update = async (user_response) => {
     sql += "refreshed = Now() ";
     sql += "WHERE ally_code = ?"
 
-    await runSQL(sql, [user_response.data.data.name, user_response.data.data.character_galactic_power, user_response.data.data.ship_galactic_power, 
-                user_response.data.data.guild_id, user_response.data.data.guild_name,  ally_code]);
+    await runSQL(sql, [user_response.data.name, user_response.data.character_galactic_power, user_response.data.ship_galactic_power, 
+                user_response.data.guild_id, user_response.data.guild_name,  ally_code]);
 
     //add player units
-    for(var u = 0; u < user_response.data.units.length; u++){
-        await players.addUnit(ally_code, user_response.data.units[u].data);
+    for(var u = 0; u < user_response.units.length; u++){
+        await players.addUnit(ally_code, user_response.units[u].data);
     }
 
     //delete all mods
     await runSQL("DELETE FROM player_mod WHERE ally_code  = ?", [ally_code]);
 
     //add mods
-    for(var m = 0; m < user_response.data.mods.length; m++){
-        await players.addMod(ally_code, user_response.data.mods[m]);
+    for(var m = 0; m < user_response.mods.length; m++){
+        await players.addMod(ally_code, user_response.mods[m]);
     }
 
 }

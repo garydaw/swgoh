@@ -24,7 +24,7 @@ export default function SwgohAdmin() {
     setMessage('Imports guild members...');
     try {
       
-      const result = await apiRequest('swgoh/allies', true, 'POST', { data: jsonText });
+      const result = await apiRequest('swgoh/allies', true, 'POST', { jsonText });
       setPlayers(result);
       
     } catch (error) {
