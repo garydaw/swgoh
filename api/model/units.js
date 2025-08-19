@@ -79,7 +79,7 @@ units.saveImageFromURL = async (url, path, filename) => {
 
 units.refreshUnits = async (data) => {
 
-    const allUnits = data.units.data;
+    const allUnits = data.data;
    
     //loop round allUnits
     for(var u = 0; u < allUnits.length; u++){

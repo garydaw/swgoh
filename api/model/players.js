@@ -21,7 +21,7 @@ players.getGuildMembers = async (ally_code) => {
     return rows;
 }
 
-players.getGuildMembersRefresh = async (ally_code) => {
+players.getGuildMembersRefresh = async () => {
 
     const url = siteRootURL + 'api/player/';
     let sql = "";
@@ -29,7 +29,7 @@ players.getGuildMembersRefresh = async (ally_code) => {
     sql += "FROM player p ";
     sql += "ORDER BY p.refreshed ";
 
-    const rows= await runSQL(sql, [url, ally_code]);
+    const rows= await runSQL(sql, [url]);
 
     return rows;
 }
@@ -193,20 +193,8 @@ players.delete = async (ally_code) => {
     await runSQL(sql, [ally_code]);
 }
 
-players.refreshAllies = async (response) => {
+players.refreshAllies = async (guild_ally_codes) => {
 
-    //find guild members
-    let text_start = 0;
-    const text = '<a href="/p/';
-    text_start = response.data.indexOf(text, text_start) + text.length;
-    
-    let guild_ally_codes = [];
-
-    while(text_start !== text.length-1){
-        guild_ally_codes.push(response.data.substr(text_start, 9))
-        text_start = response.data.indexOf(text, text_start) + text.length;
-    }
-    
     if(guild_ally_codes.length === 0){
         return;
     }

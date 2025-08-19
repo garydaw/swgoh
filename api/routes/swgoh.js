@@ -28,9 +28,32 @@ swgohRouter.post('/units', async (req, res) => {
   
 });
 
+swgohRouter.post('/alliesArray', async (req, res) => {
+
+    await players.refreshAllies(req.body);
+    const allies =  await players.getGuildMembersRefresh();
+    
+    //res.json(allies);
+    res.json({result:true, message: 'Guild successfully updated.' });
+  
+});
+
 swgohRouter.post('/allies', async (req, res) => {
     
-    await players.refreshAllies(req.body);
+    let response = req.body
+    //find guild members
+    let text_start = 0;
+    const text = '<a href="/p/';
+    text_start = response.data.indexOf(text, text_start) + text.length;
+    
+    let guild_ally_codes = [];
+
+    while(text_start !== text.length-1){
+        guild_ally_codes.push(response.data.substr(text_start, 9))
+        text_start = response.data.indexOf(text, text_start) + text.length;
+    }
+
+    await players.refreshAllies(guild_ally_codes);
     const allies =  await players.getGuildMembersRefresh();
     
     res.json(allies);
