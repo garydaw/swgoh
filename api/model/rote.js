@@ -437,7 +437,7 @@ rote.getOperations = async (path, phase) => {
   rote_sql += "CASE WHEN p.ally_code IS NULL THEN 'Unallocated' "
   rote_sql += "WHEN u.combat_type = 1 AND pu.relic_tier - 2 >= ro.relic_level THEN 'Allocated' "
   rote_sql += "WHEN u.combat_type = 2 AND pu.rarity = 7 THEN 'Allocated' "
-  rote_sql += "ELSE 'Working' END AS allocation_type "
+  rote_sql += "ELSE 'Working' END AS allocation_type, '' AS zeta_abilities, 0 AS omicron_abilities "
   rote_sql += "FROM rote_operation ro "
   rote_sql += "INNER JOIN rote_planets rp "
   rote_sql += "    ON rp.phase = ro.phase "
