@@ -6,7 +6,8 @@ const pool = mariadb.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: process.env.MY_DB
+  database: process.env.MY_DB,
+  bigIntAsNumber: true 
 });
 
 //connect to db, run query and return results
