@@ -33,7 +33,6 @@ swgohRouter.post('/alliesArray', async (req, res) => {
     await players.refreshAllies(req.body);
     const allies =  await players.getGuildMembersRefresh();
     
-    //res.json(allies);
     res.json({result:true, message: 'Guild successfully updated.' });
   
 });

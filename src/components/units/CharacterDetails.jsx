@@ -34,9 +34,7 @@ export default function CharacterDetails({character}) {
       <div className="d-flex justify-content mb-2">
         <h2>Character Details</h2>
       </div>
-      <p>
-        Details for {character.character_name}
-      </p>
+      <h4>Details for {character.character_name}</h4>
       <div className={css.twoColumnGrid}>
         {data.map((item, index) => (
           <div key={index} className={css.card}>
