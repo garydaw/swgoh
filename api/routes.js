@@ -12,6 +12,7 @@ import twRouter from './routes/tw.js';
 import twCountersRouter from './routes/tw_counters.js';
 import roteRouter from './routes/rote.js';
 import migrationRouter from './routes/migrations.js';
+import modsRouter from './routes/mods.js';
 
 apiRouter.use(authMiddleware);
 
@@ -26,5 +27,6 @@ apiRouter.use("/tw", twRouter);
 apiRouter.use("/twcounters", twCountersRouter);
 apiRouter.use("/rote", roteRouter);
 apiRouter.use("/migrations", migrationRouter);
+apiRouter.use("/mods", modsRouter);
 
 export default apiRouter;
