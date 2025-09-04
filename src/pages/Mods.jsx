@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useLoaderData } from 'react-router'
 import { apiRequest } from '../helpers/ApiRequest';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
+import PaginatedTable from '../components/general/PaginatedTable';
 
 
 export function modsLoader({params, request}){
@@ -25,6 +26,7 @@ export function modsLoader({params, request}){
 
 export default function Mods() {
   const loader = useLoaderData();
+  const [mods, setMods] = useState([]);
 
   const transformed = Object.values(
     loader.reduce((acc, { rarity, speed, count }) => {
@@ -35,8 +37,22 @@ export default function Mods() {
         return acc;
     }, {})
     );
+
+  const backToChart = () => {
+    setMods([]);
+  }
+  const handleBarClick = async ( data, index) => {
+    
+    const currentQueryParams = new URLSearchParams(location.search);
+
+    const new_mods = await apiRequest(`/mods/speed/${data.speed}?${currentQueryParams.toString()}`, false, 'GET');
+    setMods(new_mods);
+
+  }
     
   return (
+    <>
+    {mods.length == 0 && 
     <ResponsiveContainer width="100%" height="80%">
   <BarChart
     data={transformed}
@@ -64,10 +80,16 @@ export default function Mods() {
     <Tooltip labelFormatter={(value) => `Speed ${value}`} />
     <Legend verticalAlign="top" height={36}/>
     
-    <Bar name="5 Dot" dataKey="5" stackId="a" fill="#8884d8" />
-    <Bar name="6 Dot" dataKey="6" stackId="a" fill="#82ca9d" />
+    <Bar name="5 Dot" dataKey="5" stackId="a" fill="#8884d8" onClick={handleBarClick}/>
+    <Bar name="6 Dot" dataKey="6" stackId="a" fill="#82ca9d" onClick={handleBarClick}/>
   </BarChart>
-</ResponsiveContainer>
+</ResponsiveContainer>}
+{mods.length > 0 && 
+<div>
+  <button className='btn btn-primary mb-2' onClick={backToChart}>Back to Chart</button>
+  <PaginatedTable dataToDisplay={mods} />
+</div>}
+</>
 
   );
 };

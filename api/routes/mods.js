@@ -10,5 +10,12 @@ modsRouter.get('/', async (req, res) => {
   
 });
 
+modsRouter.get('/speed/:speed', async (req, res) => {
+
+    const ally_mods = await mods.getSpeedMods(req.query.ally_code, req.params.speed);
+    res.json(ally_mods);
+  
+});
+
 
 export default modsRouter;
