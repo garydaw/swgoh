@@ -10,6 +10,7 @@ import UserAdmin from '../pages/UserAdmin';
 import TeamAdmin from '../pages/TeamAdmin';
 import SwgohAdmin from '../pages/SwgohAdmin';
 import TWCounters, {twcountersLoader} from '../pages/TWCounters';
+import Mods, {modsLoader} from '../pages/Mods';
 
 //all the protected routes
 export const protectedcRoutes = [
@@ -20,6 +21,11 @@ export const protectedcRoutes = [
             path:"/characters",
             element:React.createElement(Units, { combat_type: "characters" }),
             loader:unitLoader
+          },
+          { 
+            path:"/mods",
+            element:React.createElement(Mods),
+            loader:modsLoader
           },
           {
             path:"/ships",

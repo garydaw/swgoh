@@ -14,6 +14,7 @@ export default function Navigation() {
   //list of main links
   const navItems = [
     { title: "Characters", to: "/characters" },
+    { title: "Mods", to: "/mods" },
     { title: "Ships", to: "/ships" },
     { title: "Journey Guides", to: "/journey" },
     { title: "GAC", to: "/gac" },
