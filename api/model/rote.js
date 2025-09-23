@@ -719,7 +719,7 @@ rote.getAllyCountAvailableAllocations = async (path, phase, operations) => {
 
 rote.minNumbersToAddUpToTarget = (arr, target) => {
     
-  let sum = BigInt(0);
+  let sum = 0;
   let index = arr.length - 1;
   const usedNumbers = [];
   
