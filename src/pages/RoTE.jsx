@@ -3,6 +3,7 @@ import Operations from '../components/rote/Operations'
 import { useSearchParams } from 'react-router-dom';
 import { apiRequest } from '../helpers/ApiRequest';
 import AllyOperations from '../components/rote/AllyOperations';
+import BasicOperations from '../components/rote/BasicOperations';
 import { useAuth } from '../store/useAuth';
 
 export default function RoTE() {
@@ -11,6 +12,7 @@ export default function RoTE() {
   const [rotePlanets, setRotePlanets] = useState([]);
   const [rotePlanet, setRotePlanet] = useState(searchParams.get('rote_planet') || "1");
   const [roteOperations, setRoteOperations] = useState([]);
+  const [roteBasic, setRoteBasic] = useState([]);
   const [roteAllies, setRoteAllies] = useState([]);
   const [roteSwaps, setRoteSwaps] = useState([]);
   const [canWork, setCanWork] = useState([]);
@@ -54,6 +56,7 @@ export default function RoTE() {
   const operationsReceived = (result) => {
     setRoteOperations(result.operations);
     setRoteAllies(result.ally);
+    setRoteBasic(result.basic);
     createSwaps(result.swaps);
     createCanWork(result.canWork);
   }
@@ -144,20 +147,30 @@ export default function RoTE() {
           <button className='btn btn-primary' onClick={getOperations}>View</button>
         </div>
         {roteOperations.length > 0 &&
-          <div style={{maxWidth:"250px"}} className='px-2'>
-            <div className="form-check">
-              <input className="form-check-input" type="radio" name="roteView" id="roteViewPlanet" value="planet" checked={roteView === "planet"} onChange={roteViewChanged}/>
-              <label className="form-check-label" htmlFor="roteViewPlanet">Planet</label>
-            </div>
-            <div className="form-check">
-              <input className="form-check-input" type="radio" name="roteView" id="roteViewAllies" value="allies" checked={roteView === "allies"} onChange={roteViewChanged}/>
-              <label className="form-check-label" htmlFor="roteViewAllies">Allies</label>
-            </div>
-            <div className="form-check">
-              <input className="form-check-input" type="radio" name="roteView" id="roteViewMe" value="me" checked={roteView === "me"} onChange={roteViewChanged}/>
-              <label className="form-check-label" htmlFor="roteViewMe">Me</label>
-            </div>
+          <div style={{ maxWidth: "250px" }} className="px-2 d-flex flex-wrap">
+            {[
+              ["planet", "Planet"],
+              ["basic", "Basic"],
+              ["allies", "Allies"],
+              ["me", "Me"]
+            ].map(([value, label]) => (
+              <div key={value} className="form-check w-50">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="roteView"
+                  id={`roteView-${value}`}
+                  value={value}
+                  checked={roteView === value}
+                  onChange={roteViewChanged}
+                />
+                <label className="form-check-label" htmlFor={`roteView-${value}`}>
+                  {label}
+                </label>
+              </div>
+            ))}
           </div>
+
         }
         {roteOperations.length > 0 && admin === 1 &&
           <div style={{maxWidth:"250px"}} className='px-2'>
@@ -188,7 +201,10 @@ export default function RoTE() {
           
           ))
       }
-      {roteView !== "planet" &&
+      {roteView == "basic"  &&
+        <BasicOperations roteBasic={roteBasic} />
+      }
+      {(roteView == "allies" || roteView == "me") &&
         <AllyOperations allies={roteAllies} username={roteView === "me" ? username : ""} />
       }
     </div>

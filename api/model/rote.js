@@ -507,11 +507,33 @@ rote.getOperations = async (path, phase) => {
 
   const canWork = await runSQL(sql, [path, phase]);
 
+  sql = "SELECT ro.base_id, u.character_name, COUNT(*) AS required,  ";
+  sql += "(SELECT COUNT(*) AS c  ";
+  sql += "FROM player_unit pu  ";
+  sql += "INNER JOIN unit u  ";
+  sql += "	ON u.base_id = pu.base_id  ";
+  sql += "WHERE pu.rarity = 7  ";
+  sql += "AND pu.base_id = ro.base_id   ";
+  sql += "AND (  ";
+  sql += "	(u.combat_type = 1 AND ro.relic_level <= pu.relic_tier)  ";
+  sql += "	OR u.combat_type = 2  ";
+  sql += ")) AS actual  ";
+  sql += "FROM rote_operation ro  ";
+  sql += "INNER JOIN unit u ";
+  sql += "	ON u.base_id = ro.base_id ";
+  sql += "WHERE ro.path = ?  ";
+  sql += "AND ro.phase = ?  ";
+  sql += "GROUP BY ro.base_id, u.character_name, ro.relic_level  ";
+  sql += "ORDER BY actual - COUNT(*)  ";
+
+  const basic = await runSQL(sql, [path, phase]);
+
   let view = {};
   view.operations = operations;
   view.ally = ally;
   view.swaps = swaps;
   view.canWork = canWork;
+  view.basic = basic;
 
   return view;
 }
