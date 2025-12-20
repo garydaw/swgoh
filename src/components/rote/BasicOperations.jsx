@@ -8,6 +8,7 @@ export default function BasicOperations({roteBasic}) {
         <thead>
           <tr style={{ backgroundColor: "rgba(200, 200, 200, 0.5)" }}>
             <th className="border border-gray-300 px-4 py-2">Character</th>
+            <th className="border border-gray-300 px-4 py-2">Relic</th>
             <th className="border border-gray-300 px-4 py-2">Required</th>
             <th className="border border-gray-300 px-4 py-2">Actual</th>
           </tr>
@@ -20,6 +21,7 @@ export default function BasicOperations({roteBasic}) {
             return (
             <tr key={`rote_basic_${index}`} style={{ backgroundColor: background }}>
               <td className="border border-gray-300 px-4 py-2">{basicOp.character_name}</td>
+              <td className="border border-gray-300 px-4 py-2">{basicOp.relic_level}</td>
               <td className="border border-gray-300 px-4 py-2">{basicOp.required}</td>
               <td className="border border-gray-300 px-4 py-2">{basicOp.actual}</td>
             </tr>)
