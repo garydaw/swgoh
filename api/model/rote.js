@@ -515,7 +515,7 @@ rote.getOperations = async (path, phase) => {
   sql += "WHERE pu.rarity = 7  ";
   sql += "AND pu.base_id = ro.base_id   ";
   sql += "AND (  ";
-  sql += "	(u.combat_type = 1 AND ro.relic_level <= pu.relic_tier)  ";
+  sql += "	(u.combat_type = 1 AND ro.relic_level <= pu.relic_tier - 2)  ";
   sql += "	OR u.combat_type = 2  ";
   sql += ")) AS actual  ";
   sql += "FROM rote_operation ro  ";
