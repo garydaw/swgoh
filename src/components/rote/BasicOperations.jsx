@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from "react-router-dom";
 
 export default function BasicOperations({roteBasic}) {
 
@@ -20,7 +21,7 @@ export default function BasicOperations({roteBasic}) {
                        : "rgba(255,0,0,0.25)";
             return (
             <tr key={`rote_basic_${index}`} style={{ backgroundColor: background }}>
-              <td className="border border-gray-300 px-4 py-2">{basicOp.character_name}</td>
+              <td className="border border-gray-300 px-4 py-2"><Link to={"/guildunits?guild_unit=" + basicOp.base_id} className="nav-link">{basicOp.character_name}</Link></td>
               <td className="border border-gray-300 px-4 py-2">{basicOp.relic_level}</td>
               <td className="border border-gray-300 px-4 py-2">{basicOp.required}</td>
               <td className="border border-gray-300 px-4 py-2">{basicOp.actual}</td>

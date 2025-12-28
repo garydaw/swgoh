@@ -1,5 +1,6 @@
 import React from 'react'
 import Units, {unitLoader} from '../pages/Units';
+import GuildUnits from '../pages/GuildUnits';
 import ProtectedLayout from '../layouts/ProtectedLayout';
 import JourneyGuides, {journeyLoader} from '../pages/JourneyGuides';
 import GAC, { gacLoader } from '../pages/GAC';
@@ -31,6 +32,10 @@ export const protectedcRoutes = [
             path:"/ships",
             element:React.createElement(Units, { combat_type: "ships" }),
             loader:unitLoader
+          },
+          {
+            path:"/guildunits",
+            element:React.createElement(GuildUnits)
           },
           {
             path:"/journey",

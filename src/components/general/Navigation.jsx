@@ -16,6 +16,7 @@ export default function Navigation() {
     { title: "Characters", to: "/characters" },
     { title: "Mods", to: "/mods" },
     { title: "Ships", to: "/ships" },
+    { title: "Guild Units", to: "/guildunits" },
     { title: "Journey Guides", to: "/journey" },
     { title: "GAC", to: "/gac" },
     { title: "TW", to: "/tw" },

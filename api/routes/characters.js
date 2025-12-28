@@ -17,5 +17,16 @@ charactersRouter.get('/', async (req, res) => {
   
 });
 
+//get guild unit details
+charactersRouter.get('/guild/:base_id', async (req, res) => {
+    
+    let base_id = req.params.base_id;
+    
+    const guild_characters = await units.getGuildUnits(req.query.ally_code, base_id, COMBAT_TYPE);
+
+    res.json(guild_characters);
+  
+});
+
 
 export default charactersRouter;

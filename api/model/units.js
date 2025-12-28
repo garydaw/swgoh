@@ -150,6 +150,35 @@ units.getGeneric = async (combat_type) => {
 
 }
 
+units.getGuildUnits = async (ally_code, base_id, combat_type) => {
+
+    let sql = "";
+    sql += "SELECT u.base_id,  p.ally_name as character_name, u.alignment, u.unit_image, ";
+    sql += "        pu.gear_level, pu.gear_level_plus, pu.gear_level_flags, ";
+    sql += "        pu.level, pu.power, pu.rarity, pu.zeta_abilities, pu.omicron_abilities, ";
+    sql += "        pu.relic_tier, pu.has_ultimate, u.is_galactic_legend, "
+    sql += "        CASE u.alignment WHEN 1 THEN 'neutral' WHEN 2 THEN 'light' ELSE 'dark' END as alignment_label, "
+    sql += "        p.ally_code, p.ally_name "
+    sql += "FROM player p "
+    sql += "INNER JOIN player_unit pu ";
+    sql += "    ON p.ally_code = pu.ally_code ";
+    sql += "INNER JOIN unit u ";
+    sql += "    ON pu.base_id = u.base_id ";
+    sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
+    sql += "AND u.combat_type = ? ";
+    sql += "AND u.base_id = ? ";
+    sql += "GROUP BY u.base_id, u.alignment, u.unit_image, ";
+    sql += "        pu.gear_level, pu.gear_level_plus, pu.gear_level_flags, ";
+    sql += "        pu.level, pu.power, pu.rarity, pu.zeta_abilities, pu.omicron_abilities, ";
+    sql += "        pu.relic_tier, pu.has_ultimate, u.is_galactic_legend "
+    sql += "ORDER BY pu.gear_level DESC, pu.relic_tier DESC, pu.power DESC, p.ally_code ";
+
+    const rows= await runSQL(sql, [ally_code, combat_type, base_id]);
+
+    return rows;
+
+}
+
 units.saveImageFromURL = async (url, path, filename) => {
     try {
     const response = await axios({

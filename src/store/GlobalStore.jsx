@@ -21,7 +21,6 @@ export const GlobalContextProvider = props => {
             setUnits(general.units);
             setShips(general.ships);
             setAllies(general.allies);
-            console.log(general.lastUpdated);
             setLastUpdated(general.lastUpdated);
         };
 
