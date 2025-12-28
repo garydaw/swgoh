@@ -9,7 +9,9 @@ generalRouter.get('/', async (req, res) => {
     const general = {}
     general.units = await units.getGeneric(1);
     general.ships = await units.getGeneric(2);
-    general.allies = await players.getGuildMembers(req.user.user_name)
+    general.allies = await players.getGuildMembers(req.user.user_name);
+    general.lastUpdated = await players.getLastUpdated(req.user.user_name);
+    console.log(general.lastUpdated);
     res.json(general);
   
 });

@@ -9,6 +9,7 @@ export const GlobalContextProvider = props => {
     const [units, setUnits] = useState([]);
     const [ships, setShips] = useState([]);
     const [allies, setAllies] = useState([]);
+    const [lastUpdated, setLastUpdated] = useState(null);
     
     const {isLoggedIn} = useAuth();
 
@@ -20,6 +21,8 @@ export const GlobalContextProvider = props => {
             setUnits(general.units);
             setShips(general.ships);
             setAllies(general.allies);
+            console.log(general.lastUpdated);
+            setLastUpdated(general.lastUpdated);
         };
 
         if(isLoggedIn){
@@ -39,14 +42,36 @@ export const GlobalContextProvider = props => {
         return ally ? ally.ally_name : ally_code;
     }
 
+    function getLastUpdated() {
+        const date = new Date(lastUpdated);
+
+        const day = date.getDate();
+        const month = date.toLocaleString('en-GB', { month: 'short' });
+        const year = date.getFullYear();
+
+        const ordinal = (n) => {
+            if (n > 3 && n < 21) return 'th';
+            switch (n % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+            }
+        };
+
+        return `${day}${ordinal(day)} ${month} ${year}`;
+    }
+
     return (
         <GlobalContext.Provider
             value={{
               units,
               ships,
               allies,
+              lastUpdated,
               getUserName,
-              getAllies
+              getAllies,
+              getLastUpdated
             }}
         >
             {props.children}

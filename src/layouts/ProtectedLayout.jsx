@@ -61,6 +61,7 @@ export default function ProtectedLayout(props) {
               placeholder={data.getUserName(searchTerm)}
               clickHandler={searchAllyHandleItemClick}/>
           </div>
+          <div className="form-group row ps-5">Rosters Updated: {data.getLastUpdated()}</div>
         </div>
         
         <div className="col-2 text-end">
