@@ -555,8 +555,7 @@ rote.getKeyUnits = async () => {
   sql += "FROM rote_operation ro  ";
   sql += "INNER JOIN unit u ";
   sql += "	ON u.base_id = ro.base_id ";
-  sql += "GROUP BY ro.base_id, u.character_name, ro.relic_level, ro.relic_level  ";
-  sql += "HAVING actual = COUNT(*) ) AS ku ";
+  sql += "GROUP BY ro.base_id, u.character_name, ro.relic_level, ro.relic_level ) AS ku ";
   sql += "INNER JOIN unit u1 ";
   sql += "    ON	u1.base_id = ku.base_id ";
   sql += "INNER JOIN player_unit pu1 ";
@@ -568,6 +567,7 @@ rote.getKeyUnits = async () => {
   sql += ")  ";
   sql += "INNER JOIN player p1 ";
   sql += "    ON  pu1.ally_code = p1.ally_code ";
+  sql += "WHERE ku.actual = ku.required ";
   sql += "ORDER BY ku.phase, ku.path, ku.character_name, p1.ally_name ";
 
   return await runSQL(sql, []);
