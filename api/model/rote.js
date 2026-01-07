@@ -539,7 +539,7 @@ rote.getOperations = async (path, phase) => {
 }
 
 rote.getKeyUnits = async () => {
-  let sql = "SELECT ku.path, ku.phase, ku.character_name, ku.relic_level, p1.ally_name ";
+  let sql = "SELECT ku.path, ku.phase, ku.character_name, ku.relic_level, p1.ally_name, ku.required, ku.actual ";
   sql += "FROM ( ";
   sql += "SELECT ro.path, ro.phase, ro.base_id, u.character_name, ro.relic_level, COUNT(*) AS required,  ";
   sql += "(SELECT COUNT(*) AS c  ";
