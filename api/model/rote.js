@@ -539,7 +539,7 @@ rote.getOperations = async (path, phase) => {
 }
 
 rote.getKeyUnits = async () => {
-  let sql = "SELECT ku.path, ku.phase, ku.character_name, ku.relic_level, p1.ally_name, ku.required, ku.actual ";
+  let sql = "SELECT ku.path, ku.phase, ku.character_name, ku.relic_level, p1.ally_name ";
   sql += "FROM ( ";
   sql += "SELECT ro.path, ro.phase, ro.base_id, u.character_name, ro.relic_level, COUNT(*) AS required,  ";
   sql += "(SELECT COUNT(*) AS c  ";
@@ -555,7 +555,7 @@ rote.getKeyUnits = async () => {
   sql += "FROM rote_operation ro  ";
   sql += "INNER JOIN unit u ";
   sql += "	ON u.base_id = ro.base_id ";
-  sql += "GROUP BY ro.base_id, u.character_name, ro.relic_level, ro.relic_level ) AS ku ";
+  sql += "GROUP BY ro.path, ro.phase, ro.base_id, u.character_name, ro.relic_level ) AS ku ";
   sql += "INNER JOIN unit u1 ";
   sql += "    ON	u1.base_id = ku.base_id ";
   sql += "INNER JOIN player_unit pu1 ";
