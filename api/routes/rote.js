@@ -31,6 +31,13 @@ roteRouter.get('/export', async (req, res) => {
   
 });
 
+roteRouter.get('/keyunits', async (req, res) => {
+
+    const keyunits = await rote.getKeyUnits();
+    res.json(keyunits);
+  
+});
+
 roteRouter.get('/operations/:path/:planet', async (req, res) => {
 
     const path = req.params.path;

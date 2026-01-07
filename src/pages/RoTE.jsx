@@ -17,6 +17,8 @@ export default function RoTE() {
   const [roteSwaps, setRoteSwaps] = useState([]);
   const [canWork, setCanWork] = useState([]);
   const [roteView, setRoteView] = useState(searchParams.get('rote_view') ||"planet");
+  const [keyUnits, setKeyUnits] = useState([]);
+  const [showModal, setshowModal] = useState(false);
 
   const {username, admin} = useAuth();
 
@@ -29,6 +31,9 @@ export default function RoTE() {
       if(rotePlanets.length === 0){
         const planets = await apiRequest('rote/planets', false, 'GET');
         setRotePlanets(planets);
+
+        const keyUnits = await apiRequest('rote/keyunits', false, 'GET');
+        setKeyUnits(keyUnits);
 
         if(searchParams.get('rote_path') && searchParams.get('rote_planet')){
           getOperations();
@@ -84,6 +89,36 @@ export default function RoTE() {
     
   }
 
+  const showKeyUnit = async () => {
+    setshowModal(true);
+  }
+
+  const groupedKeyUnits = keyUnits.reduce((acc, item) => {
+    const groupKey = `${item.path}-${item.phase}`;
+
+    if (!acc[groupKey]) {
+      acc[groupKey] = {
+        path: item.path,
+        phase: item.phase,
+        characters: {}
+      };
+    }
+
+    if (!acc[groupKey].characters[item.character_name]) {
+      acc[groupKey].characters[item.character_name] = {
+        relic_level: item.relic_level,
+        allies: []
+      };
+    }
+
+    acc[groupKey].characters[item.character_name].allies.push(
+      item.ally_name
+    );
+
+    return acc;
+  }, {});
+
+
   const createSwaps = (swaps) => {
     let operationSwaps = {};
     for(let s = 0; s < swaps.length; s++){
@@ -127,6 +162,38 @@ export default function RoTE() {
   }
   return (
     <div>
+
+      <div id="roteModal" className="modal" style={{ display: showModal ? 'block' : 'none' }}>
+        <div className="modal-content">
+          <span className="close" onClick={() => setshowModal(false)}>
+            &times;
+          </span>
+
+          {Object.values(groupedKeyUnits).map(group => (
+            <div key={`${group.path}-${group.phase}`}>
+              <h3>
+                {group.path.charAt(0).toUpperCase() + group.path.slice(1)} Phase {group.phase}
+              </h3>
+
+              <ul>
+                {Object.entries(group.characters).map(
+                  ([characterName, characterData]) => (
+                    <li key={characterName}>
+                      
+                        {characterName} (Relic {characterData.relic_level})
+                     
+                      {" — "}
+                      {characterData.allies.join(", ")}
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+
       <div className="d-flex justify-content mb-2">
         <h2>RotE</h2>
         <div style={{maxWidth:"250px"}} className='px-2'>
@@ -182,6 +249,9 @@ export default function RoTE() {
             <button className='btn btn-primary' onClick={getExport}>Export</button>
           </div>
         }
+        <div style={{maxWidth:"250px"}} className='px-2'>
+          <button className='btn btn-primary' onClick={showKeyUnit}>Key Units</button>
+        </div>
       </div>
       
       {roteView === "planet"  &&

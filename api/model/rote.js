@@ -538,6 +538,42 @@ rote.getOperations = async (path, phase) => {
   return view;
 }
 
+rote.getKeyUnits = async () => {
+  let sql = "SELECT ku.path, ku.phase, ku.character_name, ku.relic_level, p1.ally_name ";
+  sql += "FROM ( ";
+  sql += "SELECT ro.path, ro.phase, ro.base_id, u.character_name, ro.relic_level, COUNT(*) AS required,  ";
+  sql += "(SELECT COUNT(*) AS c  ";
+  sql += "FROM player_unit pu  ";
+  sql += "INNER JOIN unit u  ";
+  sql += "	ON u.base_id = pu.base_id  ";
+  sql += "WHERE pu.rarity = 7  ";
+  sql += "AND pu.base_id = ro.base_id   ";
+  sql += "AND (  ";
+  sql += "	(u.combat_type = 1 AND ro.relic_level <= pu.relic_tier - 2)  ";
+  sql += "	OR u.combat_type = 2  ";
+  sql += ")) AS actual  ";
+  sql += "FROM rote_operation ro  ";
+  sql += "INNER JOIN unit u ";
+  sql += "	ON u.base_id = ro.base_id ";
+  sql += "GROUP BY ro.base_id, u.character_name, ro.relic_level, ro.relic_level  ";
+  sql += "HAVING actual = COUNT(*) ) AS ku ";
+  sql += "INNER JOIN unit u1 ";
+  sql += "    ON	u1.base_id = ku.base_id ";
+  sql += "INNER JOIN player_unit pu1 ";
+  sql += "    ON pu1.base_id = ku.base_id ";
+  sql += "    AND pu1.rarity = 7 ";
+  sql += "AND (  ";
+  sql += "	(u1.combat_type = 1 AND ku.relic_level <= pu1.relic_tier - 2)  ";
+  sql += "	OR u1.combat_type = 2  ";
+  sql += ")  ";
+  sql += "INNER JOIN player p1 ";
+  sql += "    ON  pu1.ally_code = p1.ally_code ";
+  sql += "ORDER BY ku.phase, ku.path, ku.character_name, p1.ally_name ";
+
+  return await runSQL(sql, []);
+
+}
+
 rote.allocateOperations = async (path, phase) => {
 
   //reset allocation
