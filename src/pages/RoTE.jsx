@@ -171,23 +171,14 @@ export default function RoTE() {
 
           {Object.values(groupedKeyUnits).map(group => (
             <div key={`${group.path}-${group.phase}`}>
-              <h3>
-                {group.path.charAt(0).toUpperCase() + group.path.slice(1)} Phase {group.phase}
-              </h3>
+              ** {group.path.charAt(0).toUpperCase() + group.path.slice(1)} Phase {group.phase} **
 
-              <ul>
+              
                 {Object.entries(group.characters).map(
                   ([characterName, characterData]) => (
-                    <li key={characterName}>
-                      
-                        {characterName} (Relic {characterData.relic_level})
-                     
-                      {" — "}
-                      {characterData.allies.join(", ")}
-                    </li>
+                    <div key={characterName}>* {characterName} (Relic {characterData.relic_level}) {" — "} {characterData.allies.join(", ")}</div>
                   )
                 )}
-              </ul>
             </div>
           ))}
         </div>
