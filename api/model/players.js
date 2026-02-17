@@ -1,5 +1,5 @@
 import runSQL from "./database.js";
-import axios from "axios";
+import axios, { all } from "axios";
 import auth from "./auth.js";
 
 
@@ -124,10 +124,16 @@ players.addMod = async (ally_code, mod_data) => {
     sql += "?, ?, ?, ?, ?, ?, ";
     sql += "?, ?, ?, ?) ";
     
+    if(mod_data.character === null){
+        console.log("this is NULL!")
+        console.log(ally_code, mod_data);
+    } else {
+        console.log(ally_code, mod_data);
     await runSQL(sql, [ mod_data.id,
         ally_code, mod_data.character, mod_data.level, mod_data.tier, mod_data.rarity, mod_data.slot, mod_data.set,
         mod_data.primary_stat.name, mod_data.primary_stat.display_value, mod_data.secondary_stats[0].name, mod_data.secondary_stats[0].display_value, mod_data.secondary_stats[1].name, mod_data.secondary_stats[1].display_value,
         mod_data.secondary_stats[2].name, mod_data.secondary_stats[2].display_value, mod_data.secondary_stats[3].name, mod_data.secondary_stats[3].display_value]);
+    }
     
 }
 
