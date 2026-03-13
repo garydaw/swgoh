@@ -75,7 +75,7 @@ export default function TeamAdmin() {
 
       }));
 
-      const newPost = [base_id, ...teamPost]
+      const newPost = [...teamPost, base_id]
       setTeamPost(newPost);
     }
   };
