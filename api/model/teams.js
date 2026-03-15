@@ -181,97 +181,248 @@ teams.getExcel = async (ally_code, team_type) => {
   let workbook = new excel.Workbook();
 
   let twTeams = [
-    { name: "Rey with Ben", units:[{base_id: "GLREY"},
-                                   {base_id: "BENSOLO"}] },
-    { name: "Rey", units:[{base_id: "GLREY"}] },
-    { name: "Palp with SK", units:[{base_id: "EMPERORPALPATINE"},
-                          {base_id: "STARKILLER"},
-                          {base_id: "JUHANI", omi: ["uniqueskill_juhani01"]},
-                          {base_id: "VISASMARR"},
-                          {base_id: "MARAJADE", omi: ["uniqueskill_MARAJADE01"]},
-    ] },
-    { name: "LV", units:[{base_id: "LORDVADER"},
-                          {base_id: "APPO"},
-                          {base_id: "DISGUISEDCLONETROOPER"},
-                          {base_id: "SCORCH"},
-                          {base_id: "OPERATIVE"},
-    ]},
-    { name: "Phasma", units:[{base_id: "PHASMA", omi: ["leaderskill_PHASMA"]},]},
-    { name: "GG", units:[{base_id: "GRIEVOUS"},
-                          {base_id: "DROIDEKA", omi: ["uniqueskill_DROIDEKA01"]},
-                          {base_id: "B2SUPERBATTLEDROID"},
-                          {base_id: "MAGNAGUARD"},
-    ]},
-    { name: "Beq", units:[{base_id: "KELLERANBEQ"},
-                          {base_id: "MACEWINDU", omi: ["uniqueskill_MACEWINDU02"]},
-                          {base_id: "ANAKINKNIGHT"},
-    ]},
-    { name: "Leia", units:[{base_id: "GLLEIA"},
-                          {base_id: "R2D2_LEGENDARY"},
-                          {base_id: "CAPTAINDROGAN"},
-    ] },
-    { name: "DTMG", units:[{base_id: "MOFFGIDEONS3", omi: ["leaderskill_MOFFGIDEONS3","specialskill_MOFFGIDEONS301","uniqueskill_MOFFGIDEONS301"]},
-                          {base_id: "STORMTROOPER"},
-                          {base_id: "DEATHTROOPER"},
-    ] },
-    { name: "Quadme", units:[{base_id: "QUEENAMIDALA"},
-                          {base_id: "MASTERQUIGON"},
-                          {base_id: "PADAWANOBIWAN"},
-    ]},
-    { name: "Cere", units:[{base_id: "CEREJUNDA"},
-                          {base_id: "FULCRUMAHSOKA", omi: ["uniqueskill_FULCRUMAHSOKA01"]},
-                          {base_id: "CALKESTIS", omi: ["uniqueskill_CALKESTIS01"]},
-    ]},
-    { name: "Jabba", units:[{base_id: "JABBATHEHUTT"},
-                          {base_id: "BOUSHH"},
-                          {base_id: "KRRSANTAN"},
-                          {base_id: "UNDERCOVERLANDO"},
-    ] },
-    { name: "Geos", units:[{base_id: "GEONOSIANBROODALPHA"},
-                          {base_id: "GEONOSIANSOLDIER"},
-                          {base_id: "GEONOSIANSPY"},
-                          {base_id: "POGGLETHELESSER", omi: ["uniqueskill_POGGLETHELESSER01"]},
-                          {base_id: "SUNFAC"},
-    ]},
-    { name: "Malgus", units:[{base_id: "DARTHMALGUS"},
-                          {base_id: "DARTHREVAN"},
-                          {base_id: "DARTHMALAK"},
-                          {base_id: "BASTILASHANDARK"},
-    ]},
-    { name: "Finn with Zorii", units:[{base_id: "FINN"},
-                              {base_id: "ZORIIBLISS_V2"},
-    ]},
-    { name: "Sana", units:[{base_id: "SANASTARROS"}] },
-    { name: "Grand Mothers", units:[{base_id: "GREATMOTHERS"},
-                              {base_id: "MORGANELSBETH"},
-                              {base_id: "NIGHTTROOPER"},
-                              {base_id: "DEATHTROOPERPERIDEA"},
-                              {base_id: "NIGHTSISTERSPIRIT"},
-    ] },
-    { name: "Phoenix", units:[{base_id: "HERASYNDULLAS3", omi: ["leaderskill_HERASYNDULLAS3"]},
-                              {base_id: "CAPTAINREX"},
-    ]},
-    { name: "Jawas", units:[{base_id: "CHIEFNEBIT", omi: ["leaderskill_CHIEFNEBIT"]},
-                          {base_id: "DATHCHA"},
-                          {base_id: "JAWA"},
-                          {base_id: "JAWAENGINEER"},
-                          {base_id: "JAWASCAVENGER"},
-    ]},
-    { name: "Tuskens", units:[{base_id: "TUSKENCHIEFTAIN"},
-                          {base_id: "TUSKENRAIDER"},
-                          {base_id: "TUSKENHUNTRESS"},
-                          {base_id: "TUSKENSHAMAN"},
-                          {base_id: "URORRURRR"},
-                          
-    ]},
-    { name: "GAS", units:[{base_id: "GENERALSKYWALKER"},
-                          {base_id: "CT7567"},
-                          {base_id: "CT210408"},
-                          {base_id: "CT5555"},
-                          {base_id: "ARCTROOPER501ST"},
-    ]},
+  {
+    name: "Stranger",
+    units: [
+      { base_id: "STRANGER" },
+      { base_id: "BARRISSOFFEE" },
+      { base_id: "MAULHATEFUELED" },
+      { base_id: "STARKILLER" },
+      { base_id: "VISASMARR" }
+    ]
+  },
+  {
+    name: "Rey",
+    units: [
+      { base_id: "GLREY" },
+      { base_id: "BARRISSOFFEE" },
+      { base_id: "BENSOLO" },
+      { base_id: "EZRAEXILE" },
+      { base_id: "REYJEDITRAINING" }
+    ]
+  },
+  {
+    name: "Palp with SK",
+    units: [
+      { base_id: "EMPERORPALPATINE" },
+      {base_id: "JUHANI", omi: ["uniqueskill_juhani01"]},
+      {base_id: "MARAJADE", omi: ["uniqueskill_MARAJADE01"]},
+      { base_id: "STARKILLER" },
+      { base_id: "VISASMARR" }
+    ]
+  },
+  {
+    name: "LV",
+    units: [
 
-  ];
+      { base_id: "LORDVADER" },
+      { base_id: "APPO" },
+      { base_id: "DISGUISEDCLONETROOPER" },
+      { base_id: "OPERATIVE" },
+      { base_id: "SCORCH" }
+    ]
+  },
+  {
+    name: "Phasma",
+    units: [
+      { base_id: "PHASMA", omi: ["leaderskill_PHASMA"]},
+      { base_id: "FIRSTORDEREXECUTIONER" },
+      { base_id: "FIRSTORDERSPECIALFORCESPILOT" },
+      { base_id: "FIRSTORDERTIEPILOT" },
+      { base_id: "KYLOREN" }
+    ]
+  },
+  {
+    name: "GG",
+    units: [
+      { base_id: "GRIEVOUS" },
+      { base_id: "B1BATTLEDROIDV2" },
+      { base_id: "B2SUPERBATTLEDROID" },
+      { base_id: "DROIDEKA", omi: ["uniqueskill_DROIDEKA01"]},
+      { base_id: "MAGNAGUARD" }
+    ]
+  },
+  {
+    name: "Beq",
+    units: [
+      { base_id: "KELLERANBEQ" },
+      { base_id: "ANAKINKNIGHT" },
+      { base_id: "GRANDMASTERYODA" },
+      { base_id: "KIADIMUNDI" },
+      { base_id: "MACEWINDU", omi: ["uniqueskill_MACEWINDU02"]},
+    ]
+  },
+  {
+    name: "Leia",
+    units: [
+      { base_id: "GLLEIA" },
+      { base_id: "CAPTAINDROGAN" },
+      { base_id: "MONMOTHMA" },
+      { base_id: "OLDBENKENOBI" },
+      { base_id: "R2D2_LEGENDARY" }
+    ]
+  },
+  {
+    name: "Ahsoka",
+    units: [
+      { base_id: "GLAHSOKATANO" },
+      { base_id: "GENERALSYNDULLA" },
+      { base_id: "HUYANG" },
+      { base_id: "PADAWANSABINE" },
+      { base_id: "WATTAMBOR" }
+    ]
+  },
+  {
+    name: "Queen Amidala",
+    units: [
+      { base_id: "QUEENAMIDALA" },
+      { base_id: "BADBATCHECHO" },
+      { base_id: "MASTERQUIGON" },
+      { base_id: "PADAWANOBIWAN" },
+      { base_id: "SHAAKTI" }
+    ]
+  },
+  {
+    name: "Gungans",
+    units: [
+      { base_id: "BOSSNASS" },
+      { base_id: "BOOMADIER" },
+      { base_id: "CAPTAINTARPALS" },
+      { base_id: "GUNGANPHALANX" },
+      { base_id: "JARJARBINKS" }
+    ]
+  },
+  {
+    name: "Cere",
+    units: [
+      { base_id: "CEREJUNDA" },
+      { base_id: "CALKESTIS", omi: ["uniqueskill_CALKESTIS01"]},
+      { base_id: "FULCRUMAHSOKA", omi: ["uniqueskill_FULCRUMAHSOKA01"]},
+      { base_id: "KYLORENUNMASKED" },
+      { base_id: "TARONMALICOS" }
+    ]
+  },
+  {
+    name: "Jabba",
+    units: [
+      { base_id: "JABBATHEHUTT" },
+      { base_id: "BOBAFETT" },
+      { base_id: "BOUSHH" },
+      { base_id: "KRRSANTAN" },
+      { base_id: "UNDERCOVERLANDO" }
+    ]
+  },
+  {
+    name: "Wookies",
+    units: [
+      { base_id: "TARFFUL" },
+      { base_id: "CLONEWARSCHEWBACCA" },
+      { base_id: "YODACHEWBACCA" },
+      { base_id: "YOUNGCHEWBACCA" },
+      { base_id: "ZAALBAR" }
+    ]
+  },
+  {
+    name: "Palp with Vader",
+    units: [
+      { base_id: "EMPERORPALPATINE" },
+      { base_id: "GRANDMOFFTARKIN" },
+      { base_id: "MARAJADE", omi: ["uniqueskill_MARAJADE01"]},
+      { base_id: "ROYALGUARD" },
+      { base_id: "VADERDUELSEND" }
+    ]
+  },
+  {
+    name: "DTMG",
+    units: [
+      { base_id: "MOFFGIDEONS3", omi: ["leaderskill_MOFFGIDEONS3","specialskill_MOFFGIDEONS301","uniqueskill_MOFFGIDEONS301"]},
+      { base_id: "CAPTAINENOCH" },
+      { base_id: "DEATHTROOPER" },
+      { base_id: "MOFFGIDEONS1" },
+      { base_id: "SCOUTTROOPER_V3" }
+    ]
+  },
+  {
+    name: "Geonosians",
+    units: [
+      { base_id: "GEONOSIANBROODALPHA" },
+      { base_id: "GEONOSIANSOLDIER" },
+      { base_id: "GEONOSIANSPY" },
+      {base_id: "POGGLETHELESSER", omi: ["uniqueskill_POGGLETHELESSER01"]},
+      { base_id: "SUNFAC" }
+    ]
+  },
+  {
+    name: "King Hondo",
+    units: [
+      { base_id: "GLHONDO" },
+      { base_id: "BRUTUS" },
+      { base_id: "CAPTAINSILVO" },
+      { base_id: "HONDO" },
+      { base_id: "VANE" }
+    ]
+  },
+  {
+    name: "JMK",
+    units: [
+      { base_id: "JEDIMASTERKENOBI" },
+      { base_id: "AHSOKATANO" },
+      { base_id: "COMMANDERAHSOKA" },
+      { base_id: "GENERALKENOBI" },
+      { base_id: "PADMEAMIDALA" }
+    ]
+  },
+  {
+    name: "Finn and Zorii",
+    units: [
+      { base_id: "FINN" },
+      { base_id: "EPIXFINN" },
+      { base_id: "POE" },
+      { base_id: "ROSETICO" },
+      { base_id: "ZORIIBLISS_V2" }
+    ]
+  },
+  {
+    name: "Great Mothers",
+    units: [
+      { base_id: "GREATMOTHERS" },
+      { base_id: "DEATHTROOPERPERIDEA" },
+      { base_id: "MERRIN" },
+      { base_id: "MORGANELSBETH" },
+      { base_id: "NIGHTTROOPER" }
+    ]
+  },
+  {
+    name: "Phoenix",
+    units: [
+      { base_id: "HERASYNDULLAS3", omi: ["leaderskill_HERASYNDULLAS3"]},
+      { base_id: "CAPTAINREX" },
+      { base_id: "CHOPPERS3" },
+      { base_id: "KANANJARRUSS3" },
+      { base_id: "SABINEWRENS3" }
+    ]
+  },
+  {
+    name: "SLKR and Dark Rey",
+    units: [
+      { base_id: "SUPREMELEADERKYLOREN" },
+      { base_id: "DARKREY" },
+      { base_id: "FIRSTORDERTROOPER" },
+      { base_id: "FOSITHTROOPER" },
+      { base_id: "GENERALHUX" }
+    ]
+  },
+  {
+    name: "Malgus",
+    units: [
+      { base_id: "DARTHMALGUS" },
+      { base_id: "BASTILASHANDARK" },
+      { base_id: "DARTHMALAK" },
+      { base_id: "DARTHREVAN" },
+      { base_id: "SITHMARAUDER" }
+    ]
+  }
+];
 
   /*****Teams*****/
   for (let t = 0; t < twTeams.length; t++) {
