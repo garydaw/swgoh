@@ -25,7 +25,7 @@ twRouter.post('', async (req, res) => {
 twRouter.get('/export', async (req, res) => {
 
    
-    const excel = await teams.getExcel(req.user.user_name, 'tw');
+    const excel = await teams.getExcel(req.user.user_name, 'tw', req.query.includeOmi === 'true');
 
     res.setHeader(
     "Content-Type",

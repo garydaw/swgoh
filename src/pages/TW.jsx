@@ -38,8 +38,8 @@ export default function TW() {
   }
 
   
-  const getTeams = async () => {
-    const blob = await apiRequest('tw/export', true, 'GET', null, 'blob');
+  const getTeams = async (includeOmi) => {
+    const blob = await apiRequest('tw/export?includeOmi=' + includeOmi, true, 'GET', null, 'blob');
       // Create a link element to download the file
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -71,7 +71,8 @@ export default function TW() {
           </div>
         </div>
         <div style={{maxWidth:"250px"}} className='px-2'>
-            <button className='btn btn-primary' onClick={getTeams}>Get Teams</button>
+            <button className='btn btn-primary' onClick={() => getTeams(true)}>Get Teams</button>
+            <button className='btn btn-primary' onClick={() => getTeams(false)}>Get Teams (no omi)</button>
           </div>
       </div>
 

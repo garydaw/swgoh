@@ -149,7 +149,8 @@ const fills = {
               headers:["FF93C47D", "FFD9EAD3"],
               light:["FF6FA8DC", "FFCFE2F3"], 
               dark:["FFE06666", "FFF4CCCC"],
-              neutral:["FFCCCCCC", "FFEFEFEF"]
+              neutral:["FFCCCCCC", "FFEFEFEF"],
+              tw:["FF1F4E78", "FFBFBFBF", "FFF8FBFF", "FFFFFFFF"]
             };
 let row_count = 1;
 
@@ -157,8 +158,8 @@ const capitalize = (s) =>{
     return s && String(s[0]).toUpperCase() + String(s).slice(1);
 }
 
-const setCellStyle = (cell, fontSize, bold, alignment, fillColor, wrapText) => {
-  cell.font = { size: fontSize, bold: bold };
+const setCellStyle = (cell, fontSize, bold, alignment, fillColor, wrapText, fontColour, borders) => {
+  cell.font = { size: fontSize, bold: bold, color: { argb: fontColour } };
   cell.alignment = { 
     horizontal: alignment, 
     wrapText: wrapText
@@ -168,15 +169,17 @@ const setCellStyle = (cell, fontSize, bold, alignment, fillColor, wrapText) => {
     pattern: 'solid',
     fgColor: { argb: fillColor }
   };
-  cell.border = {
-    top: {style:'thick', color: {argb:'FF000000'}},
-    left: {style:'thick', color: {argb:'FF000000'}},
-    bottom: {style:'thick', color: {argb:'FF000000'}},
-    right: {style:'thick', color: {argb:'FF000000'}}
-  };
+  if(borders) {
+    cell.border = {
+      top: {style:'thick', color: {argb:'FF000000'}},
+      left: {style:'thick', color: {argb:'FF000000'}},
+      bottom: {style:'thick', color: {argb:'FF000000'}},
+      right: {style:'thick', color: {argb:'FF000000'}}
+    };
+  }
 };
 
-teams.getExcel = async (ally_code, team_type) => {
+teams.getExcel = async (ally_code, team_type, includeOmi) => {
 
   let workbook = new excel.Workbook();
 
@@ -383,12 +386,23 @@ teams.getExcel = async (ally_code, team_type) => {
     }
   ];
 
+  let summary = workbook.addWorksheet("Summary");
+  summary.addRow(["Territory War Dashboard"]); 
+  setCellStyle(summary.getCell("A1"), 14, true, 'center', fills.tw[0], false, 'FFFFFFFF', false);
+  summary.getColumn(1).width = 30;
+  summary.getColumn(2).width = 10;
+  summary.mergeCells(1,1,1,2);
+
+  summary.addRow(["Team", "Count"]); 
+  setCellStyle(summary.getCell("A2"), 11, true, 'left', fills.tw[1], false, 'FF000000', false);
+  setCellStyle(summary.getCell("B2"), 11, true, 'right', fills.tw[1], false, 'FF000000', false);
+
   /*****Teams*****/
   for (let t = 0; t < twTeams.length; t++) {
     let worksheet = workbook.addWorksheet(twTeams[t].name);
     row_count = 1;
     worksheet.getCell("A" + row_count).value = twTeams[t].name;
-    setCellStyle(worksheet.getCell("A" + row_count), 24, true, 'center', fills.headers[0], false);
+    setCellStyle(worksheet.getCell("A" + row_count), 14, true, 'center', fills.tw[0], false, 'FFFFFFFF', false);
 
     //get the number of columns based on the units and their omicron abilities
     let columns = 2;
@@ -427,13 +441,13 @@ teams.getExcel = async (ally_code, team_type) => {
     worksheet.addRow(thisRowHeader);
     worksheet.getRow(row_count).eachCell({ includeEmpty: true }, (cell, colNumber) => {
       if (colNumber >= 1 && colNumber <= (columns)) { 
-        setCellStyle(cell, 14, true, 'center', fills.headers[1], false); 
+        setCellStyle(cell, 11, true, 'center', fills.tw[1], false, 'FF000000', false); 
       }
     });
     
     row_count++;
 
-    const playerCharacters = await teams.getFixedTeam(ally_code, twTeams[t].units);
+    const playerCharacters = await teams.getFixedTeam(ally_code, twTeams[t].units, includeOmi);
 
     for (let i = 0; i < playerCharacters.length; i++) {
       let row = [];
@@ -449,30 +463,28 @@ teams.getExcel = async (ally_code, team_type) => {
       }
       worksheet.addRow(row);
 
-      // Fixed styles for A and B
-      setCellStyle(worksheet.getCell('A' + row_count), 14, true, 'center', fills.headers[1], false);
-      setCellStyle(worksheet.getCell('B' + row_count), 14, true, 'center', fills.headers[0], false);
-
-      const startColCode = 'C'.charCodeAt(0); // Starting at column C
-
-      for (let i = 0; i < columns - 2; i++) {
+      const index = row_count % 2 === 0 ? 2 : 3;
+      
+      const startColCode = 'A'.charCodeAt(0); // Starting at column C
+      for (let i = 0; i < columns; i++) {
         const colLetter = String.fromCharCode(startColCode + i); // E.g., C, D, E, etc.
-        setCellStyle(worksheet.getCell(colLetter + row_count), 14, true, 'center', fills.neutral[0], false);
+        setCellStyle(worksheet.getCell(colLetter + row_count), 11, false, 'center', fills.tw[index], false, 'FF000000', false);
       }
-
+      
+      
 
       row_count++;
     }
+    summary.addRow([twTeams[t].name, playerCharacters.length]);
   }
-
 
   return workbook;
 }
 
 
 
-teams.getFixedTeam = async (ally_code, units) => {
-
+teams.getFixedTeam = async (ally_code, units, includeOmi) => {
+  
   let query_params = [];
   let sql = "";
   sql += "SELECT p.ally_name "
@@ -497,7 +509,7 @@ teams.getFixedTeam = async (ally_code, units) => {
   query_params.push(ally_code);
   for (let i = 0; i < units.length; i++) {
     sql += "AND unit_"+i+"_pu.relic_tier > 2 ";
-    if (units[i].omi !== undefined) {
+    if (includeOmi && units[i].omi !== undefined) {
       for (let o = 0; o < units[i].omi.length; o++) {
         sql += "AND unit_"+i+"_pu.omicron_abilities LIKE '%" + units[i].omi[o] + "%' ";
       }
