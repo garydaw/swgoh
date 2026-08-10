@@ -76,7 +76,7 @@ players.update = async (user_response) => {
 
     
     const ally_code = user_response.data.ally_code;
-    console.log(ally_code);
+    
     let sql = "";
     sql += "UPDATE player SET ";
     sql += "ally_name = ?, ";
@@ -107,7 +107,6 @@ players.update = async (user_response) => {
 
 players.addMod = async (ally_code, mod_data) => {
 
-    console.log(ally_code,mod_data.id);
     if(!("secondary_stats" in mod_data)){
         mod_data.secondary_stats = [];
     }
@@ -138,7 +137,6 @@ players.addMod = async (ally_code, mod_data) => {
 
 players.addUnit = async (ally_code, unit_data) => {
     
-    console.log(ally_code,unit_data.base_id);
     let gear_level_plus = 0;
     let gear_level_binary = "";
     for(var g = 0; g < unit_data.gear.length; g++){
