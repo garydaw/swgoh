@@ -6,6 +6,7 @@ import JourneyGuides, {journeyLoader} from '../pages/JourneyGuides';
 import GAC, { gacLoader } from '../pages/GAC';
 import TW, { twLoader } from '../pages/TW';
 import RoTE from '../pages/RoTE';
+import RoTEPlanner, {rotePlannerLoader} from '../pages/RotePlanner';
 import Relics from '../pages/Relics';
 import UserAdmin from '../pages/UserAdmin';
 import TeamAdmin from '../pages/TeamAdmin';
@@ -60,6 +61,11 @@ export const protectedcRoutes = [
           {
             path:"/rote",
             element:React.createElement(RoTE),
+          },
+          {
+            path:"/roteplanner",
+            element:React.createElement(RoTEPlanner),
+            loader:rotePlannerLoader
           },
           {
             path:"/relics",

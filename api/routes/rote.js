@@ -88,5 +88,19 @@ roteRouter.post('/operations/working/:path/:planet/:operation/:unit_index/:ally_
   
 });
 
+roteRouter.get('/config', async (req, res) => {
+
+    const config = await rote.getConfig();
+    res.json(config);
+  
+});
+
+roteRouter.get('/guildData', async (req, res) => {
+
+    const guildData = await rote.getGuildData(req.query.ally_code);
+    res.json(guildData);
+  
+});
+
 
 export default roteRouter;

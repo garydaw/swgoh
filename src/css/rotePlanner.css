@@ -1,0 +1,385 @@
+.rote-planner {
+    width: min(1600px, 100%);
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.rote-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.rote-header h1,
+.phase-summary h2,
+.preload-panel h2,
+.planet-card h3 {
+    margin: 0;
+}
+
+.rote-eyebrow {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    opacity: 0.65;
+}
+
+.rote-header-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.rote-header-stats > div {
+    min-width: 110px;
+    padding: 12px 14px;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+}
+
+.rote-header-stats span,
+.phase-stars span,
+.field-heading label,
+.planner-field > label {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.rote-header-stats strong {
+    display: block;
+    margin-top: 4px;
+}
+
+.phase-selector {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.phase-selector button {
+    padding: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.phase-selector button.selected {
+    border-color: currentColor;
+}
+
+.phase-selector span,
+.phase-selector strong {
+    display: block;
+}
+
+.phase-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: center;
+    padding: 18px;
+    margin-bottom: 16px;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+}
+
+.phase-stars {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.phase-total {
+    padding-left: 24px;
+    border-left: 1px solid #d9d9d9;
+}
+
+.planner-toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.secondary-button {
+    border: 1px solid #d9d9d9;
+    background: transparent;
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.territory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.territory-column > header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.planet-card,
+.preload-panel {
+    border: 1px solid #d9d9d9;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.planet-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 14px;
+}
+
+.planet-alignment {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.planet-stars {
+    white-space: nowrap;
+}
+
+.incoming-preload {
+    padding: 8px 10px;
+    margin-bottom: 14px;
+    border-radius: 8px;
+    background: rgba(128, 0, 255, 0.08);
+}
+
+.operation-selector {
+    margin-bottom: 16px;
+}
+
+.operation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.operation-grid button {
+    min-height: 50px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.operation-grid button.selected {
+    border-color: currentColor;
+}
+
+.operation-grid button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.operation-grid span,
+.operation-grid small {
+    display: block;
+}
+
+.planner-field {
+    margin-bottom: 16px;
+}
+
+.planner-field input[type="number"],
+.deployment-number {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 6px;
+    padding: 9px 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    background: transparent;
+}
+
+.field-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.field-heading .deployment-number {
+    width: 150px;
+    margin-top: 0;
+}
+
+.planner-field input[type="range"] {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    opacity: 0.6;
+}
+
+.point-breakdown {
+    display: grid;
+    gap: 6px;
+    padding: 12px 0;
+    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.point-breakdown > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.point-breakdown .ops {
+    text-decoration: underline;
+    text-decoration-color: #5b8def;
+}
+
+.point-breakdown .missions {
+    text-decoration: underline;
+    text-decoration-color: #4caf50;
+}
+
+.point-breakdown .deployment {
+    text-decoration: underline;
+    text-decoration-color: #d8a400;
+}
+
+.point-breakdown .preload {
+    text-decoration: underline;
+    text-decoration-color: #9c5de5;
+}
+
+.point-total {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.star-progress {
+    margin-top: 14px;
+}
+
+.star-progress-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.star-progress-header span {
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+.progress-track {
+    height: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e8e8e8;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: currentColor;
+}
+
+.preload-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: currentColor;
+}
+
+.star-thresholds {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.star-thresholds span {
+    text-align: center;
+}
+
+.star-thresholds b,
+.star-thresholds small {
+    display: block;
+}
+
+.star-thresholds small {
+    opacity: 0.6;
+    font-size: 0.7rem;
+}
+
+.preload-panel {
+    margin-top: 16px;
+}
+
+.preload-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.preload-row > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.preload-row span {
+    opacity: 0.7;
+}
+
+.muted,
+.rote-empty {
+    opacity: 0.65;
+}
+
+@media (max-width: 1000px) {
+    .rote-header,
+    .phase-summary {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .territory-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .phase-selector {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .rote-planner {
+        padding: 12px;
+    }
+
+    .phase-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .phase-stars {
+        flex-wrap: wrap;
+    }
+}

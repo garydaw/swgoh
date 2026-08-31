@@ -840,4 +840,73 @@ rote.workingOperations = async (path, phase, operation, team_index, ally_code) =
 
   await runSQL(sql, [ally_code, path, phase, operation, team_index]);
 }
+
+rote.getConfig = async () => {
+
+  let config = {};
+  config.operationValues = {
+    1: 10000000,
+    2: 11000000,
+    3: 13200000,
+    4: 18500000,
+    5: 33250000,
+    6: 86500000
+  };
+
+  let sql = "";
+  sql += "SELECT path, phase, planet, star_1, star_2, star_3 ";
+  sql += "FROM rote_planets ";
+  sql += "ORDER BY path, phase ";
+
+  const rows= await runSQL(sql, []);
+
+  config.planets = {
+    light: {},
+    dark: {},
+    neutral: {}
+  };
+
+  for(let p = 0; p < rows.length; p++){
+    config.planets[rows[p].path][rows[p].planet] = {
+      star_1: rows[p].star_1,
+      star_2: rows[p].star_2,
+      star_3: rows[p].star_3
+    };
+  }
+
+  return config;
+}
+
+rote.getGuildData = async (ally_code) => {
+
+  let guildData = {};
+  guildData.guildGP = await players.getGuildGP(ally_code);
+
+  let sql = "";
+  sql += "SELECT ro.PATH AS path, ro.PHASE AS planet, ro.operation ";
+  sql += "FROM rote_operation ro ";
+  sql += "INNER JOIN player p ";
+  sql += "	ON p.ally_code = ro.ally_code ";
+  sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
+  sql += "GROUP BY ro.PATH, ro.PHASE, ro.operation ";
+  sql += "HAVING COUNT(*) = 15 ";
+  sql += "ORDER BY ro.PATH, ro.PHASE, ro.operation ";
+
+  const rows = await runSQL(sql, [ally_code]);
+
+  for (const row of rows) {
+    if (!guildData[row.path]) {
+      guildData[row.path] = {};
+    }
+
+    if (!guildData[row.path][row.planet]) {
+      guildData[row.path][row.planet] = [];
+    }
+
+    guildData[row.path][row.planet].push(row.operation);
+  }
+
+  return guildData;
+}
+
 export default rote;

@@ -21,11 +21,48 @@ migrations.run = async (version) => {
         case "5":
             await versionFive();
             break;
+        case "6":
+            await versionSix();
+            break;
         default:
             console.log("doh!");
     }
 
-} 
+}
+
+async function versionSix (){
+    console.log("add stars to rote_planets");
+    await runSQL("ALTER TABLE rote_planets ADD IF NOT EXISTS star_1 INT NOT NULL DEFAULT 0");
+    await runSQL("ALTER TABLE rote_planets ADD IF NOT EXISTS star_2 INT NOT NULL DEFAULT 0");
+    await runSQL("ALTER TABLE rote_planets ADD IF NOT EXISTS star_3 INT NOT NULL DEFAULT 0");
+
+    console.log("add star values to rote_planets");
+    await runSQL("UPDATE rote_planets SET star_1 = 116000000, star_2 = 186000000, star_3 = 248000000 WHERE path = 'dark' AND phase = 1");
+    await runSQL("UPDATE rote_planets SET star_1 = 112000000, star_2 = 179000000, star_3 = 238000000 WHERE path = 'neutral' AND phase = 1");
+    await runSQL("UPDATE rote_planets SET star_1 = 116000000, star_2 = 186000000, star_3 = 248000000 WHERE path = 'light' AND phase = 1");
+
+    await runSQL("UPDATE rote_planets SET star_1 = 148000000, star_2 = 237000000, star_3 = 316000000 WHERE path = 'dark' AND phase = 2");
+    await runSQL("UPDATE rote_planets SET star_1 = 148000000, star_2 = 237000000, star_3 = 316000000 WHERE path = 'neutral' AND phase = 2");
+    await runSQL("UPDATE rote_planets SET star_1 = 142000000, star_2 = 228000000, star_3 = 304000000 WHERE path = 'light' AND phase = 2");
+
+    await runSQL("UPDATE rote_planets SET star_1 = 159000000, star_2 = 254000000, star_3 = 339000000 WHERE path = 'dark' AND phase = 3");
+    await runSQL("UPDATE rote_planets SET star_1 = 191000000, star_2 = 306000000, star_3 = 407000000 WHERE path = 'neutral' AND phase = 3");
+    await runSQL("UPDATE rote_planets SET star_1 = 191000000, star_2 = 306000000, star_3 = 407000000 WHERE path = 'light' AND phase = 3");
+
+    await runSQL("UPDATE rote_planets SET star_1 = 235000000, star_2 = 400000000, star_3 = 500000000 WHERE path = 'dark' AND phase = 4");
+    await runSQL("UPDATE rote_planets SET star_1 = 235000000, star_2 = 400000000, star_3 = 500000000 WHERE path = 'neutral' AND phase = 4");
+    await runSQL("UPDATE rote_planets SET star_1 = 247000000, star_2 = 420000000, star_3 = 525000000 WHERE path = 'light' AND phase = 4");
+
+    await runSQL("UPDATE rote_planets SET star_1 = 341000000, star_2 = 620000000, star_3 = 730000000 WHERE path = 'dark' AND phase = 5");
+    await runSQL("UPDATE rote_planets SET star_1 = 341000000, star_2 = 620000000, star_3 = 730000000 WHERE path = 'neutral' AND phase = 5");
+    await runSQL("UPDATE rote_planets SET star_1 = 341000000, star_2 = 620000000, star_3 = 730000000 WHERE path = 'light' AND phase = 5");
+
+    await runSQL("UPDATE rote_planets SET star_1 = 583000000, star_2 = 1050000000, star_3 = 1240000000 WHERE path = 'dark' AND phase = 6");
+    await runSQL("UPDATE rote_planets SET star_1 = 583000000, star_2 = 1050000000, star_3 = 1240000000 WHERE path = 'neutral' AND phase = 6");
+    await runSQL("UPDATE rote_planets SET star_1 = 556000000, star_2 = 1010000000, star_3 = 1180000000 WHERE path = 'light' AND phase = 6");
+
+}
+
 async function versionFive (){
     console.log("add refresh date to player");
     await runSQL("ALTER TABLE player ADD IF NOT EXISTS refreshed DATE NOT NULL DEFAULT '1900-01-01'");

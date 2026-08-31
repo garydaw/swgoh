@@ -239,5 +239,18 @@ players.refreshAllies = async (guild_ally_codes) => {
     }
 }
 
+players.getGuildGP = async (ally_code) => {
+
+    let sql = "";
+    sql += "SELECT SUM(pu.power) as guild_gp ";
+    sql += "FROM player_unit pu ";
+    sql += "JOIN player p ON pu.ally_code = p.ally_code ";
+    sql += "WHERE p.guild_id = ( SELECT guild_id FROM player WHERE ally_code = ?) ";
+
+    const rows= await runSQL(sql, [ally_code]);
+
+    return rows[0].guild_gp;
+}
+
 
 export default players;
