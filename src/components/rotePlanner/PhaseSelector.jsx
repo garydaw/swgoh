@@ -5,29 +5,28 @@ export function PhaseSelector({
     onChange,
 }) {
     return (
-        <nav className="phase-selector">
-            {phases.map(phase => {
-                const result = results.find(
-                    item => Number(item.phaseId) === Number(phase.id)
+        <div className="phase-selector">
+            {phases.map((phase) => {
+                const result = results?.find(
+                    (item) => item.id === phase.id
                 );
-
-                const selected =
-                    Number(currentPhase) === Number(phase.id);
 
                 return (
                     <button
                         key={phase.id}
                         type="button"
-                        className={selected ? "selected" : ""}
+                        className={`phase-selector__button ${
+                            Number(currentPhase) === Number(phase.id)
+                                ? "is-active"
+                                : ""
+                        }`}
                         onClick={() => onChange(phase.id)}
                     >
-                        <span>{phase.name ?? `Phase ${phase.id}`}</span>
-                        <strong>
-                            ⭐ {result?.totalStars ?? 0}
-                        </strong>
+                        <span>Phase {phase.id}</span>
+                        <strong>{result?.stars ?? 0} / 9 ⭐</strong>
                     </button>
                 );
             })}
-        </nav>
+        </div>
     );
 }

@@ -1,14 +1,13 @@
-import { useMemo } from "react";
 import { useLoaderData } from "react-router-dom";
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from "../helpers/ApiRequest";
 
 import { RoteHeader } from "../components/rotePlanner/RoteHeader";
 import { PhaseSelector } from "../components/rotePlanner/PhaseSelector";
 import { PhaseSummary } from "../components/rotePlanner/PhaseSummary";
 import { TerritoryColumn } from "../components/rotePlanner/TerritoryColumn";
 import { PreloadPanel } from "../components/rotePlanner/PreloadPanel";
-import { useRotePlanner } from "../rote-planner/hooks/useRotePlanner";
-import { ALIGNMENTS } from "../rote-planner/data/rotePlannerDefaults";
+import { useRotePlanner } from "..//hooks/useRotePlanner";
+import { ALIGNMENTS } from "../helpers/rotePlannerDefaults";
 
 import "../css/rotePlanner.css";
 
@@ -19,25 +18,18 @@ export async function rotePlannerLoader({ params, request }) {
         apiRequest("rote/guildData", true, "GET"),
     ]);
 
-    return {
-        planets,
-        config,
-        guildData: guildData,
-    };
+    return { planets, config, guildData };
+}
+
+export function twcountersLoader({ params, request }) {
+    return apiRequest("twcounters/", true, "GET");
 }
 
 export default function RotePlanner() {
-    const loaderData = useLoaderData();
+    const { planets, config, guildData } = useLoaderData();
 
-    const guildGP = Number(
-        loaderData?.guildData?.guildGP ??
-        0
-    );
-
-    const guildData = loaderData?.guildData ?? {};
-
-    const operationValues =
-        loaderData?.config?.operationValues ?? {};
+    const guildGP = Number(guildData?.guildGP ?? 0);
+    const operationValues = config?.operationValues ?? {};
 
     const {
         planner,
@@ -49,19 +41,14 @@ export default function RotePlanner() {
         updatePlanet,
         resetPlanner,
     } = useRotePlanner({
-        roteData: loaderData?.planets,
-        config: loaderData?.config,
+        planets,
+        config,
         guildData,
         guildGP,
-        operationValues,
     });
 
-    const currentPlanetPlans = planner.planets;
-
-    const targetStars = useMemo(
-        () => roteData.phases.length * 9,
-        [roteData.phases.length]
-    );
+    const availableGP =
+        Math.max(0, guildGP - strategy.totalAllocatedGP);
 
     if (!currentPhase) {
         return (
@@ -78,14 +65,17 @@ export default function RotePlanner() {
             <RoteHeader
                 guildGP={guildGP}
                 projectedStars={strategy.totalStars}
-                targetStars={targetStars}
+                targetStars={strategy.maxStars}
                 remainingGP={strategy.remainingGP}
             />
 
             <div className="planner-toolbar">
-                <span>
-                    {currentPhase.name ?? `Phase ${currentPhase.id}`}
-                </span>
+                <div>
+                    <strong>{currentPhase.name}</strong>
+                    <span className="planner-toolbar__hint">
+                        Configure operations, missions, deployment and preload.
+                    </span>
+                </div>
 
                 <button
                     type="button"
@@ -109,21 +99,14 @@ export default function RotePlanner() {
             />
 
             <div className="territory-grid">
-                {ALIGNMENTS.map(alignment => {
+                {ALIGNMENTS.map((alignment) => {
                     const planet = currentPhase[alignment];
 
-                    if (!planet) {
-                        return null;
-                    }
+                    if (!planet) return null;
 
-                    const planetId =
-                        planet.planetId ?? planet.id;
-
-                    const result =
-                        currentPhaseResult?.planets?.[planetId];
-
-                    const plan =
-                        currentPlanetPlans[planetId] ?? {};
+                    const planetId = planet.planetId;
+                    const result = currentPhaseResult?.planets?.[planetId];
+                    const plan = planner.planets[planetId] ?? {};
 
                     return (
                         <TerritoryColumn
@@ -134,11 +117,7 @@ export default function RotePlanner() {
                             plan={plan}
                             guildData={guildData}
                             operationValues={operationValues}
-                            deploymentMax={Math.max(
-                                0,
-                                guildGP - strategy.totalDeployment
-                            )}
-                            preload={result?.preloadGP ?? 0}
+                            availableGP={availableGP}
                             onUpdate={updatePlanet}
                         />
                     );

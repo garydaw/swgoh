@@ -1,41 +1,30 @@
-import { ALIGNMENTS } from "../../rote-planner/data/rotePlannerDefaults";
+function formatGP(value) {
+    return `${(Number(value || 0) / 1_000_000).toFixed(1)}M`;
+}
 
 export function PhaseSummary({ phase, result }) {
+    if (!phase || !result) return null;
+
     return (
         <section className="phase-summary">
             <div>
-                <span className="rote-eyebrow">
-                    {phase?.name ?? `Phase ${phase?.id}`}
-                </span>
-                <h2>Projected result</h2>
+                <span>Phase</span>
+                <strong>{phase.id}</strong>
             </div>
 
-            <div className="phase-stars">
-                {ALIGNMENTS.map(alignment => {
-                    const planet = phase?.[alignment];
+            <div>
+                <span>Stars</span>
+                <strong>{result.stars} / 9 ⭐</strong>
+            </div>
 
-                    if (!planet) {
-                        return null;
-                    }
+            <div>
+                <span>Deployment</span>
+                <strong>{formatGP(result.totalDeployment)}</strong>
+            </div>
 
-                    const id = planet.planetId ?? planet.id;
-                    const stars = result?.planets?.[id]?.stars ?? 0;
-
-                    return (
-                        <div key={alignment}>
-                            <span>{alignment}</span>
-                            <strong>
-                                {"⭐".repeat(stars)}
-                                {"☆".repeat(3 - stars)}
-                            </strong>
-                        </div>
-                    );
-                })}
-
-                <div className="phase-total">
-                    <span>Total</span>
-                    <strong>⭐ {result?.totalStars ?? 0}</strong>
-                </div>
+            <div>
+                <span>Preload</span>
+                <strong>{formatGP(result.totalPreload)}</strong>
             </div>
         </section>
     );

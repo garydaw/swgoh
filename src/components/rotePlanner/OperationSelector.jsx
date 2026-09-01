@@ -1,57 +1,50 @@
+import { OPERATION_IDS } from "../../helpers/rotePlannerDefaults";
+
+function formatGP(value) {
+    const millions = Number(value || 0) / 1_000_000;
+    return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(2)}M`;
+}
+
 export function OperationSelector({
     selected = [],
     available = [],
-    operationPoints = {},
+    operationValues = {},
+    planetLevel,
     onChange,
 }) {
-    function toggle(id) {
-        if (!available.includes(id)) {
-            return;
-        }
+    function toggle(operation) {
+        if (!available.includes(operation)) return;
 
-        const next = selected.includes(id)
-            ? selected.filter(operationId => operationId !== id)
-            : [...selected, id];
+        const next = selected.includes(operation)
+            ? selected.filter((item) => item !== operation)
+            : [...selected, operation].sort((a, b) => a - b);
 
         onChange(next);
     }
 
     return (
-        <div className="operation-selector">
-            <label>Operations</label>
+        <div className="operation-grid">
+            {OPERATION_IDS.map((operation) => {
+                const availableForPlanet = available.includes(operation);
+                const isSelected = selected.includes(operation);
 
-            <div className="operation-grid">
-                {[1, 2, 3, 4, 5, 6].map(id => {
-                    const isAvailable = available.includes(id);
-                    const isSelected = selected.includes(id);
-
-                    return (
-                        <button
-                            key={id}
-                            type="button"
-                            disabled={!isAvailable}
-                            className={isSelected ? "selected" : ""}
-                            onClick={() => toggle(id)}
-                            title={
-                                isAvailable
-                                    ? `Operation ${id}`
-                                    : "Not available to this guild"
-                            }
-                        >
-                            <span>OP {id}</span>
-                            {operationPoints[id] ? (
-                                <small>
-                                    {formatMillions(operationPoints[id])}
-                                </small>
-                            ) : null}
-                        </button>
-                    );
-                })}
-            </div>
+                return (
+                    <button
+                        key={operation}
+                        type="button"
+                        disabled={!availableForPlanet}
+                        className={`operation-button ${
+                            isSelected ? "is-selected" : ""
+                        } ${!availableForPlanet ? "is-disabled" : ""}`}
+                        onClick={() => toggle(operation)}
+                    >
+                        <span>{availableForPlanet ? "OP" : "🔒 OP"} {operation}</span>
+                        <strong>
+                            {formatGP(operationValues[String(planetLevel)])}
+                        </strong>
+                    </button>
+                );
+            })}
         </div>
     );
-}
-
-function formatMillions(value) {
-    return `${Number(value) / 1_000_000}M`;
 }
