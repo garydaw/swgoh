@@ -6,11 +6,8 @@ import { EMPTY_PLAN, ALIGNMENTS } from "../helpers/rotePlannerDefaults";
 function buildInitialPlanner(roteData) {
     const planets = {};
 
-    for (const phase of roteData.phases) {
-        for (const alignment of ALIGNMENTS) {
-            const planet = phase[alignment];
-            if (!planet) continue;
-
+    for (const alignment of ALIGNMENTS) {
+        for (const planet of roteData.planets?.[alignment] ?? []) {
             planets[planet.planetId] = {
                 ...EMPTY_PLAN,
                 operations: [],
@@ -50,13 +47,15 @@ export function useRotePlanner({
         [roteData, planner, guildGP, config]
     );
 
-    const currentPhase =
-        roteData.phases.find((phase) => phase.id === planner.phase) ??
-        roteData.phases[0];
-
+    // Unlike the old implementation, the current phase is the calculated
+    // phase result because its planets depend on progression through earlier
+    // phases.
     const currentPhaseResult =
         strategy.phases.find((phase) => phase.id === planner.phase) ??
+        strategy.phases[0] ??
         null;
+
+    const currentPhase = currentPhaseResult;
 
     function setPhase(phase) {
         setPlanner((current) => ({

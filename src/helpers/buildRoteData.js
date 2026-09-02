@@ -1,41 +1,47 @@
 import { ALIGNMENTS } from "./rotePlannerDefaults";
 
+function normalisePlanetName(name) {
+    return String(name)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
 export function buildRoteData(planets, config) {
-    if (!planets || !config?.planets) {
-        return { phases: [] };
-    }
+    const result = {
+        planets: {
+            dark: [],
+            neutral: [],
+            light: [],
+        },
+        phases: Array.from({ length: 6 }, (_, index) => ({
+            id: index + 1,
+            name: `Phase ${index + 1}`,
+        })),
+    };
 
-    const phases = Array.from({ length: 6 }, (_, index) => {
-        const phase = index + 1;
-        const result = {
-            id: phase,
-            name: `Phase ${phase}`,
-        };
+    for (const alignment of ALIGNMENTS) {
+        const names = planets?.[alignment] ?? [];
+        const configPath = config?.planets?.[alignment] ?? {};
 
-        for (const alignment of ALIGNMENTS) {
-            const name = planets?.[alignment]?.[index];
-            const data = name
-                ? config.planets?.[alignment]?.[name]
-                : null;
+        result.planets[alignment] = names.map((name, index) => {
+            const level = index + 1;
+            const planetConfig = configPath[name] ?? {};
 
-            if (!name || !data) continue;
-
-            result[alignment] = {
-                id: `${alignment}-${name}`,
-                planetId: name,
+            return {
+                planetId: normalisePlanetName(`${alignment}-${name}`),
                 name,
                 alignment,
-                level: phase,
+                level,
                 stars: {
-                    1: Number(data.star_1 ?? 0),
-                    2: Number(data.star_2 ?? 0),
-                    3: Number(data.star_3 ?? 0),
+                    1: Number(planetConfig.star_1 ?? 0),
+                    2: Number(planetConfig.star_2 ?? 0),
+                    3: Number(planetConfig.star_3 ?? 0),
                 },
             };
-        }
+        });
+    }
 
-        return result;
-    });
-
-    return { phases };
+    return result;
 }

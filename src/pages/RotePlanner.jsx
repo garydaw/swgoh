@@ -47,8 +47,6 @@ export default function RotePlanner() {
         guildGP,
     });
 
-    const availableGP =
-        Math.max(0, guildGP - strategy.totalAllocatedGP);
 
     if (!currentPhase) {
         return (
@@ -100,13 +98,27 @@ export default function RotePlanner() {
 
             <div className="territory-grid">
                 {ALIGNMENTS.map((alignment) => {
-                    const planet = currentPhase[alignment];
+                    const planet = currentPhase?.activePlanets?.[alignment];
 
                     if (!planet) return null;
 
                     const planetId = planet.planetId;
                     const result = currentPhaseResult?.planets?.[planetId];
                     const plan = planner.planets[planetId] ?? {};
+
+                    // GP is a phase budget. Work out how much of this phase's
+                    // budget is available to this planet after excluding its
+                    // own current deployment/preload.
+                    const phaseAllocatedGP = Number(
+                        currentPhaseResult?.totalAllocatedGP ?? 0
+                    );
+                    const ownAllocatedGP =
+                        Math.max(0, Number(plan.deployment ?? 0)) +
+                        Math.max(0, Number(plan.preload ?? 0));
+                    const availableGP = Math.max(
+                        0,
+                        guildGP - (phaseAllocatedGP - ownAllocatedGP)
+                    );
 
                     return (
                         <TerritoryColumn
@@ -118,6 +130,7 @@ export default function RotePlanner() {
                             guildData={guildData}
                             operationValues={operationValues}
                             availableGP={availableGP}
+                            nextPlanet={currentPhaseResult?.nextPlanets?.[alignment] ?? null}
                             onUpdate={updatePlanet}
                         />
                     );

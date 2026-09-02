@@ -38,7 +38,7 @@ export function OperationSelector({
                         } ${!availableForPlanet ? "is-disabled" : ""}`}
                         onClick={() => toggle(operation)}
                     >
-                        <span>{availableForPlanet ? "OP" : "🔒 OP"} {operation}</span>
+                        <span>{availableForPlanet ? "OP" : "🔒 OP"} {operation} - </span>
                         <strong>
                             {formatGP(operationValues[String(planetLevel)])}
                         </strong>
