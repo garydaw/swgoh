@@ -60,12 +60,7 @@ export default function RotePlanner() {
 
     return (
         <main className="rote-planner">
-            <RoteHeader
-                guildGP={guildGP}
-                projectedStars={strategy.totalStars}
-                targetStars={strategy.maxStars}
-                remainingGP={strategy.remainingGP}
-            />
+            <RoteHeader/>
 
             <div className="planner-toolbar">
                 <div>
@@ -94,6 +89,11 @@ export default function RotePlanner() {
             <PhaseSummary
                 phase={currentPhase}
                 result={currentPhaseResult}
+                guildGP={guildGP}
+                projectedStars={strategy.totalStars}
+                targetStars={strategy.maxStars}
+                remainingGP={strategy.remainingGP}
+            
             />
 
             <div className="territory-grid">
