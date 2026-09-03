@@ -78,9 +78,22 @@ export function TerritoryColumn({
             ? Math.max(0, Number(nextPlanet.stars?.[1] ?? 0) - 1)
             : 0;
 
-    const maxDeployment = Math.max(
+    const threeStarThreshold = Number(planet.stars?.[3] ?? 0);
+
+    const pointsBeforeDeployment =
+        Number(result?.operationPoints ?? 0) +
+        Number(result?.missionPoints ?? 0) +
+        Number(result?.preloadGP ?? 0) +
+        enteredPreload;
+
+    const GPToThreeStars = Math.max(
         0,
-        availableGP - Math.min(enteredPreload, maxPreload)
+        threeStarThreshold - pointsBeforeDeployment
+    );
+
+    const maxDeployment = Math.min(
+        availableGP + deploymentGP,
+        GPToThreeStars
     );
 
     const preload = Math.min(

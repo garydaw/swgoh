@@ -7,8 +7,7 @@ export function PhaseSummary({
     result,
     guildGP,
     projectedStars,
-    targetStars,
-    remainingGP, }) {
+    targetStars }) {
     if (!phase || !result) return null;
 
     return (
@@ -40,23 +39,18 @@ export function PhaseSummary({
             <div className="phase-summary__planner">
                 <section className="phase-summary">
                     <div>
-                        <span>Guild GP</span>
-                        <strong>{formatGP(guildGP)}</strong>
-                    </div>
-
-                    <div>
                         <span>Projected Stars</span>
                         <strong>{projectedStars} / {targetStars}</strong>
                     </div>
 
                     <div>
                         <span>GP Used</span>
-                        <strong>{formatGP(guildGP - remainingGP)}</strong>
+                        <strong>{formatGP(guildGP - result.remainingGP)}</strong>
                     </div>
 
                     <div>
                         <span>GP Remaining</span>
-                        <strong>{formatGP(remainingGP)}</strong>
+                        <strong>{formatGP(result.remainingGP)}</strong>
                     </div>
                 </section>
             </div>
