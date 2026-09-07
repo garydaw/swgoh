@@ -1,7 +1,13 @@
 import { ALIGNMENTS } from "./rotePlannerDefaults";
-import { calculatePlanet } from "./calculatePlanet";
+import { calculatePlanet, getAvailableOperations } from "./calculatePlanet";
 
-export function calculateStrategy(roteData, planner, guildGP, operationValues) {
+export function calculateStrategy(
+    roteData,
+    planner,
+    guildGP,
+    operationValues,
+    guildData
+) {
     let totalStars = 0;
     let totalAllocatedGP = 0;
     const phaseResults = [];
@@ -16,7 +22,11 @@ export function calculateStrategy(roteData, planner, guildGP, operationValues) {
         light: 0,
     };
 
-    // GP already sitting on the current planet from previous phases.
+    // Operations already completed on a planet in earlier phases.
+    // Operations are one-time only, even when the planet carries over.
+    const usedOperations = {};
+
+    // GP/mission points already sitting on the current planet from previous phases.
     // This is inherited preload: it contributes points to the planet but
     // does NOT consume the new phase's guild GP budget.
     const inheritedPreload = {
@@ -53,17 +63,56 @@ export function calculateStrategy(roteData, planner, guildGP, operationValues) {
                 Number(inheritedPreload[alignment] ?? 0)
             );
 
+            const availableOperations = getAvailableOperations(
+                guildData,
+                planet
+            );
+            const previouslyUsedOperations = new Set(
+                usedOperations[planetId] ?? []
+            );
+
+            // Operations are one-time only. If this planet carries into a
+            // later phase, operations completed in an earlier phase are
+            // removed from the current phase's selectable/calculated list.
+            const validOperations = (plan.operations ?? [])
+                .map(Number)
+                .filter(
+                    (operation) =>
+                        availableOperations.includes(operation) &&
+                        !previouslyUsedOperations.has(operation)
+                );
+
+            const calculationPlan = {
+                ...plan,
+                operations: validOperations,
+            };
+
             // Preload is already on this planet before the new phase starts.
-            // calculatePlanet includes it in the planet's points, but it is
-            // deliberately NOT part of phaseAllocatedGP.
+            // It includes both deployment GP and mission points carried from
+            // previous phases. It contributes to the planet's points but does
+            // not consume the new phase's guild GP budget.
             const result = calculatePlanet(
                 planet,
-                plan,
+                calculationPlan,
                 operationValues,
                 preload
             );
 
+            result.availableOperations = availableOperations.filter(
+                (operation) => !previouslyUsedOperations.has(operation)
+            );
+            result.selectedOperations = validOperations;
+
             planets[planetId] = result;
+
+            // Record operations completed on this planet. They remain
+            // unavailable if the planet carries into the next phase.
+            usedOperations[planetId] = [
+                ...new Set([
+                    ...(usedOperations[planetId] ?? []),
+                    ...validOperations,
+                ]),
+            ];
             phaseStars += result.stars;
             phaseDeployment += result.deploymentGP;
 
@@ -79,14 +128,16 @@ export function calculateStrategy(roteData, planner, guildGP, operationValues) {
                     activeIndexes[alignment] = index + 1;
                 }
             } else {
-                // No star means we stay on this planet next phase. Everything
-                // deployed onto it is now effectively preload, including any
-                // preload that was already there. It has already been paid for
-                // in earlier phases, so it is not charged again.
-                inheritedPreload[alignment] =
-                    preload + result.deploymentGP;
+                // No star means we stay on this planet next phase. Both
+                // deployment GP and mission points become preload. Existing
+                // preload has already been paid for in earlier phases, so it
+                // is carried forward without consuming the new phase budget.
+                const newPreload =
+                    result.deploymentGP + result.missionPoints;
 
-                phasePreload += result.deploymentGP;
+                inheritedPreload[alignment] = preload + newPreload;
+
+                phasePreload += newPreload;
             }
         }
 

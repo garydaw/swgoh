@@ -60,8 +60,8 @@ export function TerritoryColumn({
     nextPlanet,
     onUpdate,
 }) {
-    const available = getAvailableOperations(guildData, planet);
-    const selectedOperations = plan.operations ?? [];
+    const available = result?.availableOperations ?? getAvailableOperations(guildData, planet);
+    const selectedOperations = result?.selectedOperations ?? [];
 
     const update = (changes) => onUpdate(planet.planetId, changes);
 

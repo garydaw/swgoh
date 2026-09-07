@@ -51,7 +51,8 @@ export function useRotePlanner({
                 roteData,
                 planner,
                 guildGP,
-                config?.operationValues ?? {}
+                config?.operationValues ?? {},
+                guildData
             ),
         [roteData, planner, guildGP, config]
     );
