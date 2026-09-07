@@ -63,28 +63,19 @@ export function TerritoryColumn({
     const available = getAvailableOperations(guildData, planet);
     const selectedOperations = plan.operations ?? [];
 
-    const update = (changes) =>
-        onUpdate(planet.planetId, changes);
+    const update = (changes) => onUpdate(planet.planetId, changes);
 
     const deploymentGP = Math.max(0, Number(plan.deployment ?? 0));
-    const enteredPreload = Math.max(0, Number(plan.preload ?? 0));
+    const inheritedPreload = Math.max(0, Number(result?.preloadGP ?? 0));
 
-    // Preload is placed on the next planet, not on the planet currently
-    // earning the stars. It is therefore safe only while the current planet
-    // has earned at least one star, and it must stay below the next planet's
-    // first-star threshold.
-    const maxPreload =
-        result?.stars >= 1 && nextPlanet
-            ? Math.max(0, Number(nextPlanet.stars?.[1] ?? 0) - 1)
-            : 0;
-
+    // Deployment is limited by both the remaining phase budget and the amount
+    // actually needed to reach 3 stars. Inherited preload counts towards the
+    // planet's points, but does not consume this phase's GP budget.
     const threeStarThreshold = Number(planet.stars?.[3] ?? 0);
-
     const pointsBeforeDeployment =
         Number(result?.operationPoints ?? 0) +
         Number(result?.missionPoints ?? 0) +
-        Number(result?.preloadGP ?? 0) +
-        enteredPreload;
+        inheritedPreload;
 
     const GPToThreeStars = Math.max(
         0,
@@ -92,15 +83,11 @@ export function TerritoryColumn({
     );
 
     const maxDeployment = Math.min(
-        availableGP + deploymentGP,
+        Math.max(0, Number(availableGP ?? 0)),
         GPToThreeStars
     );
 
-    const preload = Math.min(
-        enteredPreload,
-        maxPreload,
-        Math.max(0, availableGP - deploymentGP)
-    );
+    const displayedDeployment = Math.min(deploymentGP, maxDeployment);
 
     return (
         <section className={`territory-column territory-column--${alignment}`}>
@@ -120,6 +107,13 @@ export function TerritoryColumn({
                     </span>
                 )}
             </div>
+
+            {inheritedPreload > 0 && (
+                <div className="inherited-preload">
+                    <span>Inherited preload</span>
+                    <strong>{formatGP(inheritedPreload)}</strong>
+                </div>
+            )}
 
             <label className="field-label">Operations</label>
             <OperationSelector
@@ -171,14 +165,15 @@ export function TerritoryColumn({
                         min="0"
                         max={maxDeployment / 1_000_000}
                         step="1"
-                        value={deploymentGP / 1_000_000}
+                        value={displayedDeployment / 1_000_000}
                         onChange={(event) =>
                             update({
                                 deployment: Math.min(
                                     maxDeployment,
                                     Math.max(
                                         0,
-                                        (Number(event.target.value) || 0) * 1_000_000
+                                        (Number(event.target.value) || 0) *
+                                            1_000_000
                                     )
                                 ),
                             })
@@ -212,47 +207,6 @@ export function TerritoryColumn({
             </div>
 
             <StarProgress result={result} planet={planet} />
-
-            {result?.stars >= 1 && nextPlanet && (
-                <div className="preload-box">
-                    <div>
-                        <strong>Preload next planet</strong>
-                        <span>
-                            Maximum safe preload: {formatGP(maxPreload)}
-                        </span>
-                    </div>
-
-                    <input
-                        className="number-input"
-                        type="number"
-                        min="0"
-                        max={Math.max(
-                            0,
-                            Math.min(
-                                maxPreload,
-                                availableGP - deploymentGP
-                            )
-                        )}
-                        step="1000000"
-                        value={preload}
-                        onChange={(event) =>
-                            update({
-                                preload: Math.min(
-                                    maxPreload,
-                                    Math.max(
-                                        0,
-                                        availableGP - deploymentGP
-                                    ),
-                                    Math.max(
-                                        0,
-                                        Number(event.target.value) || 0
-                                    )
-                                ),
-                            })
-                        }
-                    />
-                </div>
-            )}
         </section>
     );
 }

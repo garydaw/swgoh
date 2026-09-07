@@ -5,7 +5,6 @@ import { RoteHeader } from "../components/rotePlanner/RoteHeader";
 import { PhaseSelector } from "../components/rotePlanner/PhaseSelector";
 import { PhaseSummary } from "../components/rotePlanner/PhaseSummary";
 import { TerritoryColumn } from "../components/rotePlanner/TerritoryColumn";
-import { PreloadPanel } from "../components/rotePlanner/PreloadPanel";
 import { useRotePlanner } from "..//hooks/useRotePlanner";
 import { ALIGNMENTS } from "../helpers/rotePlannerDefaults";
 
@@ -66,7 +65,7 @@ export default function RotePlanner() {
                 <div>
                     <strong>{currentPhase.name}</strong>
                     <span className="planner-toolbar__hint">
-                        Configure operations, missions, deployment and preload.
+                        Configure operations, missions and deployment.
                     </span>
                 </div>
 
@@ -103,17 +102,18 @@ export default function RotePlanner() {
 
                     const planetId = planet.planetId;
                     const result = currentPhaseResult?.planets?.[planetId];
-                    const plan = planner.planets[planetId] ?? {};
+                    const plan = planner.planets?.[planner.phase]?.[planetId] ?? {};
 
-                    // GP is a phase budget. Work out how much of this phase's
-                    // budget is available to this planet after excluding its
-                    // own current deployment/preload.
+                    // GP is a fresh budget for the current phase. Exclude this
+                    // planet's existing deployment so its input can be edited
+                    // without reducing the amount available to itself.
                     const phaseAllocatedGP = Number(
                         currentPhaseResult?.totalAllocatedGP ?? 0
                     );
-                    const ownAllocatedGP =
-                        Math.max(0, Number(plan.deployment ?? 0)) +
-                        Math.max(0, Number(plan.preload ?? 0));
+                    const ownAllocatedGP = Math.max(
+                        0,
+                        Number(plan.deployment ?? 0)
+                    );
                     const availableGP = Math.max(
                         0,
                         guildGP - (phaseAllocatedGP - ownAllocatedGP)
@@ -136,10 +136,6 @@ export default function RotePlanner() {
                 })}
             </div>
 
-            <PreloadPanel
-                phase={currentPhase}
-                result={currentPhaseResult}
-            />
         </main>
     );
 }
