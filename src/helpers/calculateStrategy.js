@@ -128,12 +128,15 @@ export function calculateStrategy(
                     activeIndexes[alignment] = index + 1;
                 }
             } else {
-                // No star means we stay on this planet next phase. Both
-                // deployment GP and mission points become preload. Existing
-                // preload has already been paid for in earlier phases, so it
-                // is carried forward without consuming the new phase budget.
+                // No star means we stay on this planet next phase. Operation
+                // points, deployment GP and mission points from this phase all
+                // become preload. Existing preload has already been paid for
+                // in earlier phases, so it is carried forward without consuming
+                // the new phase budget.
                 const newPreload =
-                    result.deploymentGP + result.missionPoints;
+                    result.operationPoints +
+                    result.deploymentGP +
+                    result.missionPoints;
 
                 inheritedPreload[alignment] = preload + newPreload;
 
@@ -152,8 +155,9 @@ export function calculateStrategy(
             phaseBudgetGP: phaseBudget,
             totalAllocatedGP: phaseAllocatedGP,
             totalDeploymentGP: phaseDeployment,
-            // New preload created by this phase. It is simply deployment on
-            // planets that did not earn a star.
+            // New preload created by this phase. If a planet earns no star,
+            // its operation points, deployment GP and mission points all
+            // remain on that planet and carry into the next phase.
             totalPreload: phasePreload,
             remainingGP: Math.max(0, phaseBudget - phaseAllocatedGP),
             overBudgetGP: Math.max(0, phaseAllocatedGP - phaseBudget),
