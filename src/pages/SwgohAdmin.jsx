@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from "react-router-dom";
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 
 export default function SwgohAdmin() {
   const [jsonText, setJsonText] = useState('');

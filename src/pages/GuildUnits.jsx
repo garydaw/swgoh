@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from 'react'
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 import { GlobalContext } from '../store/GlobalStore';
 import SearchableList from '../components/general/SearchableList';
 import {  useSearchParams } from 'react-router-dom';

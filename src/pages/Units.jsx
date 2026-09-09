@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import { useLoaderData, useNavigate } from 'react-router'
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 import UnitBasic from '../components/units/UnitBasic';
 import { unitSearch } from '../helpers/UnitSearch';
 import CharacterDetails from '../components/units/CharacterDetails';

@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import { useAuth } from '../../store/useAuth';
-import { apiRequest } from '../../helpers/ApiRequest';
+import { apiRequest } from '../../helpers/apiRequest';
 
 export default function LogoutButton() {
   const {logout} = useAuth();

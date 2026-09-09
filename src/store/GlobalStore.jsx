@@ -1,5 +1,5 @@
 import { createContext, useEffect,useState } from "react";
-import { apiRequest } from "../helpers/ApiRequest";
+import { apiRequest } from "../helpers/apiRequest";
 import { useAuth } from '../store/useAuth';
 
 export const GlobalContext = createContext([]);

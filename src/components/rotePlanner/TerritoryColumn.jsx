@@ -108,13 +108,6 @@ export function TerritoryColumn({
                 )}
             </div>
 
-            {inheritedPreload > 0 && (
-                <div className="inherited-preload">
-                    <span>Inherited preload</span>
-                    <strong>{formatGP(inheritedPreload)}</strong>
-                </div>
-            )}
-
             <label className="field-label">Operations</label>
             <OperationSelector
                 selected={selectedOperations}

@@ -310,26 +310,6 @@
     opacity: .45;
 }
 
-.inherited-preload {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin: 8px 0 4px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    background: rgba(127, 127, 127, .08);
-    font-size: .8rem;
-}
-
-.inherited-preload span {
-    opacity: .65;
-}
-
-.inherited-preload strong {
-    font-size: .85rem;
-}
-
 .rote-empty {
     padding: 40px;
     text-align: center;

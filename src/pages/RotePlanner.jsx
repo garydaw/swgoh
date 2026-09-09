@@ -1,11 +1,11 @@
 import { useLoaderData } from "react-router-dom";
-import { apiRequest } from "../helpers/ApiRequest";
+import { apiRequest } from "../helpers/apiRequest";
 
 import { RoteHeader } from "../components/rotePlanner/RoteHeader";
 import { PhaseSelector } from "../components/rotePlanner/PhaseSelector";
 import { PhaseSummary } from "../components/rotePlanner/PhaseSummary";
 import { TerritoryColumn } from "../components/rotePlanner/TerritoryColumn";
-import { useRotePlanner } from "..//hooks/useRotePlanner";
+import { useRotePlanner } from "../hooks/useRotePlanner";
 import { ALIGNMENTS } from "../helpers/rotePlannerDefaults";
 
 import "../css/rotePlanner.css";
