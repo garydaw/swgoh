@@ -26,9 +26,9 @@ export function calculateStrategy(
     // Operations are one-time only, even when the planet carries over.
     const usedOperations = {};
 
-    // GP/mission points already sitting on the current planet from previous phases.
-    // This is inherited preload: it contributes points to the planet but
-    // does NOT consume the new phase's guild GP budget.
+    // GP/mission points already sitting on the current planet from previous
+    // phases. This is inherited preload: it contributes points to the planet
+    // but does NOT consume the new phase's guild GP budget.
     const inheritedPreload = {
         dark: 0,
         neutral: 0,
@@ -58,6 +58,7 @@ export function calculateStrategy(
             const planetId = planet.planetId;
             const phasePlans = planner.planets?.[phase.id] ?? {};
             const plan = phasePlans[planetId] ?? {};
+
             const preload = Math.max(
                 0,
                 Number(inheritedPreload[alignment] ?? 0)
@@ -67,13 +68,15 @@ export function calculateStrategy(
                 guildData,
                 planet
             );
+
             const previouslyUsedOperations = new Set(
                 usedOperations[planetId] ?? []
             );
 
-            // Operations are one-time only. If this planet carries into a
-            // later phase, operations completed in an earlier phase are
-            // removed from the current phase's selectable/calculated list.
+            // Only calculate operations that:
+            // 1. Exist for this planet.
+            // 2. Are selected in the current plan.
+            // 3. Have not already been completed in an earlier phase.
             const validOperations = (plan.operations ?? [])
                 .map(Number)
                 .filter(
@@ -82,27 +85,14 @@ export function calculateStrategy(
                         !previouslyUsedOperations.has(operation)
                 );
 
-            const requestedDeployment = Math.max(
-                0,
-                Number(plan.deployment ?? 0)
-            );
-
-            const deploymentGP = Math.min(
-                requestedDeployment,
-                availableDeploymentGP,
-                GPToThreeStars
-            );
-
             const calculationPlan = {
                 ...plan,
                 operations: validOperations,
-                deployment: deploymentGP,
             };
 
-            // Preload is already on this planet before the new phase starts.
-            // It includes both deployment GP and mission points carried from
-            // previous phases. It contributes to the planet's points but does
-            // not consume the new phase's guild GP budget.
+            // Preload is already sitting on this planet before the new phase
+            // starts. It contributes to the planet's points but does not
+            // consume the new phase's guild GP budget.
             const result = calculatePlanet(
                 planet,
                 calculationPlan,
@@ -113,18 +103,20 @@ export function calculateStrategy(
             result.availableOperations = availableOperations.filter(
                 (operation) => !previouslyUsedOperations.has(operation)
             );
+
             result.selectedOperations = validOperations;
 
             planets[planetId] = result;
 
-            // Record operations completed on this planet. They remain
-            // unavailable if the planet carries into the next phase.
+            // Record operations completed on this planet.
+            // They remain unavailable if the planet carries into the next phase.
             usedOperations[planetId] = [
                 ...new Set([
                     ...(usedOperations[planetId] ?? []),
                     ...validOperations,
                 ]),
             ];
+
             phaseStars += result.stars;
             phaseDeployment += result.deploymentGP;
 
@@ -140,11 +132,14 @@ export function calculateStrategy(
                     activeIndexes[alignment] = index + 1;
                 }
             } else {
-                // No star means we stay on this planet next phase. Operation
-                // points, deployment GP and mission points from this phase all
-                // become preload. Existing preload has already been paid for
-                // in earlier phases, so it is carried forward without consuming
-                // the new phase budget.
+                // No star means we stay on this planet next phase.
+                //
+                // Operation points, deployment GP and mission points from this
+                // phase all become preload.
+                //
+                // Existing preload has already been accounted for in earlier
+                // phases, so it is carried forward without consuming the new
+                // phase's budget.
                 const newPreload =
                     result.operationPoints +
                     result.deploymentGP +
@@ -167,12 +162,23 @@ export function calculateStrategy(
             phaseBudgetGP: phaseBudget,
             totalAllocatedGP: phaseAllocatedGP,
             totalDeploymentGP: phaseDeployment,
-            // New preload created by this phase. If a planet earns no star,
-            // its operation points, deployment GP and mission points all
-            // remain on that planet and carry into the next phase.
+
+            // New preload created by this phase.
+            // If a planet earns no star, its operation points, deployment GP
+            // and mission points all remain on that planet and carry into the
+            // next phase.
             totalPreload: phasePreload,
-            remainingGP: Math.max(0, phaseBudget - phaseAllocatedGP),
-            overBudgetGP: Math.max(0, phaseAllocatedGP - phaseBudget),
+
+            remainingGP: Math.max(
+                0,
+                phaseBudget - phaseAllocatedGP
+            ),
+
+            overBudgetGP: Math.max(
+                0,
+                phaseAllocatedGP - phaseBudget
+            ),
+
             planets,
             activePlanets,
             nextPlanets,
@@ -183,11 +189,13 @@ export function calculateStrategy(
         totalStars,
         maxStars: roteData.phases.length * 9,
         totalAllocatedGP,
+
         // Informational only: each phase receives a fresh guild GP allowance.
         remainingGP: Math.max(
             0,
             phaseResults.at(-1)?.remainingGP ?? phaseBudget
         ),
+
         phases: phaseResults,
     };
 }
