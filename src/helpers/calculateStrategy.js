@@ -82,9 +82,21 @@ export function calculateStrategy(
                         !previouslyUsedOperations.has(operation)
                 );
 
+            const requestedDeployment = Math.max(
+                0,
+                Number(plan.deployment ?? 0)
+            );
+
+            const deploymentGP = Math.min(
+                requestedDeployment,
+                availableDeploymentGP,
+                GPToThreeStars
+            );
+
             const calculationPlan = {
                 ...plan,
                 operations: validOperations,
+                deployment: deploymentGP,
             };
 
             // Preload is already on this planet before the new phase starts.
