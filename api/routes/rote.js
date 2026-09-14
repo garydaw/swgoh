@@ -1,6 +1,7 @@
 import express from 'express';
 const roteRouter = express.Router();
 import rote from "../model/rote.js";
+import rote_planner from "../model/rote_planner.js";
 
 
 roteRouter.get('/planets', async (req, res) => {
@@ -101,6 +102,33 @@ roteRouter.get('/guildData', async (req, res) => {
     res.json(guildData);
   
 });
+
+roteRouter.get('/plans', async (req, res) => {
+
+    const plans = await rote_planner.getPlans();
+    res.json(plans);
+})
+
+roteRouter.post('/plans', async (req, res) => {
+    const planData = req.body;
+    const newPlan = await rote_planner.createPlan(planData, req.query.ally_code);
+    res.json(newPlan);
+})
+
+roteRouter.put('/plans/:id', async (req, res) => {
+
+    const id = req.params.id;
+    const planData = req.body;
+    const newPlan = await rote_planner.updatePlan(id, planData, req.query.ally_code);
+    res.json(newPlan);
+})
+
+roteRouter.delete('/plans/:id', async (req, res) => {
+
+    const id = req.params.id;
+    const result = await rote_planner.deletePlan(id);
+    res.json(result);
+})
 
 
 export default roteRouter;

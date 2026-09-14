@@ -338,3 +338,111 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.saved-plans {
+    margin-top: 16px;
+    padding: 12px 18px;
+    border: 1px solid rgba(127, 127, 127, .25);
+    border-radius: 14px;
+    background: var(--rote-panel);
+}
+
+.saved-plans__header h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.saved-plans__header span {
+    font-size: .78rem;
+    opacity: .65;
+}
+
+.saved-plans__editor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.saved-plans__name-input {
+    min-width: 220px;
+    padding: 6px 10px;
+    border: 1px solid rgba(127, 127, 127, .3);
+    border-radius: 8px;
+    background: transparent;
+}
+
+.saved-plans__list {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.saved-plan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 9px;
+    border-radius: 8px;
+    background: rgba(127, 127, 127, .08);
+}
+
+.saved-plan.is-current {
+    outline: 1px solid currentColor;
+}
+
+.saved-plan__details {
+    min-width: 0;
+}
+
+.saved-plan__details strong,
+.saved-plan__details span {
+    display: block;
+}
+
+.saved-plan__details strong {
+    font-size: .9rem;
+}
+
+.saved-plan__details span {
+    font-size: .7rem;
+    opacity: .6;
+}
+
+.saved-plan__actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.saved-plan__delete {
+    opacity: .8;
+}
+
+.saved-plans__empty {
+    margin-top: 10px;
+    font-size: .8rem;
+    opacity: .65;
+}
+
+.saved-plans button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .saved-plans__editor,
+    .saved-plan {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .saved-plans__name-input {
+        min-width: 0;
+    }
+
+    .saved-plan__actions {
+        flex-wrap: wrap;
+    }
+}

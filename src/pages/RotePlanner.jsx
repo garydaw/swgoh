@@ -1,4 +1,5 @@
 import { useLoaderData } from "react-router-dom";
+import { useState } from "react";
 import { apiRequest } from "../helpers/apiRequest";
 
 import { RoteHeader } from "../components/rotePlanner/RoteHeader";
@@ -7,17 +8,20 @@ import { PhaseSummary } from "../components/rotePlanner/PhaseSummary";
 import { TerritoryColumn } from "../components/rotePlanner/TerritoryColumn";
 import { useRotePlanner } from "../hooks/useRotePlanner";
 import { ALIGNMENTS } from "../helpers/rotePlannerDefaults";
+import { useAuth } from "../store/useAuth";
+import { SavedPlans } from "../components/rotePlanner/SavedPlans";
 
 import "../css/rotePlanner.css";
 
 export async function rotePlannerLoader({ params, request }) {
-    const [planets, config, guildData] = await Promise.all([
+    const [planets, config, guildData, savedPlans] = await Promise.all([
         apiRequest("rote/planets", true, "GET"),
         apiRequest("rote/config", true, "GET"),
         apiRequest("rote/guildData", true, "GET"),
+        apiRequest("rote/plans", true, "GET"),
     ]);
 
-    return { planets, config, guildData };
+    return { planets, config, guildData, savedPlans };
 }
 
 export function twcountersLoader({ params, request }) {
@@ -25,7 +29,21 @@ export function twcountersLoader({ params, request }) {
 }
 
 export default function RotePlanner() {
-    const { planets, config, guildData } = useLoaderData();
+    const {
+        planets,
+        config,
+        guildData,
+        savedPlans: loaderSavedPlans,
+    } = useLoaderData();
+
+    const { admin } = useAuth();
+    const [savedPlans, setSavedPlans] = useState(
+        Array.isArray(loaderSavedPlans) ? loaderSavedPlans : []
+    );
+    const [currentPlanId, setCurrentPlanId] = useState(null);
+    const [planName, setPlanName] = useState("");
+    const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const guildGP = Number(guildData?.guildGP ?? 0);
     const operationValues = config?.operationValues ?? {};
@@ -39,6 +57,8 @@ export default function RotePlanner() {
         setPhase,
         updatePlanet,
         resetPlanner,
+        getPlanData,
+        loadPlan,
     } = useRotePlanner({
         planets,
         config,
@@ -46,6 +66,97 @@ export default function RotePlanner() {
         guildGP,
     });
 
+
+    async function savePlan() {
+        if (admin !== 1 || !planName.trim()) return;
+
+        setSaving(true);
+
+        try {
+            const result = await apiRequest("rote/plans", true, "POST", {
+                name: planName.trim(),
+                plan: getPlanData(),
+            });
+
+            const saved = result;
+
+            setSavedPlans((current) => [
+                ...current.filter((item) => Number(item.id) !== Number(saved.id)),
+                saved,
+            ]);
+            setCurrentPlanId(saved.id);
+            setPlanName(saved.name ?? planName.trim());
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    async function updateSavedPlan() {
+        if (admin !== 1 || !currentPlanId || !planName.trim()) return;
+
+        setSaving(true);
+
+        try {
+            const result = await apiRequest(
+                `rote/plans/${currentPlanId}`,
+                true,
+                "PUT",
+                {
+                    name: planName.trim(),
+                    plan: getPlanData(),
+                }
+            );
+
+            const saved = result;
+
+            setSavedPlans((current) =>
+                current.map((item) =>
+                    Number(item.id) === Number(currentPlanId)
+                        ? saved
+                        : item
+                )
+            );
+            setPlanName(saved.name ?? planName.trim());
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    async function saveAsNew() {
+        if (admin !== 1 || !planName.trim()) return;
+        await savePlan();
+    }
+
+    async function deletePlan(plan) {
+        if (admin !== 1) return;
+
+        if (!window.confirm(`Delete the saved plan "${plan.name}"?`)) {
+            return;
+        }
+
+        setDeleting(true);
+
+        try {
+            await apiRequest(`rote/plans/${plan.id}`, true, "DELETE");
+
+            setSavedPlans((current) =>
+                current.filter((item) => Number(item.id) !== Number(plan.id))
+            );
+
+            if (Number(currentPlanId) === Number(plan.id)) {
+                setCurrentPlanId(null);
+                setPlanName("");
+            }
+        } finally {
+            setDeleting(false);
+        }
+    }
+
+    function loadSavedPlan(plan) {
+        loadPlan(plan);
+        setCurrentPlanId(plan.id);
+        setPlanName(plan.name ?? "");
+    }
 
     if (!currentPhase) {
         return (
@@ -136,6 +247,21 @@ export default function RotePlanner() {
                 })}
             </div>
 
+
+            <SavedPlans
+                plans={savedPlans}
+                currentPlanId={currentPlanId}
+                isAdmin={admin === 1}
+                planName={planName}
+                onPlanNameChange={setPlanName}
+                onSave={savePlan}
+                onSaveAsNew={saveAsNew}
+                onLoad={loadSavedPlan}
+                onUpdate={updateSavedPlan}
+                onDelete={deletePlan}
+                saving={saving}
+                deleting={deleting}
+            />
         </main>
     );
 }

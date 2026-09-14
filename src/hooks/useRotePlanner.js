@@ -96,6 +96,48 @@ export function useRotePlanner({
         setPlanner(buildInitialPlanner(roteData));
     }
 
+    function getPlanData() {
+        return {
+            phase: planner.phase,
+            planets: planner.planets,
+        };
+    }
+
+    function loadPlan(savedPlan) {
+        const planData = savedPlan?.plan ?? savedPlan;
+
+        if (!planData?.planets) {
+            return;
+        }
+
+        const initialPlanner = buildInitialPlanner(roteData);
+        const savedPlanets = planData.planets ?? {};
+        const mergedPhases = { ...initialPlanner.planets };
+
+        for (const phase of roteData.phases ?? []) {
+            const phaseId = phase.id;
+            const savedPhase = savedPlanets[phaseId] ?? {};
+            const initialPhase = mergedPhases[phaseId] ?? {};
+
+            mergedPhases[phaseId] = { ...initialPhase };
+
+            for (const planetId of Object.keys(initialPhase)) {
+                mergedPhases[phaseId][planetId] = {
+                    ...initialPhase[planetId],
+                    ...(savedPhase[planetId] ?? {}),
+                    operations: [
+                        ...(savedPhase[planetId]?.operations ?? []),
+                    ],
+                };
+            }
+        }
+
+        setPlanner({
+            phase: Number(planData.phase ?? 1),
+            planets: mergedPhases,
+        });
+    }
+
     return {
         planner,
         roteData,
@@ -105,5 +147,7 @@ export function useRotePlanner({
         setPhase,
         updatePlanet,
         resetPlanner,
+        getPlanData,
+        loadPlan,
     };
 }

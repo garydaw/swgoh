@@ -61,6 +61,23 @@ async function versionSix (){
     await runSQL("UPDATE rote_planets SET star_1 = 583000000, star_2 = 1050000000, star_3 = 1240000000 WHERE path = 'neutral' AND phase = 6");
     await runSQL("UPDATE rote_planets SET star_1 = 556000000, star_2 = 1010000000, star_3 = 1180000000 WHERE path = 'light' AND phase = 6");
 
+    console.log("creating tw counters");
+    await runSQL("CREATE TABLE IF NOT EXISTS rote_planner ("+
+        "id int NOT NULL AUTO_INCREMENT, "+
+        "ally_code int NOT NULL, "+
+        "name VARCHAR(256) NOT NULL, "+
+        "phase_1 VARCHAR(2048), "+
+        "phase_2 VARCHAR(2048), "+
+        "phase_3 VARCHAR(2048), "+
+        "phase_4 VARCHAR(2048), "+
+        "phase_5 VARCHAR(2048), "+
+        "phase_6 VARCHAR(2048), "+
+        "date_created DATETIME NOT NULL DEFAULT now(), "+
+        "date_updated DATETIME NOT NULL DEFAULT now(), "+
+        "updated_by int, "+
+        "primary key(id) "+
+        ");");
+
 }
 
 async function versionFive (){
