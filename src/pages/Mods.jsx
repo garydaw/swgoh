@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useLoaderData } from 'react-router'
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import PaginatedTable from '../components/general/PaginatedTable';
 

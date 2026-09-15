@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../store/GlobalStore';
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 
 export default function UserAdmin() {
   const data = useContext(GlobalContext);

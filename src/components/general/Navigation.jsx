@@ -30,6 +30,7 @@ export default function Navigation() {
     navItems.push({ title: "User Admin", to: "/userAdmin" });
     navItems.push({ title: "Team Admin", to: "/teamAdmin" });
     navItems.push({ title: "SWGOH Admin", to: "/swgohAdmin" });
+    navItems.push({ title: "RoTE Planner", to: "/roteplanner" });
   }
 
   return (

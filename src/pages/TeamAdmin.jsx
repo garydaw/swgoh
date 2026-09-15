@@ -3,7 +3,7 @@ import Team from '../components/teams/Team';
 import { GlobalContext } from '../store/GlobalStore';
 import { unitSearch } from '../helpers/UnitSearch';
 import UnitBasic from '../components/units/UnitBasic';
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 
 export default function TeamAdmin() {
   const data = useContext(GlobalContext);

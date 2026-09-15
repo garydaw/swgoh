@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useLoaderData } from 'react-router';
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 import Team from '../components/teams/Team';
 import UnitBasic from '../components/units/UnitBasic';
 import { useSearchParams } from 'react-router-dom';

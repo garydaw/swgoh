@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {  useNavigate } from 'react-router-dom'
 import { useAuth } from '../store/useAuth';
-import { apiRequest } from '../helpers/ApiRequest';
+import { apiRequest } from '../helpers/apiRequest';
 
 export default function Login() {
 
