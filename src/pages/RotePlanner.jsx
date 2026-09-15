@@ -158,6 +158,101 @@ export default function RotePlanner() {
         setPlanName(plan.name ?? "");
     }
 
+    function checkResetPlanner() {
+        if (!window.confirm("Reset the planner? All unsaved changes will be lost.")) {
+            return;
+        }
+
+        resetPlanner();
+    }
+
+    function formatMillions(value) {
+    const millions = Number(value || 0) / 1_000_000;
+
+    return millions % 1 === 0
+        ? `${millions.toFixed(0)}M`
+        : `${millions.toFixed(2)}M`;
+}
+
+function exportDiscord(detailed) {
+    const lines = [];
+
+    lines.push(`⭐ ROTE PLAN — ${strategy.totalStars}⭐`);
+    lines.push("");
+    let totalStars = 0;
+    strategy.phases.forEach((phase) => {
+        lines.push(`━━━━━━━━ PHASE ${phase.id} ━━━━━━━━`);
+
+        const planets = Object.values(phase.planets ?? {});
+
+        planets.forEach((planet) => {
+            const alignmentIcon = {
+                dark: "🌑 Dark",
+                neutral: "⚪ Neutral",
+                light: "☀️ Light",
+            }[planet.alignment] ?? "•";
+
+            const operations = planet.selectedOperations ?? [];
+
+            if (planet.stars >= 1) {
+                lines.push(
+                    `${alignmentIcon} ${planet.name.toUpperCase()} — ${planet.stars}⭐`
+                );
+            } else if (phase.id < 6) {
+                lines.push(
+                    `${alignmentIcon} ${planet.name.toUpperCase()} — PRELOAD → P${phase.id + 1}`
+                );
+            } else {
+                lines.push(
+                    `${alignmentIcon} ${planet.name.toUpperCase()} — NO STARS`
+                );
+            }
+
+            if (operations.length > 0) {
+                lines.push(`Ops: ${operations.join(", ")}`);
+            }
+
+            if (planet.missionPoints > 0 ) {
+                lines.push(
+                    `Missions: ${formatMillions(planet.missionPoints)}`
+                );
+            }
+
+            if (planet.deploymentGP > 0) {
+                if( detailed || planet.stars < 1 ) {
+                    lines.push(
+                        `Deploy: ${formatMillions(planet.deploymentGP)}`
+                    );
+                }
+            }
+
+            lines.push("");
+        });
+
+        if( detailed ) {
+            lines.push(
+                `GP USED: ${formatMillions(phase.totalAllocatedGP)} / ${formatMillions(phase.phaseBudgetGP)}`
+            );
+        }
+
+        lines.push(`PHASE STARS: ${phase.stars}/9`);
+        totalStars += phase.stars;
+        lines.push(`RUNNING TOTALSTARS: ${totalStars}/ ${phase.id * 9}`);
+        lines.push("");
+    });
+
+    const exportText = lines.join("\n");
+
+    navigator.clipboard
+        .writeText(exportText)
+        .then(() => {
+            alert("RoTE plan copied to clipboard.");
+        })
+        .catch(() => {
+            console.error("Failed to copy RoTE plan to clipboard.");
+        });
+}
+
     if (!currentPhase) {
         return (
             <main className="rote-planner">
@@ -179,11 +274,25 @@ export default function RotePlanner() {
                         Configure operations, missions and deployment.
                     </span>
                 </div>
+                <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() => exportDiscord(true)}
+                >
+                    Export Detailed Discord
+                </button>
+                <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() => exportDiscord(false)}
+                >
+                    Export  Discord
+                </button>
 
                 <button
                     type="button"
                     className="secondary-button"
-                    onClick={resetPlanner}
+                    onClick={checkResetPlanner}
                 >
                     Reset Planner
                 </button>
