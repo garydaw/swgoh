@@ -16,11 +16,20 @@ var runSQL = async function sqlConnection(sql, values) {
     //console.log(sql);
     //console.log(values);
     const conn = await pool.getConnection();
-    const rows = await conn.query(sql, values);
-    //console.log(rows);
-    conn.release();
 
-    return rows;
+    try {
+        return await conn.query(sql, values);
+    } finally {
+        conn.release();
+    }
+
 };
+
+// Close the connection pool
+const closeDB = async function closeDB() {
+    await pool.end();
+};
+
+export { closeDB };
 
 export default runSQL;

@@ -1,10 +1,10 @@
 import comlink from '../comlink/client.js';
 
-async function importPlayer(allyCode) {
+async function importPlayer(playerId) {
 
-    const player = await comlink.getPlayer(String(allyCode));
+    const player = await comlink.getPlayer(null, String(playerId));
 
-    console.log('Importing player data for allyCode units:', player.rosterUnit.length);
+    console.log('Importing player data for '+player.name+' units:', player.rosterUnit.length);
 
     /*
     for (const unit of player.rosterUnit) {

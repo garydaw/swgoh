@@ -1,9 +1,18 @@
 import 'dotenv/config';
+import { closeDB } from '../model/database.js';
+import importGameData from './importGameData.js';
 import importGuild from './importGuild.js';
-import importPlayer from './importPlayer.js';
 
 async function main() {
-    await importGuild("Ge0VaZyTRH-pUMiXAvppXg");
+
+    try {
+        await importGameData();
+
+        // await importGuild("Ge0VaZyTRH-pUMiXAvppXg");
+
+    } finally {
+        await closeDB();
+    }
 }
 
 main().catch(error => {
