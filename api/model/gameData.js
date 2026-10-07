@@ -9,17 +9,24 @@ const isLocal = process.env.FRONTEND_DOMAIN === 'http://localhost:5173' ? true :
 
 let gameData = {};
 
-gameData.checkMetadata = async (metadata) => {
+gameData.checkisLatestMetadata = async (type, version) => {
 
-    const sql = "SELECT metadata FROM metadata ORDER BY date_run DESC LIMIT 1;";
+    const sql = "SELECT version, date_run, DATE_FORMAT(date_run, '%D %b %Y') AS date_run_formatted FROM metadata WHERE type = ? ORDER BY date_run DESC LIMIT 1;";
 
-    const latestMetadata = await runSQL(sql, []);
+    const latestMetadata = await runSQL(sql, [type]);
 
-    if (latestMetadata.length > 0 && latestMetadata[0].metadata === metadata) {
-        return false;
-    }
+    let check = {}
+    check.isLatest = latestMetadata.length > 0 && latestMetadata[0].version === version;
+    check.date_run = latestMetadata.length > 0 ? latestMetadata[0].date_run : null;
+    check.date_run_formatted = latestMetadata.length > 0 ? latestMetadata[0].date_run_formatted : null;
+    return check;
+}
 
-    return true;
+gameData.setLatestMetadata = async (type, version) => {
+
+    const sql = "INSERT INTO metadata (type, version) VALUES (?, ?);";
+
+    await runSQL(sql, [type, version]);
 }
 
 gameData.clearLocalization = async () => {

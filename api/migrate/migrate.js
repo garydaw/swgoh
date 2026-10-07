@@ -75,9 +75,10 @@ async function comlinkImports() {
     await convertCollation();
 
     await runSQL("CREATE TABLE IF NOT EXISTS metadata ("+
-        "metadata varchar(255) NOT NULL, "+
+        "version varchar(255) NOT NULL, "+
+        "type varchar(255) NOT NULL, "+
         "date_run DATETIME NOT NULL DEFAULT now(), "+
-        "primary key(metadata) "+
+        "primary key(version, type) "+
         ");");
 
     await runSQL("CREATE TABLE IF NOT EXISTS localizations ("+

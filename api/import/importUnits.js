@@ -6,6 +6,7 @@ async function importUnits(version) {
     const segment = await comlink.getGameData(version, false, 3);
 
     const { categoryMap, localizationMap } = await loadMappings();
+    let unitCount = 0;
 
     for (const unit of segment.units) {
 
@@ -21,7 +22,10 @@ async function importUnits(version) {
         );
         
         await gameData.addUnit(mappedUnit);
+        unitCount++;
     }
+
+    return `Unit data imported successfully.\n Rows imported: ${unitCount}\n`;
 }
 
 async function loadMappings() {

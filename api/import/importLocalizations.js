@@ -17,6 +17,8 @@ async function importLocalization(version) {
     for (const row of rows) {
         await gameData.addLocalization(row.key, row.value)
     }
+
+    return `Localization data imported successfully.\n Rows imported: ${rows.length}\n`;
 }
 
 function parseLocalization(contents) {
