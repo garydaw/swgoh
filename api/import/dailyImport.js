@@ -11,18 +11,24 @@ async function main() {
         const gameData = await importGameData();
         const endTimeGameData = new Date();
         const durationGameData = (endTimeGameData - startTime) / 1000;
-
-        //await importGuild("Ge0VaZyTRH-pUMiXAvppXg");
-
+/*
+        const guildData = await importGuild("Ge0VaZyTRH-pUMiXAvppXg");
+        const endTimeGuild = new Date();
+        const durationGuild = (endTimeGuild - endTimeGameData) / 1000;
+        
         const endTime = new Date();
         const duration = (endTime - startTime) / 1000;
+
+        console.log(guildData);
 
         await sendImportEmail(
             'SWGOH daily import completed',
             `The SWGOH daily import completed successfully in ${duration} seconds. \n` +
             `Game data import took ${durationGameData} seconds. \n` +
-            `${gameData}`
-        );
+            `${gameData}`+
+            `Guild data import took ${durationGuild} seconds. \n` +
+            `${guildData}`
+        );*/
 
     } finally {
         await closeDB();
@@ -31,13 +37,13 @@ async function main() {
 
 main().catch(async error => {
     console.error('Daily import failed:', error);
-    try {
+    /*try {
         await sendImportEmail(
             'SWGOH daily import FAILED',
             `The SWGOH daily import failed.\n\n${error.stack || error}`
         );
     } catch (emailError) {
         console.error('Failed to send error email:', emailError);
-    }
+    }*/
     process.exit(1);
 });

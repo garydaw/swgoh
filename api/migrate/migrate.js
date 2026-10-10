@@ -95,6 +95,18 @@ async function comlinkImports() {
         ");");
 
     await runSQL("ALTER TABLE unit MODIFY categories varchar(255);");
+
+    await runSQL("ALTER TABLE player ADD IF NOT EXISTS player_id VARCHAR(31) NOT NULL DEFAULT ''");
+
+    await runSQL("CREATE TABLE IF NOT EXISTS skills ("+
+        "id varchar(255) NOT NULL, "+
+        "nameKey TEXT NOT NULL, "+
+        "ability_reference varchar(255) NOT NULL, "+
+        "skill_type int NOT NULL, "+
+        "zeta_tier int NOT NULL DEFAULT 0, "+
+        "omicron_tier int NOT NULL DEFAULT 0, "+
+        "primary key(id) "+
+        ");");
 }
 
 async function convertCollation() {

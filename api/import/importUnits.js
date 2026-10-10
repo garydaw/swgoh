@@ -1,14 +1,11 @@
-import comlink from '../comlink/client.js';
 import gameData from '../model/gameData.js';
 
-async function importUnits(version) {
-
-    const segment = await comlink.getGameData(version, false, 3);
+async function importUnits(units) {
 
     const { categoryMap, localizationMap } = await loadMappings();
     let unitCount = 0;
 
-    for (const unit of segment.units) {
+    for (const unit of units) {
 
         const suffix = unit.id.split(':').pop(); 
         if(suffix !== 'ONE_STAR') {

@@ -84,14 +84,15 @@ players.update = async (user_response) => {
     sql += "ship_galactic_power = ?, ";
     sql += "guild_id = ?, ";
     sql += "guild_name = ?, ";
+    sql += "player_id = ?, ";
     sql += "refreshed = Now() ";
     sql += "WHERE ally_code = ?"
 
     await runSQL(sql, [user_response.data.name, user_response.data.character_galactic_power, user_response.data.ship_galactic_power, 
-                user_response.data.guild_id, user_response.data.guild_name,  ally_code]);
+                user_response.data.guild_id, user_response.data.guild_name, user_response.data.player_id, ally_code]);
 
     //add player units
-    for(var u = 0; u < user_response.units.length; u++){
+    /*for(var u = 0; u < user_response.units.length; u++){
         await players.addUnit(ally_code, user_response.units[u].data);
     }
 
@@ -101,7 +102,7 @@ players.update = async (user_response) => {
     //add mods
     for(var m = 0; m < user_response.mods.length; m++){
         await players.addMod(ally_code, user_response.mods[m]);
-    }
+    }*/
 
 }
 
@@ -185,6 +186,13 @@ players.add = async (ally_code) => {
     await runSQL(sql, [ally_code]);
 
     await auth.changePassword(ally_code, ally_code);
+}
+
+players.playersToRemove = async (player_ids, guild_id) => {
+
+    let sql = "SELECT ally_code, ally_name FROM player WHERE player_id NOT IN (?) AND guild_id = ?";
+
+    return await runSQL(sql, [player_ids, guild_id]);
 }
 
 players.delete = async (ally_code) => {

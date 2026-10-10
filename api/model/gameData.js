@@ -83,6 +83,21 @@ gameData.getCategories = async () => {
   return await runSQL(sql, []);
 }
 
+gameData.clearSkills = async () => {
+
+  const sql = "DELETE FROM skills;"
+  await runSQL(sql, []);
+}
+
+gameData.addSkill = async(id, nameKey, abilityReference, skillType, zetaTier, omicronTier) => {
+
+  const sql = "INSERT INTO skills (id, nameKey, ability_reference, skill_type, zeta_tier, omicron_tier) VALUES (?, ?, ?, ?, ?, ?);";
+
+  await runSQL(sql, [id, nameKey, abilityReference, skillType, zetaTier, omicronTier]);
+
+  return;
+}
+
 gameData.saveImageFromURL = async (filename) => {
     try {
       const response = await axios({

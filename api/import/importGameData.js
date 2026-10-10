@@ -1,6 +1,7 @@
 import comlink from '../comlink/client.js';
 import importLocalization from './importLocalizations.js';
 import importCategory from './importCategory.js';
+import importSkills from './importSkills.js';
 import importUnits from './importUnits.js';
 import gameData from '../model/gameData.js';
 
@@ -27,8 +28,14 @@ async function importGameData() {
 
     if(!isGameDataLatest.isLatest) {
 
-        returnMessage += await importCategory(gameDataVersion);
-        returnMessage += await importUnits(gameDataVersion);
+        const segmentOne = await comlink.getGameData(gameDataVersion, false, 1);
+        const segmentThree = await comlink.getGameData(gameDataVersion, false, 1);
+
+        returnMessage += await importCategory(segmentOne.category);
+
+        returnMessage += await importSkills(segmentOne.skill);
+
+        returnMessage += await importUnits(segmentThree.units);
         await gameData.setLatestMetadata('gamedata', gameDataVersion);
 
     } else {
