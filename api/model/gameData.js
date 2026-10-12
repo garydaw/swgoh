@@ -98,6 +98,13 @@ gameData.addSkill = async(id, nameKey, abilityReference, skillType, zetaTier, om
   return;
 }
 
+gameData.getSkills = async () => {
+
+  const sql = "SELECT id, nameKey, ability_reference, skill_type, zeta_tier, omicron_tier FROM skills;"
+
+  return await runSQL(sql, []);
+}
+
 gameData.saveImageFromURL = async (filename) => {
     try {
       const response = await axios({

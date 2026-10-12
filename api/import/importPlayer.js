@@ -1,13 +1,12 @@
 import comlink from '../comlink/client.js';
 import players from '../model/players.js';
 
-async function importPlayer(playerId) {
+async function importPlayer(playerId, skillsMap) {
 
     let returnMessage = ``;
 
     const playerData = await comlink.getPlayer(null, String(playerId));
     
-    console.log(`Importing player ${playerId})`);
     const playerExists = await players.playerExists(playerData.allyCode);
 
     if (!playerExists) {
@@ -28,15 +27,26 @@ async function importPlayer(playerId) {
     }
 
     player.data.units = playerData.rosterUnit.map(unit => {
-        const omicronAbilities = unit.skill
-            .filter(ability => ability.tier === 7)
-            .map(ability => ability.id);
-        
-        if(omicronAbilities.length > 0) {
-            console.log(unit.skill);
-            console.log(`Unit ${unit.definitionId} has omicron abilities: ${omicronAbilities}`);
+
+        if(unit.definitionId.split(':')[0] !== "WAMPA"){
+            return null;
         }
         
+        const omicronAbilities = [];
+        const zetaAbilities = [];
+
+        for(const skill of unit.skill) {
+            const skillInfo = skillsMap.get(skill.id);
+
+            if(skillInfo.zetaTier > 0 && skill.tier >= skillInfo.zetaTier) {
+                zetaAbilities.push(skill.id);
+            }
+            if(skillInfo.omicronTier > 0 && skill.tier >= skillInfo.omicronTier) {
+                omicronAbilities.push(skill.id);
+            }
+        }
+
+        console.log(unit);      
         return {
             base_id: unit.definitionId.split(':')[0],
             gear_level: '',
@@ -45,8 +55,8 @@ async function importPlayer(playerId) {
             level: unit.currentLevel,
             power: unit.currentXp,
             rarity: unit.currentRarity,
-            zeta_abilities: [],
-            omicron_abilities: [],
+            zeta_abilities: zetaAbilities,
+            omicron_abilities: omicronAbilities,
             relic_tier: unit.relic?.currentTier ?? 1,
             has_ultimate: '',
             is_galactic_legend: ''

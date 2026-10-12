@@ -1,7 +1,16 @@
 import comlink from '../comlink/client.js';
+import gameData from '../model/gameData.js';
 import importPlayer, {deleteGuildMembers} from './importPlayer.js';
 
 async function importGuild(guildId) {
+
+    const skills = await gameData.getSkills();
+
+    const skillsMap = new Map();
+
+    for (const skill of skills) {
+        skillsMap.set(skill.id, {zetaTier: skill.zeta_tier, omicronTier: skill.omicron_tier});
+    }
 
     const guildData = await comlink.getGuild(guildId);
 
@@ -11,7 +20,7 @@ async function importGuild(guildId) {
     for (const member of guildData.guild.member) {
         
         if(member.playerId === "5gljXPF8TcC59PLhabODOA")
-            returnMessage += await importPlayer(member.playerId);
+            returnMessage += await importPlayer(member.playerId, skillsMap);
     }
 
     let playerIds = guildData.guild.member.map(member => member.playerId);

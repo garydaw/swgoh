@@ -11,7 +11,7 @@ async function main() {
         const gameData = await importGameData();
         const endTimeGameData = new Date();
         const durationGameData = (endTimeGameData - startTime) / 1000;
-/*
+
         const guildData = await importGuild("Ge0VaZyTRH-pUMiXAvppXg");
         const endTimeGuild = new Date();
         const durationGuild = (endTimeGuild - endTimeGameData) / 1000;
@@ -20,7 +20,7 @@ async function main() {
         const duration = (endTime - startTime) / 1000;
 
         console.log(guildData);
-
+/*
         await sendImportEmail(
             'SWGOH daily import completed',
             `The SWGOH daily import completed successfully in ${duration} seconds. \n` +
@@ -28,8 +28,8 @@ async function main() {
             `${gameData}`+
             `Guild data import took ${durationGuild} seconds. \n` +
             `${guildData}`
-        );*/
-
+        );
+*/
     } finally {
         await closeDB();
     }

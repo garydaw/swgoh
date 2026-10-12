@@ -11,7 +11,7 @@ async function importCategory(category) {
 
     await gameData.clearCategory("PLACEHOLDER");
 
-    return `Category data imported successfully.\n Rows imported: ${segment.category.length}\n`;
+    return `Category data imported successfully.\n Rows imported: ${category.length}\n`;
 
 }
 
