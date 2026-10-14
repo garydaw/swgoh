@@ -29,7 +29,7 @@ async function importGameData() {
     if(!isGameDataLatest.isLatest) {
 
         const segmentOne = await comlink.getGameData(gameDataVersion, false, 1);
-        const segmentThree = await comlink.getGameData(gameDataVersion, false, 1);
+        const segmentThree = await comlink.getGameData(gameDataVersion, false, 3);
 
         returnMessage += await importCategory(segmentOne.category);
 

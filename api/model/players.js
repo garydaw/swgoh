@@ -92,10 +92,10 @@ players.update = async (user_response) => {
                 user_response.data.guild_id, user_response.data.guild_name, user_response.data.player_id, ally_code]);
 
     //add player units
-    /*for(var u = 0; u < user_response.units.length; u++){
+    for(var u = 0; u < user_response.units.length; u++){
         await players.addUnit(ally_code, user_response.units[u].data);
     }
-
+/*
     //delete all mods
     await runSQL("DELETE FROM player_mod WHERE ally_code  = ?", [ally_code]);
 
@@ -137,21 +137,6 @@ players.addMod = async (ally_code, mod_data) => {
 }
 
 players.addUnit = async (ally_code, unit_data) => {
-    
-    let gear_level_plus = 0;
-    let gear_level_binary = "";
-    for(var g = 0; g < unit_data.gear.length; g++){
-        if(unit_data.gear[g].is_obtained){
-            gear_level_plus++;
-            gear_level_binary = "1" + gear_level_binary;
-        } else {
-            gear_level_binary = "0" + gear_level_binary;
-        }
-    }
-
-    if(gear_level_binary === "")
-        gear_level_binary = "0";
-    const gear_level_flags = parseInt(gear_level_binary,2);
 
     //insert or update
     let sql = "INSERT INTO player_unit (ally_code, base_id, gear_level, gear_level_plus, gear_level_flags, level, power, rarity, ";
@@ -171,9 +156,9 @@ players.addUnit = async (ally_code, unit_data) => {
     sql += "is_galactic_legend = ? ";
 
     await runSQL(sql, [ally_code, unit_data.base_id,
-        unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
+        unit_data.gear_level, unit_data.gear_level_plus, unit_data.gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
         unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend, 
-        unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
+        unit_data.gear_level, unit_data.gear_level_plus, unit_data.gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
         unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend]);
 }
 

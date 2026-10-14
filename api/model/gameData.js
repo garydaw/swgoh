@@ -160,4 +160,11 @@ gameData.addUnit = async (unit) => {
 
 }
 
+gameData.getGls = async () => {
+
+  const sql = "SELECT base_id FROM unit where is_galactic_legend = 1;"
+
+  return await runSQL(sql, []);
+}
+
 export default gameData;

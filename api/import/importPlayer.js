@@ -1,7 +1,7 @@
 import comlink from '../comlink/client.js';
 import players from '../model/players.js';
 
-async function importPlayer(playerId, skillsMap) {
+async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
 
     let returnMessage = ``;
 
@@ -28,12 +28,14 @@ async function importPlayer(playerId, skillsMap) {
 
     player.data.units = playerData.rosterUnit.map(unit => {
 
-        if(unit.definitionId.split(':')[0] !== "WAMPA"){
-            return null;
-        }
-        
+        const base_id = unit.definitionId.split(':')[0];
         const omicronAbilities = [];
         const zetaAbilities = [];
+        const isGalacticLegend = GLSet.has(base_id);
+        let hasUltimate = false;
+
+        if(isGalacticLegend && unit.purchasedAbilityId.length > 0)
+            hasUltimate = true;
 
         for(const skill of unit.skill) {
             const skillInfo = skillsMap.get(skill.id);
@@ -46,25 +48,30 @@ async function importPlayer(playerId, skillsMap) {
             }
         }
 
-        console.log(unit);      
+        const gear_level_flags = unit.equipment.reduce((accumulator, item) => {
+            return accumulator | (1 << item.slot);
+        }, 0);
+
+        const gear_level_plus = unit.equipment.length;
+     
         return {
-            base_id: unit.definitionId.split(':')[0],
-            gear_level: '',
-            gear_level_plus: '',
-            gear_level_flags: '',
+            base_id: base_id,
+            gear_level: unit.currentTier,
+            gear_level_plus: gear_level_plus,
+            gear_level_flags: gear_level_flags,
             level: unit.currentLevel,
-            power: unit.currentXp,
+            power: statCalculator.calcCharGP( unit ),
             rarity: unit.currentRarity,
             zeta_abilities: zetaAbilities,
             omicron_abilities: omicronAbilities,
             relic_tier: unit.relic?.currentTier ?? 1,
-            has_ultimate: '',
-            is_galactic_legend: ''
+            has_ultimate: hasUltimate,
+            is_galactic_legend: isGalacticLegend
         }
     });
 
-    //console.log(player.data.units);
-    //await players.update(player);
+    //console.log(player.data.units.filter(unit => unit != null));
+    await players.update(player);
 
     return returnMessage
 

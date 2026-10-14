@@ -5,7 +5,6 @@ async function importUnits(units) {
     const { categoryMap, localizationMap } = await loadMappings();
     let unitCount = 0;
 
-    console.log(`Importing units...`);
     for (const unit of units) {
 
         const suffix = unit.id.split(':').pop(); 
@@ -56,10 +55,6 @@ async function loadMappings() {
 
 function mapUnit(unit, categoryMap, localizationMap) {
 
-    if(unit.baseId === 'WAMPA')
-    {
-        console.log(unit);
-    }
 
     const roleCategory = unit.categoryId.find(category =>
         category.startsWith('role_') &&
@@ -102,7 +97,7 @@ function mapUnit(unit, categoryMap, localizationMap) {
     return {
         base_id: unit.baseId,
         combat_type: unit.combatType,
-        character_name: name,
+        name: name,
         url: createUnitUrl(name),
         alignment: unit.forceAlignment,
         role: role,

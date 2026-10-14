@@ -19,7 +19,6 @@ async function main() {
         const endTime = new Date();
         const duration = (endTime - startTime) / 1000;
 
-        console.log(guildData);
 /*
         await sendImportEmail(
             'SWGOH daily import completed',
