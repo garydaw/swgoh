@@ -91,22 +91,20 @@ players.update = async (user_response) => {
     await runSQL(sql, [user_response.data.name, user_response.data.character_galactic_power, user_response.data.ship_galactic_power, 
                 user_response.data.guild_id, user_response.data.guild_name, user_response.data.player_id, ally_code]);
 
-    //add player units
-    for(var u = 0; u < user_response.units.length; u++){
-        await players.addUnit(ally_code, user_response.units[u].data);
-    }
-/*
     //delete all mods
     await runSQL("DELETE FROM player_mod WHERE ally_code  = ?", [ally_code]);
-
-    //add mods
-    for(var m = 0; m < user_response.mods.length; m++){
-        await players.addMod(ally_code, user_response.mods[m]);
-    }*/
+    
+    //add player units
+    for(var u = 0; u < user_response.units.length; u++){
+        await players.addUnit(ally_code, user_response.units[u]);
+        for(var m = 0; m < user_response.units[u].mods.length; m++){
+            await players.addMod(ally_code, user_response.units[u].base_id, user_response.units[u].mods[m]);
+        }
+    }
 
 }
 
-players.addMod = async (ally_code, mod_data) => {
+players.addMod = async (ally_code, base_id, mod_data) => {
 
     if(!("secondary_stats" in mod_data)){
         mod_data.secondary_stats = [];
@@ -126,13 +124,12 @@ players.addMod = async (ally_code, mod_data) => {
     sql += "?, ?, ?, ?, ?, ?, ";
     sql += "?, ?, ?, ?) ";
     
-    //ignore mods that are not equipped to a character
-    if(mod_data.character !== null){
-        await runSQL(sql, [ mod_data.id,
-            ally_code, mod_data.character, mod_data.level, mod_data.tier, mod_data.rarity, mod_data.slot, mod_data.set,
-            mod_data.primary_stat.name, mod_data.primary_stat.display_value, mod_data.secondary_stats[0].name, mod_data.secondary_stats[0].display_value, mod_data.secondary_stats[1].name, mod_data.secondary_stats[1].display_value,
-            mod_data.secondary_stats[2].name, mod_data.secondary_stats[2].display_value, mod_data.secondary_stats[3].name, mod_data.secondary_stats[3].display_value]);
-    }
+    
+    await runSQL(sql, [ mod_data.id,
+        ally_code, base_id, mod_data.level, mod_data.tier, mod_data.rarity, mod_data.slot, mod_data.set,
+        mod_data.primary_stat.name, mod_data.primary_stat.display_value, mod_data.secondary_stats[0].name, mod_data.secondary_stats[0].display_value, mod_data.secondary_stats[1].name, mod_data.secondary_stats[1].display_value,
+        mod_data.secondary_stats[2].name, mod_data.secondary_stats[2].display_value, mod_data.secondary_stats[3].name, mod_data.secondary_stats[3].display_value]);
+    
     
 }
 

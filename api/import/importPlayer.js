@@ -1,5 +1,6 @@
 import comlink from '../comlink/client.js';
 import players from '../model/players.js';
+import normaliseComlinkMod from './modHelper.js'
 
 async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
 
@@ -26,7 +27,7 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
         player_id: playerData.playerId
     }
 
-    player.data.units = playerData.rosterUnit.map(unit => {
+    player.units = playerData.rosterUnit.map(unit => {
 
         const base_id = unit.definitionId.split(':')[0];
         const omicronAbilities = [];
@@ -53,7 +54,13 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
         }, 0);
 
         const gear_level_plus = unit.equipment.length;
-     
+
+        const mods = [];
+
+        for (const mod of unit.equippedStatMod ?? [] ) {
+            mods.push(normaliseComlinkMod(base_id, mod));
+        }
+             
         return {
             base_id: base_id,
             gear_level: unit.currentTier,
@@ -66,11 +73,11 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
             omicron_abilities: omicronAbilities,
             relic_tier: unit.relic?.currentTier ?? 1,
             has_ultimate: hasUltimate,
-            is_galactic_legend: isGalacticLegend
+            is_galactic_legend: isGalacticLegend,
+            mods: mods
         }
     });
-
-    //console.log(player.data.units.filter(unit => unit != null));
+    
     await players.update(player);
 
     return returnMessage

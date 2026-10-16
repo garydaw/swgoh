@@ -28,7 +28,7 @@ async function importGuild(guildId) {
     //loop through guild members and import their data
     for (const member of guildData.guild.member) {
         
-        if(member.playerId === "5gljXPF8TcC59PLhabODOA")
+        //if(member.playerId === "5gljXPF8TcC59PLhabODOA")
             returnMessage += await importPlayer(member.playerId, skillsMap, statCalculator, GLSet);
     }
 
