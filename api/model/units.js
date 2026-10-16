@@ -1,12 +1,4 @@
 import runSQL from "./database.js";
-import axios, { all } from "axios";
-import fs from "fs";
-
-const imgRootURL = 'https://game-assets.swgoh.gg/textures/'
-const publicFolder = process.env.PUBLIC_FOLDER
-const siteRootURL = process.env.SWGOH_URL
-
-const isLocal = process.env.FRONTEND_DOMAIN === 'http://localhost:5173' ? true : false;
 
 let units = {};
 
@@ -179,71 +171,10 @@ units.getGuildUnits = async (ally_code, base_id, combat_type) => {
 
 }
 
-units.saveImageFromURL = async (url, path, filename) => {
-    try {
-    const response = await axios({
-        url: url + filename,
-        method: 'GET',
-        responseType: 'stream',
-    });
-
-    // Create a write stream to save the file
-    const writer = fs.createWriteStream(path + filename);
-
-    // Pipe the image data to the file
-    response.data.pipe(writer);
-
-    // Return a promise that resolves when the write stream is done
-    return new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
-        });
-    } catch (error) {
-        console.error('Error downloading the image:', error);
-    }
-}
-
-units.refreshUnits = async (data) => {
-
-    const allUnits = data.data;
-   
-    //loop round allUnits
-    for(var u = 0; u < allUnits.length; u++){
-        
-        //insert or update
-        let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image, is_galactic_legend) ";
-        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
-        sql += "ON DUPLICATE KEY UPDATE ";
-        sql += "combat_type = ?, ";
-        sql += "character_name = ?, ";
-        sql += "url = ?, ";
-        sql += "alignment = ?, ";
-        sql += "role = ?, ";
-        sql += "categories = ?, ";
-        sql += "unit_image = ?, ";
-        sql += "is_galactic_legend = ? ";
-
-        const imgName = allUnits[u].image.split("/").pop();
-        await runSQL(sql, [allUnits[u].base_id,
-                            allUnits[u].combat_type, allUnits[u].name, allUnits[u].url, allUnits[u].alignment, allUnits[u].role, allUnits[u].categories.toString(), imgName,
-                            allUnits[u].is_galactic_legend,
-                            allUnits[u].combat_type, allUnits[u].name, allUnits[u].url, allUnits[u].alignment, allUnits[u].role, allUnits[u].categories.toString(), imgName,
-                            allUnits[u].is_galactic_legend]);
-
-        
-        if(isLocal){
-           await units.saveImageFromURL(imgRootURL, publicFolder, imgName);
-        }
-    }
-
-    return;
-
-}
-
 units.getUnit = (base_id) => {
   let sql = "";
     sql += "SELECT * "
-    sql += "FROM unit p ";
+    sql += "FROM unit ";
     sql += "WHERE base_id = ? ";
 
   const row =  runSQL(sql, [base_id]);

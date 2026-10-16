@@ -84,28 +84,27 @@ players.update = async (user_response) => {
     sql += "ship_galactic_power = ?, ";
     sql += "guild_id = ?, ";
     sql += "guild_name = ?, ";
+    sql += "player_id = ?, ";
     sql += "refreshed = Now() ";
     sql += "WHERE ally_code = ?"
 
     await runSQL(sql, [user_response.data.name, user_response.data.character_galactic_power, user_response.data.ship_galactic_power, 
-                user_response.data.guild_id, user_response.data.guild_name,  ally_code]);
-
-    //add player units
-    for(var u = 0; u < user_response.units.length; u++){
-        await players.addUnit(ally_code, user_response.units[u].data);
-    }
+                user_response.data.guild_id, user_response.data.guild_name, user_response.data.player_id, ally_code]);
 
     //delete all mods
     await runSQL("DELETE FROM player_mod WHERE ally_code  = ?", [ally_code]);
-
-    //add mods
-    for(var m = 0; m < user_response.mods.length; m++){
-        await players.addMod(ally_code, user_response.mods[m]);
+    
+    //add player units
+    for(var u = 0; u < user_response.units.length; u++){
+        await players.addUnit(ally_code, user_response.units[u]);
+        for(var m = 0; m < user_response.units[u].mods.length; m++){
+            await players.addMod(ally_code, user_response.units[u].base_id, user_response.units[u].mods[m]);
+        }
     }
 
 }
 
-players.addMod = async (ally_code, mod_data) => {
+players.addMod = async (ally_code, base_id, mod_data) => {
 
     if(!("secondary_stats" in mod_data)){
         mod_data.secondary_stats = [];
@@ -125,32 +124,16 @@ players.addMod = async (ally_code, mod_data) => {
     sql += "?, ?, ?, ?, ?, ?, ";
     sql += "?, ?, ?, ?) ";
     
-    //ignore mods that are not equipped to a character
-    if(mod_data.character !== null){
-        await runSQL(sql, [ mod_data.id,
-            ally_code, mod_data.character, mod_data.level, mod_data.tier, mod_data.rarity, mod_data.slot, mod_data.set,
-            mod_data.primary_stat.name, mod_data.primary_stat.display_value, mod_data.secondary_stats[0].name, mod_data.secondary_stats[0].display_value, mod_data.secondary_stats[1].name, mod_data.secondary_stats[1].display_value,
-            mod_data.secondary_stats[2].name, mod_data.secondary_stats[2].display_value, mod_data.secondary_stats[3].name, mod_data.secondary_stats[3].display_value]);
-    }
+    
+    await runSQL(sql, [ mod_data.id,
+        ally_code, base_id, mod_data.level, mod_data.tier, mod_data.rarity, mod_data.slot, mod_data.set,
+        mod_data.primary_stat.name, mod_data.primary_stat.display_value, mod_data.secondary_stats[0].name, mod_data.secondary_stats[0].display_value, mod_data.secondary_stats[1].name, mod_data.secondary_stats[1].display_value,
+        mod_data.secondary_stats[2].name, mod_data.secondary_stats[2].display_value, mod_data.secondary_stats[3].name, mod_data.secondary_stats[3].display_value]);
+    
     
 }
 
 players.addUnit = async (ally_code, unit_data) => {
-    
-    let gear_level_plus = 0;
-    let gear_level_binary = "";
-    for(var g = 0; g < unit_data.gear.length; g++){
-        if(unit_data.gear[g].is_obtained){
-            gear_level_plus++;
-            gear_level_binary = "1" + gear_level_binary;
-        } else {
-            gear_level_binary = "0" + gear_level_binary;
-        }
-    }
-
-    if(gear_level_binary === "")
-        gear_level_binary = "0";
-    const gear_level_flags = parseInt(gear_level_binary,2);
 
     //insert or update
     let sql = "INSERT INTO player_unit (ally_code, base_id, gear_level, gear_level_plus, gear_level_flags, level, power, rarity, ";
@@ -170,9 +153,9 @@ players.addUnit = async (ally_code, unit_data) => {
     sql += "is_galactic_legend = ? ";
 
     await runSQL(sql, [ally_code, unit_data.base_id,
-        unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
+        unit_data.gear_level, unit_data.gear_level_plus, unit_data.gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
         unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend, 
-        unit_data.gear_level, gear_level_plus, gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
+        unit_data.gear_level, unit_data.gear_level_plus, unit_data.gear_level_flags, unit_data.level, unit_data.power, unit_data.rarity,
         unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend]);
 }
 
@@ -185,6 +168,13 @@ players.add = async (ally_code) => {
     await runSQL(sql, [ally_code]);
 
     await auth.changePassword(ally_code, ally_code);
+}
+
+players.playersToRemove = async (player_ids, guild_id) => {
+
+    let sql = "SELECT ally_code, ally_name FROM player WHERE player_id NOT IN (?) AND guild_id = ?";
+
+    return await runSQL(sql, [player_ids, guild_id]);
 }
 
 players.delete = async (ally_code) => {
