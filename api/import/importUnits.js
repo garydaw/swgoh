@@ -112,14 +112,9 @@ function createUnitUrl(characterName) {
 
     const slug = characterName
         .toLowerCase()
-        .replaceAll(' ', '-')
-        .replaceAll('"', '')
-        .replaceAll('(', '')
-        .replaceAll(')', '')
-        .replaceAll("'", '')
-        .replaceAll('/', '')
-        .replaceAll(' &', '')
-        .replaceAll(',', '');
+        .replace(/ /g, '-')
+        .replace(/["()'\/,]/g, '')
+        .replace(/ &/g, '');
 
     return `//swgoh.gg/units/${slug}/`;
 }
