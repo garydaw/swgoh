@@ -12,6 +12,10 @@ async function importUnits(units) {
             continue;
         }
 
+        if(unit.obtainableTime != 0) {
+            continue;
+        }
+
         const mappedUnit = mapUnit(
             unit,
             categoryMap,

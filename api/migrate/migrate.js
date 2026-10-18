@@ -23,7 +23,8 @@ async function runSQL(sql, values) {
 }
 
 const handlers = {
-    0: comlinkImports
+    0: comlinkImports,
+    1: removeIncorrectUnits
 };
 
 async function main() {
@@ -360,4 +361,9 @@ async function convertCollation() {
             REFERENCES \`${constraint.refTable}\` (\`${constraint.refColumn}\`)`
         );
     }
+}
+
+async function removeIncorrectUnits () {
+
+    await runSQL("DELETE FROM unit WHERE base_id NOT IN (SELECT DISTINCT base_id FROM player_unit)");
 }
