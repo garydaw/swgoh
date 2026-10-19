@@ -10,7 +10,6 @@ import RoTEPlanner, {rotePlannerLoader} from '../pages/RotePlanner';
 import Relics from '../pages/Relics';
 import UserAdmin from '../pages/UserAdmin';
 import TeamAdmin from '../pages/TeamAdmin';
-import SwgohAdmin from '../pages/SwgohAdmin';
 import TWCounters, {twcountersLoader} from '../pages/TWCounters';
 import Mods, {modsLoader} from '../pages/Mods';
 
@@ -78,10 +77,6 @@ export const protectedcRoutes = [
           {
             path:"/teamAdmin",
             element:React.createElement(TeamAdmin),
-          },
-          {
-            path:"/swgohAdmin",
-            element:React.createElement(SwgohAdmin),
           }
         ]
       }

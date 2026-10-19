@@ -29,7 +29,6 @@ export default function Navigation() {
   if(admin === 1){
     navItems.push({ title: "User Admin", to: "/userAdmin" });
     navItems.push({ title: "Team Admin", to: "/teamAdmin" });
-    navItems.push({ title: "SWGOH Admin", to: "/swgohAdmin" });
     navItems.push({ title: "RoTE Planner", to: "/roteplanner" });
   }
 

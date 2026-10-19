@@ -1,9 +1,5 @@
 import runSQL from "./database.js";
-import axios, { all } from "axios";
 import auth from "./auth.js";
-
-
-const siteRootURL = process.env.SWGOH_URL
 
 let players = {};
 
@@ -32,19 +28,6 @@ players.getLastUpdated = async (ally_code) => {
     const rows= await runSQL(sql, [ally_code]);
 
     return rows[0].refreshed;
-}
-
-players.getGuildMembersRefresh = async () => {
-
-    const url = siteRootURL + 'api/player/';
-    let sql = "";
-    sql += "SELECT  CONCAT(?, p.ally_code) AS url, p.refreshed, p.ally_name ";
-    sql += "FROM player p ";
-    sql += "ORDER BY p.refreshed ";
-
-    const rows= await runSQL(sql, [url]);
-
-    return rows;
 }
 
 players.getPlayerGuild = async (ally_code) => {
@@ -198,35 +181,6 @@ players.delete = async (ally_code) => {
     sql = "DELETE FROM player WHERE ally_code = ?";
 
     await runSQL(sql, [ally_code]);
-}
-
-players.refreshAllies = async (guild_ally_codes) => {
-
-    if(guild_ally_codes.length === 0){
-        return;
-    }
-    
-    //delete missing members    
-    let sql = "";
-    sql += "SELECT p.ally_code ";
-    sql += "FROM player p ";
-    sql += "WHERE p.ally_code NOT IN (?) ";
-
-    const rows= await runSQL(sql, [guild_ally_codes]);
-   
-    for(var i = 0; i < rows.length; i++){
-        players.delete(rows[i].ally_code);
-    }
-
-    //add and update existing members
-    for(var i = 0; i < guild_ally_codes.length; i++){
-        
-        const playerExists = await players.playerExists(guild_ally_codes[i]);
-        if(!playerExists){
-            players.add(guild_ally_codes[i])
-        }
-
-    }
 }
 
 players.getGuildGP = async (ally_code) => {

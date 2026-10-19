@@ -7,8 +7,6 @@ const authMiddleware = async (req, res, next) => {
   if (
         req.path === '/auth/login'
         || req.path === '/auth/check'
-        || req.path.slice(0, 18) === '/database/migrate/' 
-        || req.path.slice(0, 7) === '/swgoh/' 
       ) {
     return next(); // Skip middleware for excluded routes
   }
@@ -28,8 +26,7 @@ const authMiddleware = async (req, res, next) => {
     }
     req.user = {user_name:decoded.username};
     
-    if(req.path.slice(0,11) !== '/migrations')
-      log.addLog(decoded.username, req.originalUrl);
+    log.addLog(decoded.username, req.originalUrl);
     
     if(!req.query.hasOwnProperty("ally_code")){
       req.query.ally_code = decoded.username;
