@@ -35,18 +35,13 @@ authRouter.post('/login', async (req, res) => {
 //logout function
 authRouter.post('/logout', async (req, res) => {
 
-  // get token and invalidate
-  const authToken = req.cookies.token
-
-  //set maxAge to the past
-  res.cookie('token', authToken.token, {
+  res.clearCookie('token', {
     httpOnly: true,
-    secure:false, //app is not https in prod 
+    secure: false, //app is not https in prod 
     sameSite: 'lax',
-    maxAge: new Date(0),
     path: '/'
-  })
-  
+  });
+
   //nothing to return
   res.json({ message:"User logged out!"});
 });
