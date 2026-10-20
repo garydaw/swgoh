@@ -24,7 +24,8 @@ async function runSQL(sql, values) {
 
 const handlers = {
     0: comlinkImports,
-    1: removeIncorrectUnits
+    1: removeIncorrectUnits,
+    2: fixFks
 };
 
 async function main() {
@@ -366,4 +367,15 @@ async function convertCollation() {
 async function removeIncorrectUnits () {
 
     await runSQL("DELETE FROM unit WHERE base_id NOT IN (SELECT DISTINCT base_id FROM player_unit)");
+}
+
+async function fixFks () {
+
+    await runSQL(`ALTER TABLE player_mod
+        DROP FOREIGN KEY fk_player_mod__player_unit_ally_code,
+        DROP FOREIGN KEY fk_player_mod__player_unit_base_id,
+        DROP INDEX fk_player_mod__player_unit_base_id,
+        ADD CONSTRAINT fk_player_mod__player_unit
+            FOREIGN KEY (ally_code, base_id)
+            REFERENCES player_unit (ally_code, base_id)`);
 }
