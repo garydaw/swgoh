@@ -60,6 +60,14 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
         for (const mod of unit.equippedStatMod ?? [] ) {
             mods.push(normaliseComlinkMod(base_id, mod));
         }
+
+        let gp = 0;
+        try {
+            let gp = statCalculator.calcCharGP( unit );
+        } catch (e) {
+            //fails for new chars
+            console.log("unit power failed - ally code:",playerData.allyCode, " unit:", base_id );
+        }
              
         return {
             base_id: base_id,
@@ -67,7 +75,7 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
             gear_level_plus: gear_level_plus,
             gear_level_flags: gear_level_flags,
             level: unit.currentLevel,
-            power: statCalculator.calcCharGP( unit ),
+            power: gp,
             rarity: unit.currentRarity,
             zeta_abilities: zetaAbilities,
             omicron_abilities: omicronAbilities,

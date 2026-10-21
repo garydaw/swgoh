@@ -5,16 +5,19 @@ async function importUnits(units) {
     const { categoryMap, localizationMap } = await loadMappings();
     let unitCount = 0;
 
-    for (const unit of units) {
+    const unitMap = new Map();
 
-        const suffix = unit.id.split(':').pop(); 
-        if(suffix !== 'ONE_STAR') {
-            continue;
-        }
+    for (const unit of units) {
 
         if(unit.obtainableTime != 0) {
             continue;
         }
+
+        if(unitMap.get(unit.baseId)){
+            continue;
+        }
+
+        unitMap.set(unit.baseId);
 
         const mappedUnit = mapUnit(
             unit,
