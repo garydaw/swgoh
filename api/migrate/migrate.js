@@ -25,7 +25,8 @@ async function runSQL(sql, values) {
 const handlers = {
     0: comlinkImports,
     1: removeIncorrectUnits,
-    2: fixFks
+    2: fixFks,
+    3: fixFks2
 };
 
 async function main() {
@@ -376,6 +377,18 @@ async function fixFks () {
         DROP FOREIGN KEY fk_player_mod__player_unit_base_id,
         DROP INDEX fk_player_mod__player_unit_base_id,
         ADD CONSTRAINT fk_player_mod__player_unit
+            FOREIGN KEY (ally_code, base_id)
+            REFERENCES player_unit (ally_code, base_id)`);
+}
+
+async function fixFks2 () {
+
+    await runSQL(`ALTER TABLE rote_operation
+        DROP FOREIGN KEY fk_rote__player_unit,
+        DROP FOREIGN KEY fk_rote__player_unit_base_id`);
+
+    await runSQL(`ALTER TABLE rote_operation
+        ADD CONSTRAINT fk_rote__player_unit_composite
             FOREIGN KEY (ally_code, base_id)
             REFERENCES player_unit (ally_code, base_id)`);
 }
