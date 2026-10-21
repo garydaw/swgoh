@@ -63,12 +63,12 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
 
         let gp = 0;
         try {
-            let gp = statCalculator.calcCharGP( unit );
+            gp = statCalculator.calcCharGP( unit );
         } catch (e) {
             //fails for new chars
             console.log("unit power failed - ally code:",playerData.allyCode, " unit:", base_id );
         }
-             
+        
         return {
             base_id: base_id,
             gear_level: unit.currentTier,

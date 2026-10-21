@@ -385,7 +385,7 @@ async function fixFks2 () {
 
     await runSQL(`ALTER TABLE rote_operation
         DROP FOREIGN KEY fk_rote__player_unit,
-        DROP FOREIGN KEY fk_rote__player_unit_base_id`);
+        DROP FOREIGN KEY fk_rote__player_unit_base_ids`);
 
     await runSQL(`ALTER TABLE rote_operation
         ADD CONSTRAINT fk_rote__player_unit_composite
