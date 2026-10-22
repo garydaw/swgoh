@@ -22,14 +22,14 @@ export default function Navigation() {
     { title: "TW", to: "/tw" },
     { title: "TW Counters", to: "/twcounters" },
     { title: "RoTE", to: "/rote" },
-    { title: "Relics", to: "/relics" }
+    { title: "Relics", to: "/relics" },
+    { title: "RoTE Planner", to: "/roteplanner" }
   ]
 
   //add admin links for admins
   if(admin === 1){
     navItems.push({ title: "User Admin", to: "/userAdmin" });
     navItems.push({ title: "Team Admin", to: "/teamAdmin" });
-    navItems.push({ title: "RoTE Planner", to: "/roteplanner" });
   }
 
   return (
