@@ -1,6 +1,6 @@
 import gameData from '../model/gameData.js';
 
-async function importUnits(units) {
+async function importUnits(units, eraDefinition) {
 
     const { categoryMap, localizationMap } = await loadMappings();
     let unitCount = 0;
@@ -28,6 +28,17 @@ async function importUnits(units) {
         await gameData.addUnit(mappedUnit);
         unitCount++;
     }
+
+    const now = Date.now();
+
+    const currentEra = eraDefinition.find(era => {
+        const start = Number(era.startTimeMs);
+        const end = Number(era.endTimeMs);
+
+        return now >= start && now < end;
+    });
+
+    await gameData.setEraUnits(currentEra?.eraUnitId ?? []);
 
     return `Unit data imported successfully.\n Rows imported: ${unitCount}\n`;
 }
@@ -100,6 +111,10 @@ function mapUnit(unit, categoryMap, localizationMap) {
     const name = localizationMap.get(unit.nameKey) ?? unit.nameKey;
 
     const isGalacticLegend = unit.categoryId?.includes('galactic_legend') ?? false;
+
+    const crew = unit.combatType === 2
+        ? unit.crew?.map(member => member.unitId) ?? []
+        : null;
     
     return {
         base_id: unit.baseId,
@@ -110,6 +125,7 @@ function mapUnit(unit, categoryMap, localizationMap) {
         role: role,
         categories: categories.join(','),
         unit_image: unit.thumbnailName + '.png',
+        crew: JSON.stringify(crew),
         is_galactic_legend: isGalacticLegend ? 1 : 0
     };
 

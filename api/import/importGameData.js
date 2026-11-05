@@ -5,7 +5,10 @@ import importSkills from './importSkills.js';
 import importUnits from './importUnits.js';
 import gameData from '../model/gameData.js';
 
-async function importGameData() {
+async function importGameData(options = {}) {
+
+    const forceLocalizationRefresh = options.localization ?? false;
+    const forceUnitRefresh = options.unit ?? false;
 
     let returnMessage = '';
     const metadata = await comlink.getMetaData();
@@ -16,27 +19,32 @@ async function importGameData() {
     const isLocalizationLatest = await gameData.checkisLatestMetadata('localization', localizationVersion);
     const isGameDataLatest = await gameData.checkisLatestMetadata('gamedata', gameDataVersion);
 
-    if(!isLocalizationLatest.isLatest) {
+    if(forceLocalizationRefresh || !isLocalizationLatest.isLatest) {
 
         returnMessage += await importLocalization(localizationVersion);
-        await gameData.setLatestMetadata('localization', localizationVersion);
-
+        if(!isLocalizationLatest.isLatest) {
+            await gameData.setLatestMetadata('localization', localizationVersion);
+        }
     } else {
 
         returnMessage += `Localization data is already up to date (Date: ${isLocalizationLatest.date_run_formatted}).\n`;
     }
 
-    if(!isGameDataLatest.isLatest) {
+    if(forceUnitRefresh || !isGameDataLatest.isLatest) {
 
         const segmentOne = await comlink.getGameData(gameDataVersion, false, 1);
         const segmentThree = await comlink.getGameData(gameDataVersion, false, 3);
+        const segmentFour = await comlink.getGameData(gameDataVersion, false, 4);
 
         returnMessage += await importCategory(segmentOne.category);
 
         returnMessage += await importSkills(segmentOne.skill);
 
-        returnMessage += await importUnits(segmentThree.units);
-        await gameData.setLatestMetadata('gamedata', gameDataVersion);
+        returnMessage += await importUnits(segmentThree.units, segmentFour.eraDefinition);
+
+        if(!isGameDataLatest.isLatest) {
+            await gameData.setLatestMetadata('gamedata', gameDataVersion);
+        }
 
     } else {
 

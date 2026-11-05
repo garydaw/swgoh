@@ -2,7 +2,7 @@ import comlink from '../comlink/client.js';
 import players from '../model/players.js';
 import normaliseComlinkMod from './modHelper.js'
 
-async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
+async function importPlayer(playerId, skillsMap, statCalculator, GLSet, crewsMap) {
 
     let returnMessage = ``;
 
@@ -27,9 +27,17 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
         player_id: playerData.playerId
     }
 
+    const rosterById = new Map(
+        playerData.rosterUnit.map(unit => [
+            unit.definitionId.split(':')[0],
+            unit
+        ])
+    );
+
     player.units = playerData.rosterUnit.map(unit => {
 
         const base_id = unit.definitionId.split(':')[0];
+        
         const omicronAbilities = [];
         const zetaAbilities = [];
         const isGalacticLegend = GLSet.has(base_id);
@@ -63,7 +71,20 @@ async function importPlayer(playerId, skillsMap, statCalculator, GLSet) {
 
         let gp = 0;
         try {
-            gp = statCalculator.calcCharGP( unit );
+            if (crewsMap.has(base_id)) {
+                // Ship
+                const crewIds = crewsMap.get(base_id) ?? [];
+                
+                const crew = crewIds
+                    .map(id => rosterById.get(id))
+                    .filter(Boolean);
+
+                gp = statCalculator.calcShipGP(unit, crew);
+            } else {
+                // Character
+                gp = statCalculator.calcCharGP(unit);
+
+            }
         } catch (e) {
             //fails for new chars
             console.log("unit power failed - ally code:",playerData.allyCode, " unit:", base_id );
@@ -103,7 +124,13 @@ async function deleteGuildMembers(playerIds, guildId) {
      return returnMessage;
 }
 
+async function zeroEraUnits(guildId) {
 
-export { deleteGuildMembers }
+    await players.zeroEraUnits(guildId);
+
+}
+
+
+export { deleteGuildMembers, zeroEraUnits }
 
 export default importPlayer;

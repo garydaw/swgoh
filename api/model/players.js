@@ -142,6 +142,21 @@ players.addUnit = async (ally_code, unit_data) => {
         unit_data.zeta_abilities.join(","), unit_data.omicron_abilities.join(","), unit_data.relic_tier, unit_data.has_ultimate, unit_data.is_galactic_legend]);
 }
 
+players.zeroEraUnits = async (guildId) => {
+
+    let sql = "UPDATE player_unit pu ";
+    sql += "INNER JOIN player p ";
+    sql += "ON pu.ally_code = p.ally_code ";
+    sql += "INNER JOIN unit u ";
+    sql += "ON pu.base_id = u.base_id ";
+    sql += "SET pu.power = 0 ";
+    sql += "WHERE p.guild_id = ? ";
+    sql += "AND u.current_era = 1 ";
+
+    await runSQL(sql, [guildId]);
+
+}
+
 players.add = async (ally_code) => {
 
     let sql = "";

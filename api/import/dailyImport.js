@@ -4,11 +4,25 @@ import importGameData from './importGameData.js';
 import importGuild from './importGuild.js';
 import sendImportEmail from './email.js';
 
+function getImportOptions() {
+    const options = {};
+
+    for (const arg of process.argv.slice(2)) {
+        const [key, value] = arg.split('=');
+
+        options[key] = value === 'true';
+    }
+
+    return options;
+}
+
 async function main() {
 
     try {
+        const options = getImportOptions();
+        
         const startTime = new Date();
-        const gameData = await importGameData();
+        const gameData = await importGameData(options);
         const endTimeGameData = new Date();
         const durationGameData = (endTimeGameData - startTime) / 1000;
 
