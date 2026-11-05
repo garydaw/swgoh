@@ -102,6 +102,13 @@ gameData.getSkills = async () => {
 
   const sql = "SELECT id, nameKey, ability_reference, skill_type, zeta_tier, omicron_tier FROM skills;"
 
+    return await runSQL(sql, []);
+}
+
+gameData.getShipCrews = async () => {
+
+  const sql = "SELECT base_id, crew FROM unit WHERE combat_type = 2;"
+
   return await runSQL(sql, []);
 }
 
@@ -132,8 +139,8 @@ gameData.saveImageFromURL = async (filename) => {
 gameData.addUnit = async (unit) => {
 
       //insert or update
-      let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image, is_galactic_legend) ";
-      sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+      let sql = "INSERT INTO unit (base_id, combat_type, character_name, url, alignment, role, categories, unit_image, is_galactic_legend, crew) ";
+      sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
       sql += "ON DUPLICATE KEY UPDATE ";
       sql += "combat_type = ?, ";
       sql += "character_name = ?, ";
@@ -142,13 +149,14 @@ gameData.addUnit = async (unit) => {
       sql += "role = ?, ";
       sql += "categories = ?, ";
       sql += "unit_image = ?, ";
-      sql += "is_galactic_legend = ? ";
+      sql += "is_galactic_legend = ?, ";
+      sql += "crew = ? ";
 
       await runSQL(sql, [unit.base_id,
                           unit.combat_type, unit.name, unit.url, unit.alignment, unit.role, unit.categories.toString(), unit.unit_image,
-                          unit.is_galactic_legend,
+                          unit.is_galactic_legend, unit.crew,
                           unit.combat_type, unit.name, unit.url, unit.alignment, unit.role, unit.categories.toString(), unit.unit_image,
-                          unit.is_galactic_legend]);
+                          unit.is_galactic_legend, unit.crew]);
 
       
       if(isLocal){
@@ -158,6 +166,18 @@ gameData.addUnit = async (unit) => {
 
     return;
 
+}
+
+gameData.setEraUnits = async ( eraUnitIds) => {
+
+  let sql = "UPDATE unit SET current_era = 0;"
+
+  await runSQL(sql, []);
+
+  if(eraUnitIds.length > 0) {
+    sql = "UPDATE unit SET current_era = 1 WHERE base_id IN (?);"
+    await runSQL(sql, [eraUnitIds]);
+  }
 }
 
 gameData.getGls = async () => {

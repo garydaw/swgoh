@@ -1,7 +1,7 @@
 import comlink from '../comlink/client.js';
 import gameData from '../model/gameData.js';
-import importPlayer, {deleteGuildMembers} from './importPlayer.js';
-import statCalculator from 'swgoh-stat-calc';
+import importPlayer, {deleteGuildMembers, zeroEraUnits} from './importPlayer.js';
+import statCalculator from '@swgoh-utils/swgoh-stat-calc';
 
 async function importGuild(guildId) {
 
@@ -20,6 +20,13 @@ async function importGuild(guildId) {
     const GLs = await gameData.getGls();
     const GLSet = new Set(GLs.map(item => item.base_id));
 
+    const crews = await gameData.getShipCrews();
+
+    const crewsMap = new Map();
+
+    for (const crew of crews) {
+        crewsMap.set(crew.base_id, crew.crew);
+    }
 
     const guildData = await comlink.getGuild(guildId);
 
@@ -29,9 +36,11 @@ async function importGuild(guildId) {
     for (const member of guildData.guild.member) {
         
         //if(member.playerId === "5gljXPF8TcC59PLhabODOA")
-            returnMessage += await importPlayer(member.playerId, skillsMap, statCalculator, GLSet);
+            returnMessage += await importPlayer(member.playerId, skillsMap, statCalculator, GLSet, crewsMap);
     }
 
+    await zeroEraUnits(guildId);
+    
     let playerIds = guildData.guild.member.map(member => member.playerId);
     returnMessage += await deleteGuildMembers(playerIds, guildId);
     

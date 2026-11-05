@@ -26,7 +26,8 @@ const handlers = {
     0: comlinkImports,
     1: removeIncorrectUnits,
     2: fixFks,
-    3: fixFks2
+    3: fixFks2,
+    4: addCrewColumn
 };
 
 async function main() {
@@ -391,4 +392,13 @@ async function fixFks2 () {
         ADD CONSTRAINT fk_rote__player_unit_composite
             FOREIGN KEY (ally_code, base_id)
             REFERENCES player_unit (ally_code, base_id)`);
+}
+
+async function addCrewColumn () {
+
+    await runSQL(`ALTER TABLE unit
+        ADD COLUMN crew JSON DEFAULT NULL`);
+        
+    await runSQL(`ALTER TABLE unit
+        ADD COLUMN current_era BOOLEAN DEFAULT 0`);
 }
