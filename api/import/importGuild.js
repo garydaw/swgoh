@@ -2,6 +2,8 @@ import comlink from '../comlink/client.js';
 import gameData from '../model/gameData.js';
 import importPlayer, {deleteGuildMembers, zeroEraUnits} from './importPlayer.js';
 import statCalculator from '@swgoh-utils/swgoh-stat-calc';
+import rote from '../model/rote.js';
+
 
 async function importGuild(guildId) {
 
@@ -43,8 +45,22 @@ async function importGuild(guildId) {
     
     let playerIds = guildData.guild.member.map(member => member.playerId);
     returnMessage += await deleteGuildMembers(playerIds, guildId);
+
+    // reassign rote
+    await roteReassign();
     
     return returnMessage;
+}
+
+async function roteReassign() {
+
+    const planets = await rote.getPlanets();
+    for (const [path, planetList] of Object.entries(planets)) {
+        for (const planet of planetList) {
+            await rote.allocateOperations(path, planet);
+        }
+    }
+    
 }
 
 export default importGuild;
