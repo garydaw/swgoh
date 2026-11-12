@@ -1,7 +1,10 @@
 import express from 'express';
-const botRouter = express.Router();
+import botAuthMiddleware from "./middleware/botAuth.js"
 import roteRouter from './routes/bot/rote.js';
 
+
+const botRouter = express.Router();
+botRouter.use(botAuthMiddleware);
 
 botRouter.use("/rote", roteRouter);
 

@@ -5,6 +5,7 @@ import {
   Client,
   Events,
   GatewayIntentBits,
+  MessageFlags,
   StringSelectMenuBuilder
 } from 'discord.js';
 
@@ -27,7 +28,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
         await interaction.reply({
           content: `You selected: ${selectedTerritory}`,
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
 
         return;
@@ -56,6 +57,13 @@ client.on(Events.InteractionCreate, async interaction => {
             Authorization: `Bearer ${process.env.DISCORD_API_SECRET}`
           }
         });
+
+        if (response.status === 401) {
+          await interaction.editReply({
+            content: '⚠️ Sorry, I couldn\'t authenticate with the API. Please contact an administrator.'
+          });
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(data.message || `API returned ${response.status}`);
@@ -96,12 +104,12 @@ client.on(Events.InteractionCreate, async interaction => {
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         content: 'Something went wrong.',
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     } else {
       await interaction.reply({
         content: 'Something went wrong.',
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     }
   }
