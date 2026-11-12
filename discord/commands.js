@@ -8,5 +8,9 @@ export const commands = [
 
   new SlashCommandBuilder()
     .setName('getguildgp')
-    .setDescription('Get the guild total Galactic Power')
+    .setDescription('Get the guild total Galactic Power'),
+
+  new SlashCommandBuilder()
+    .setName('rotekeyunits')
+    .setDescription('Get the key units for the current ROTE event'),
 ];

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import apiRouter from './routes.js'
+import botRouter from './botRoutes.js'
 import cookieParser from 'cookie-parser';
 
 const app = express();
@@ -27,6 +28,7 @@ app.use(express.json({ limit: '10mb' }));
 
 
 app.use(cookieParser());
+app.use('/bot', botRouter);
 app.use('/api',apiRouter);
 
 const PORT = process.env.PORT || 8443;
