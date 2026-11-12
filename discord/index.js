@@ -18,9 +18,24 @@ client.once(Events.ClientReady, readyClient => {
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-  if (!interaction.isChatInputCommand()) return;
 
   try {
+
+    if (interaction.isStringSelectMenu()) {
+      if (interaction.customId === 'territory_select') {
+        const selectedTerritory = interaction.values[0];
+
+        await interaction.reply({
+          content: `You selected: ${selectedTerritory}`,
+          ephemeral: true
+        });
+
+        return;
+      }
+    }
+
+    if (!interaction.isChatInputCommand()) return;
+
     if (interaction.commandName === 'ping') {
       await interaction.reply('Pong! 🏓');
     }
