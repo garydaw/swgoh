@@ -426,6 +426,66 @@ rote.getPlanets = async () => {
   return planets;
 }
 
+rote.getPlanetsForPath = async (path) => {
+
+  let sql = "";
+  sql += "SELECT path, phase, planet ";
+  sql += "FROM rote_planets ";
+  sql += "WHERE path = ? ";
+  sql += "ORDER BY path, phase ";
+
+  return await runSQL(sql, [path]);
+
+}
+
+rote.getUnitsForOperation = async (path, planet, operation) => {
+  
+  let sql = "";
+  sql += "SELECT DISTINCT ro.path, ro.phase, rp.planet, ro.operation, "
+  sql += "ro.base_id, u.character_name "
+  sql += "FROM rote_operation ro "
+  sql += "INNER JOIN rote_planets rp "
+  sql += "    ON rp.phase = ro.phase "
+  sql += "    AND rp.path = ro.path "
+  sql += "INNER JOIN unit u "
+  sql += "    ON u.base_id = ro.base_id "
+  sql += "WHERE ro.path = ? ";
+  sql += "AND rp.phase = ? ";
+  sql += "AND ro.operation = ? ";
+  sql += "ORDER BY u.character_name";
+
+  return await runSQL(sql, [path, planet, operation]);
+}
+
+rote.getAlliesForUnits = async (path, planet, operation, units) => {
+
+  let sql = "";
+  sql += "SELECT DISTINCT ro.path, rp.planet, ro.operation, "
+  sql += "u.character_name, IFNULL(p.ally_name, 'No one') AS ally_name "
+  sql += "FROM rote_operation ro "
+  sql += "INNER JOIN rote_planets rp "
+  sql += "    ON rp.phase = ro.phase "
+  sql += "    AND rp.path = ro.path "
+  sql += "INNER JOIN unit u "
+  sql += "    ON u.base_id = ro.base_id "
+  sql += "LEFT OUTER JOIN player_unit pu "
+  sql += "    ON pu.base_id = ro.base_id "
+  sql += "    AND pu.rarity = 7 "
+  sql += "AND (  ";
+  sql += "	(u.combat_type = 1 AND ro.relic_level <= pu.relic_tier - 2)  ";
+  sql += "	OR u.combat_type = 2  ";
+  sql += ") ";
+  sql += "LEFT OUTER JOIN player p "
+  sql += "    ON  pu.ally_code = p.ally_code "
+  sql += "WHERE ro.path = ? ";
+  sql += "AND rp.phase = ? ";
+  sql += "AND ro.operation = ? ";
+  sql += "AND ro.base_id IN (?) ";
+  sql += "ORDER BY u.character_name";
+
+  return await runSQL(sql, [path, planet, operation, units]);
+}
+
 rote.getOperations = async (path, phase) => {
 
   let operations = [];

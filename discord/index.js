@@ -1,118 +1,53 @@
 
 import 'dotenv/config';
+
 import {
-  ActionRowBuilder,
   Client,
   Events,
   GatewayIntentBits,
-  MessageFlags,
-  StringSelectMenuBuilder
+  MessageFlags
 } from 'discord.js';
 
+import { handleGeneralInteraction } from './handlers/general.js';
+import { handleRoteInteraction } from './handlers/rote.js';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
 client.once(Events.ClientReady, readyClient => {
-  console.log(`BB-VIP blah is online as ${readyClient.user.tag}`);
+  console.log(`BB-VIP is online as ${readyClient.user.tag}`);
 });
 
 client.on(Events.InteractionCreate, async interaction => {
 
   try {
 
-    if (interaction.isStringSelectMenu()) {
-      if (interaction.customId === 'territory_select') {
-        const selectedTerritory = interaction.values[0];
-
-        await interaction.reply({
-          content: `You selected: ${selectedTerritory}`,
-          flags: MessageFlags.Ephemeral
-        });
-
-        return;
-      }
+    // General interactions
+    if (await handleGeneralInteraction(interaction)) {
+      return;
     }
 
-    if (!interaction.isChatInputCommand()) return;
-
-    if (interaction.commandName === 'ping') {
-      await interaction.reply('Pong! 🏓');
+    // RotE interactions
+    if (await handleRoteInteraction(interaction)) {
+      return;
     }
 
-    if (interaction.commandName === 'getguildgp') {
-      await interaction.reply('Guild GP coming soon');
-    }
-
-    if (interaction.commandName === 'rotekeyunits') {
-      
-      await interaction.deferReply();
-
-      try {
-        const apiUrl = `${process.env.API_BASE_URL}/rote/ops`;
-
-        const response = await fetch(apiUrl, {
-          headers: {
-            Authorization: `Bearer ${process.env.DISCORD_API_SECRET}`
-          }
-        });
-
-        if (response.status === 401) {
-          await interaction.editReply({
-            content: '⚠️ Sorry, I couldn\'t authenticate with the API. Please contact an administrator.'
-          });
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(data.message || `API returned ${response.status}`);
-        }
-
-        const territories = await response.json();
-
-        const selectMenu = new StringSelectMenuBuilder()
-          .setCustomId('territory_select')
-          .setPlaceholder('Select a territory')
-          .addOptions(
-            territories.map(territory => ({
-              label: territory.charAt(0).toUpperCase() + territory.slice(1),
-              value: territory
-            }))
-          );
-
-        const row = new ActionRowBuilder()
-          .addComponents(selectMenu);
-
-        await interaction.editReply({
-          content: 'Which territory would you like?',
-          components: [row]
-        });
-
-      } catch (error) {
-        console.error('rote ops error:', error);
-
-        await interaction.editReply(
-          'Sorry, I couldn\'t retrieve the territory information.'
-        );
-      }
-
-    }
   } catch (error) {
-    console.error('Command error:', error);
+    console.error('Interaction error:', error);
+
+    const response = {
+      content: 'Something went wrong. Please try again later.',
+      flags: MessageFlags.Ephemeral
+    };
 
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({
-        content: 'Something went wrong.',
-        flags: MessageFlags.Ephemeral
-      });
+      await interaction.followUp(response);
     } else {
-      await interaction.reply({
-        content: 'Something went wrong.',
-        flags: MessageFlags.Ephemeral
-      });
+      await interaction.reply(response);
     }
   }
+
 });
 
 client.login(process.env.DISCORD_TOKEN);
