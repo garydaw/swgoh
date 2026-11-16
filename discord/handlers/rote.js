@@ -1,128 +1,258 @@
+
 import {
   ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   StringSelectMenuBuilder,
   MessageFlags
 } from 'discord.js';
 
-import { apiRequest, ApiError } from '../api.js';
+import { apiRequest } from '../api.js';
+
+// Store selected units for each Discord message
+const roteUnitSelections = new Map();
+
 
 export async function handleRoteInteraction(interaction) {
 
-  // Handle the slash command
-  if (
-    interaction.isChatInputCommand() &&
-    interaction.commandName === 'rote_op_units'
-  ) {
-    const path = interaction.options.getString('path');
-    const planet = interaction.options.getInteger('planet');
-    const operation = interaction.options.getInteger('operation');
+  try {
 
-    await interaction.deferReply();
+    // ==========================================
+    // ROTE OP UNITS COMMAND
+    // ==========================================
 
-    try {
-      // If a path was supplied, skip the dropdown
+    if (
+      interaction.isChatInputCommand() &&
+      interaction.commandName === 'rote_op_units'
+    ) {
+      const path = interaction.options.getString('path');
+      const planet = interaction.options.getInteger('planet');
+      const operation = interaction.options.getInteger('operation');
+
+      await interaction.deferReply({
+        flags: MessageFlags.Ephemeral
+      });
+
+      // If a path was supplied, skip the path dropdown
       if (path) {
-        if(planet) {
-          if(operation){
-            await showRoteOperationUnits(interaction, path, planet, operation);
+
+        if (planet) {
+
+          if (operation) {
+            await showRoteOperationUnits(
+              interaction,
+              path,
+              planet,
+              operation
+            );
           } else {
             await showRoteOperations(interaction, path, planet);
           }
+
         } else {
           await showRotePlanets(interaction, path);
         }
+
       } else {
         await showRotePathSelect(interaction);
       }
-    } catch (error) {
-      console.error('ROTE command error:', error);
 
-      await interaction.editReply({
-        content: 'Sorry, I couldn’t retrieve the ROTE information.',
-        components: []
-      });
+      return true;
     }
 
-    return true;
-  }
 
-  // Handle the dropdown selection
-  if (
-    interaction.isStringSelectMenu() &&
-    interaction.customId === 'rote_path_select'
-  ) {
-    const selectedPath = interaction.values[0];
+    // ==========================================
+    // PATH DROPDOWN SELECTION
+    // ==========================================
 
-    await interaction.deferUpdate();
+    if (
+      interaction.isStringSelectMenu() &&
+      interaction.customId === 'rote_path_select'
+    ) {
+      const selectedPath = interaction.values[0];
+
+      await interaction.deferUpdate();
+
+      await showRotePlanets(interaction, selectedPath);
+
+      return true;
+    }
+
+
+    // ==========================================
+    // PLANET DROPDOWN SELECTION
+    // ==========================================
+
+    if (
+      interaction.isStringSelectMenu() &&
+      interaction.customId.startsWith('rote_planet_select_')
+    ) {
+      const path = interaction.customId.replace(
+        'rote_planet_select_',
+        ''
+      );
+
+      const planet = Number(interaction.values[0]);
+
+      await interaction.deferUpdate();
+
+      await showRoteOperations(interaction, path, planet);
+
+      return true;
+    }
+
+
+    // ==========================================
+    // OPERATION DROPDOWN SELECTION
+    // ==========================================
+
+    if (
+      interaction.isStringSelectMenu() &&
+      interaction.customId.startsWith('rote_operation_select:')
+    ) {
+      const [, path, planet] = interaction.customId.split(':');
+
+      const operation = Number(interaction.values[0]);
+
+      await interaction.deferUpdate();
+
+      await showRoteOperationUnits(
+        interaction,
+        path,
+        Number(planet),
+        operation
+      );
+
+      return true;
+    }
+
+
+    // ==========================================
+    // UNIT BUTTON TOGGLE
+    // ==========================================
+
+    if (
+      interaction.isButton() &&
+      interaction.customId.startsWith('rote_unit_toggle:')
+    ) {
+      const messageId = interaction.message.id;
+
+      const selection = roteUnitSelections.get(messageId);
+
+      if (!selection) {
+        await interaction.reply({
+          content: 'This selection has expired. Please run the command again.',
+          flags: MessageFlags.Ephemeral
+        });
+
+        return true;
+      }
+
+      // Get the selected unit ID
+      const baseId = interaction.customId.split(':')[1];
+
+      // Toggle the selected unit
+      if (selection.selectedUnits.has(baseId)) {
+        selection.selectedUnits.delete(baseId);
+      } else {
+        selection.selectedUnits.add(baseId);
+      }
+
+      await interaction.deferUpdate();
+
+      // Refresh the buttons
+      await updateUnitButtons(
+        interaction,
+        selection.units,
+        selection.selectedUnits
+      );
+
+      return true;
+    }
+
+
+    // ==========================================
+    // UNIT SUBMIT BUTTON
+    // ==========================================
+
+    if (
+      interaction.isButton() &&
+      interaction.customId === 'rote_unit_submit'
+    ) {
+      const messageId = interaction.message.id;
+
+      const selection = roteUnitSelections.get(messageId);
+
+      if (!selection || selection.selectedUnits.size === 0) {
+        await interaction.reply({
+          content: 'Please select at least one unit.',
+          flags: MessageFlags.Ephemeral
+        });
+
+        return true;
+      }
+
+      // Retrieve the stored selection details
+      const {
+        path,
+        planet,
+        operation,
+        selectedUnits
+      } = selection;
+
+      // Convert the Set into an array
+      const units = [...selectedUnits];
+
+      await interaction.deferUpdate();
+
+      // Retrieve the eligible players
+      await showRoteOperationUnitsAllies(
+        interaction,
+        path,
+        planet,
+        operation,
+        units
+      );
+
+      // Remove the stored selection once complete
+      roteUnitSelections.delete(messageId);
+
+      return true;
+    }
+
+  } catch (error) {
+
+    console.error('ROTE interaction error:', error);
+
+    const errorMessage = {
+      content: 'Sorry, something went wrong retrieving the ROTE information.',
+      components: []
+    };
 
     try {
-      await showRotePlanets(interaction, selectedPath);
-    } catch (error) {
-      console.error('ROTE selection error:', error);
-
-      await interaction.editReply({
-        content: 'Sorry, I couldn’t retrieve the ROTE information.',
-        components: []
-      });
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply(errorMessage);
+      } else {
+        await interaction.reply({
+          ...errorMessage,
+          flags: MessageFlags.Ephemeral
+        });
+      }
+    } catch (replyError) {
+      console.error('Could not send ROTE error response:', replyError);
     }
 
     return true;
   }
-
-
-  if (
-    interaction.isStringSelectMenu() &&
-    interaction.customId.startsWith('rote_planet_select_')
-  ) {
-    const path = interaction.customId.replace('rote_planet_select_', '');
-    const planet = Number(interaction.values[0]);
-
-    await interaction.deferUpdate();
-
-    await showRoteOperations(interaction, path, planet);
-
-    return true;
-  }
-
-
-  if (
-    interaction.isStringSelectMenu() &&
-    interaction.customId.startsWith('rote_operation_select_')
-  ) {
-    const path_planet = interaction.customId.replace('rote_operation_select_', '');
-    const [path, planet] = path_planet.split('_');
-    const operation = Number(interaction.values[0]);
-
-    await interaction.deferUpdate();
-
-    await showRoteOperationUnits(interaction, path, planet, operation);
-
-    return true;
-  }
-
-
-  if (
-    interaction.isStringSelectMenu() &&
-    interaction.customId.startsWith('rote_unit_select_')
-  ) {
-    const path_planet_operation = interaction.customId.replace('rote_unit_select_', '');
-    const [path, planet, operation] = path_planet_operation.split('_');
-    const units = interaction.values;
-    
-    await interaction.deferUpdate();
-
-    await showRoteOperationUnitsAllies(interaction, path, planet, operation, units);
-
-    return true;
-  }
-
-
 
   return false;
 }
 
 
-// Display the available paths
+// ==========================================
+// DISPLAY AVAILABLE PATHS
+// ==========================================
+
 async function showRotePathSelect(interaction) {
 
   const paths = await apiRequest('/rote/ops');
@@ -147,9 +277,15 @@ async function showRotePathSelect(interaction) {
 }
 
 
+// ==========================================
+// DISPLAY AVAILABLE PLANETS
+// ==========================================
+
 async function showRotePlanets(interaction, path) {
 
-  const planets = await apiRequest(`/rote/ops/${path}/planets`);
+  const planets = await apiRequest(
+    `/rote/ops/${path}/planets`
+  );
 
   const selectMenu = new StringSelectMenuBuilder()
     .setCustomId(`rote_planet_select_${path}`)
@@ -172,12 +308,17 @@ async function showRotePlanets(interaction, path) {
   });
 }
 
+
+// ==========================================
+// DISPLAY AVAILABLE OPERATIONS
+// ==========================================
+
 async function showRoteOperations(interaction, path, planet) {
 
-  const operations = [1, 2, 3, 4, 5, 6]; // Assuming there are 6 operations
-  
+  const operations = [1, 2, 3, 4, 5, 6];
+
   const selectMenu = new StringSelectMenuBuilder()
-    .setCustomId(`rote_operation_select_${path}_${planet}`)
+    .setCustomId(`rote_operation_select:${path}:${planet}`)
     .setPlaceholder('Select an Operation')
     .addOptions(
       operations.map(operation => ({
@@ -195,41 +336,138 @@ async function showRoteOperations(interaction, path, planet) {
   });
 }
 
+
+// ==========================================
+// DISPLAY AVAILABLE UNITS AS BUTTONS
+// ==========================================
+
 async function showRoteOperationUnits(interaction, path, planet, operation) {
 
-  const units = await apiRequest(`/rote/ops/${path}/${planet}/${operation}/units`);
+  const units = await apiRequest(
+    `/rote/ops/${path}/${planet}/${operation}/units`
+  );
 
-  const selectMenu = new StringSelectMenuBuilder()
-    .setCustomId(`rote_unit_select_${path}_${planet}_${operation}`)
-    .setPlaceholder('Select a Unit or Units')
-    .setMinValues(1)
-    .setMaxValues(units.length)
-    .addOptions(
-      units.map(unit => ({
-        label: unit.character_name,
-        value: String(unit.base_id)
-      }))
+  if (!units.length) {
+    await interaction.editReply({
+      content: 'No units were found for this operation.',
+      components: []
+    });
+
+    return;
+  }
+
+  // Start with nothing selected
+  const selectedUnits = new Set();
+
+  // Update the original interaction response
+  const message = await interaction.editReply({
+    content: 'Which units can you deploy? Select as many as you need.',
+    components: []
+  });
+
+  // Store everything needed for the selection
+  roteUnitSelections.set(message.id, {
+    units,
+    selectedUnits,
+    path,
+    planet,
+    operation
+  });
+
+  await updateUnitButtons(
+    interaction,
+    units,
+    selectedUnits
+  );
+}
+
+
+// ==========================================
+// CREATE / UPDATE UNIT BUTTONS
+// ==========================================
+
+async function updateUnitButtons(interaction, units, selectedUnits) {
+
+  const rows = [];
+
+  // Create buttons in groups of five
+  for (let i = 0; i < units.length; i += 5) {
+
+    const row = new ActionRowBuilder();
+
+    units.slice(i, i + 5).forEach(unit => {
+
+      const baseId = String(unit.base_id);
+      const selected = selectedUnits.has(baseId);
+
+      row.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`rote_unit_toggle:${baseId}`)
+          .setLabel(unit.character_name)
+          .setStyle(
+            selected
+              ? ButtonStyle.Success
+              : ButtonStyle.Secondary
+          )
+      );
+    });
+
+    rows.push(row);
+  }
+
+  // Add the Submit button
+  const submitRow = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setCustomId('rote_unit_submit')
+        .setLabel(`Submit selection (${selectedUnits.size})`)
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(selectedUnits.size === 0)
     );
 
-  const row = new ActionRowBuilder()
-    .addComponents(selectMenu);
+  rows.push(submitRow);
 
+  // Edit the original response (supports ephemeral messages)
   await interaction.editReply({
-    content: 'Which unit would you like?',
-    components: [row]
+    components: rows
   });
 }
 
-async function showRoteOperationUnitsAllies(interaction, path, planet, operation, units) {
+
+// ==========================================
+// RETRIEVE PLAYERS WHO CAN DEPLOY THE UNITS
+// ==========================================
+
+async function showRoteOperationUnitsAllies(
+  interaction,
+  path,
+  planet,
+  operation,
+  units
+) {
+
   const params = new URLSearchParams({
     units: units.join(',')
   });
 
-  const data = await apiRequest(`/rote/ops/${path}/${planet}/${operation}/units/allies?${params}`);
+  const data = await apiRequest(
+    `/rote/ops/${path}/${planet}/${operation}/units/allies?${params}`
+  );
 
+  if (!data || !data.length) {
+    await interaction.editReply({
+      content: 'No players were found for the selected units.',
+      components: []
+    });
+
+    return;
+  }
+
+  // Group players by character
   const groupedUnits = new Map();
 
   data.forEach(unit => {
+
     if (!groupedUnits.has(unit.character_name)) {
       groupedUnits.set(unit.character_name, []);
     }
@@ -237,18 +475,22 @@ async function showRoteOperationUnitsAllies(interaction, path, planet, operation
     groupedUnits.get(unit.character_name).push(unit.ally_name);
   });
 
-  let message = `**${data[0].path} - ${data[0].planet} Operation ${data[0].operation}**\n`;
+  // Build the Discord message
+  let message =
+    `**${data[0].path} - ${data[0].planet} Operation ${data[0].operation}**\n`;
 
   message += 'The following units can be placed by these players:\n\n';
 
   for (const [character, players] of groupedUnits) {
-    message += `**${character}** - ${players.join(', ')}\n`;
+
+    // Remove duplicate player names
+    const uniquePlayers = [...new Set(players)];
+
+    message += `**${character}** - ${uniquePlayers.join(', ')}\n`;
   }
 
   await interaction.editReply({
     content: message,
     components: []
   });
-
 }
-

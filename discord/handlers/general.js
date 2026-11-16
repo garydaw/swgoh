@@ -1,3 +1,6 @@
+import {
+  MessageFlags
+} from 'discord.js';
 
 export async function handleGeneralInteraction(interaction) {
 
@@ -7,12 +10,18 @@ export async function handleGeneralInteraction(interaction) {
   switch (interaction.commandName) {
 
     case 'ping':
-      await interaction.reply('Pong! 🏓');
+      await interaction.reply({
+        content: 'Pong! 🏓',
+        flags: MessageFlags.Ephemeral
+      } );
       return true;
       break;
 
     case 'getguildgp':
-      await interaction.reply('Guild GP coming soon');
+      await interaction.reply({
+        content: 'Guild GP coming soon',
+        flags: MessageFlags.Ephemeral
+      });
       return true;
       break;
 
@@ -31,7 +40,8 @@ export async function handleGeneralInteraction(interaction) {
   `;
 
     await interaction.reply({
-      content: `**I find your lack of faith disturbing.**\n\`\`\`${vader}\`\`\``
+        content: `**I find your lack of faith disturbing.**\n\`\`\`${vader}\`\`\``,
+        flags: MessageFlags.Ephemeral
     });
     return true;
     break;
@@ -67,7 +77,8 @@ export async function handleGeneralInteraction(interaction) {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠿⠄⠈⠻⠿⠿⠿⠿⠿⠿⠛⠛⠿⠛⠉⠁⠀⠀⠀⠀⠀⠀⠻⠿⠿⠿⠿⠟⠉⠀⠀⠤⠴⠶⠌⠿⠘⠿⠿⠿⠿⠶⠤⠀⠀⠀⠀
 `;
       await interaction.reply({
-        content: `**Do or do not. There is no try.**\n\`\`\`${yoda}\`\`\``
+        content: `**Do or do not. There is no try.**\n\`\`\`${yoda}\`\`\``,
+        flags: MessageFlags.Ephemeral
       });
       return true;
       break;

@@ -15,5 +15,6 @@ export const generalCommands = [
 
   new SlashCommandBuilder()
   .setName('yoda')
-  .setDescription('Summon the wise Master Yoda')
+  .setDescription('Summon the wise Master Yoda'),
+
 ];
