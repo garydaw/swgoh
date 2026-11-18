@@ -42,5 +42,23 @@ export const roteCommands = [
           { name: 'Operation 5', value: 5 },
           { name: 'Operation 6', value: 6 }
         )
+    ),
+
+  new SlashCommandBuilder()
+    .setName('rote_my_op_deployments')
+    .setDescription('Get your RotE operation deployments for a specific phase')
+    .addIntegerOption(option =>
+      option
+        .setName('phase')
+        .setDescription('Choose the phase (1-6)')
+        .setRequired(false)
+        .addChoices(
+          { name: 'Phase 1', value: 1 },
+          { name: 'Phase 2', value: 2 },
+          { name: 'Phase 3', value: 3 },
+          { name: 'Phase 4', value: 4 },
+          { name: 'Phase 5', value: 5 },
+          { name: 'Phase 6', value: 6 }
+        )
     )
 ];

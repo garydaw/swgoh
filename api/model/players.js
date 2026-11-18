@@ -210,5 +210,49 @@ players.getGuildGP = async (ally_code) => {
     return rows[0].guild_gp;
 }
 
+players.getPlayerByDiscordId = async (discord_id) => {
+
+    let sql = "";
+    sql += "SELECT p.ally_code, p.ally_name ";
+    sql += "FROM player p ";
+    sql += "WHERE p.discord_id = ? ";
+
+    const rows = await runSQL(sql, [discord_id]);
+
+    return rows.length > 0 ? rows[0] : null;
+}
+
+players.getPlayersByDisplayName = async (display_name) => {
+
+    let sql = "";
+    sql += "SELECT p.ally_code, p.ally_name ";
+    sql += "FROM player p ";
+    sql += "WHERE p.ally_name LIKE ? ";
+
+    const rows = await runSQL(sql, [`%${display_name}%`]);
+
+    return rows;
+}
+
+players.getPlayerByAllyCode = async (ally_code) => {
+
+    let sql = "";
+    sql += "SELECT p.ally_code, p.ally_name ";
+    sql += "FROM player p ";
+    sql += "WHERE p.ally_code = ? ";
+
+    const rows = await runSQL(sql, [ally_code]);
+
+    return rows.length > 0 ? rows[0] : null;
+}
+
+players.linkDiscordIdToPlayer = async (discord_id, ally_code) => {
+
+    let sql = "";
+    sql += "UPDATE player SET discord_id = ? ";
+    sql += "WHERE ally_code = ? ";
+
+    await runSQL(sql, [discord_id, ally_code]);
+}
 
 export default players;

@@ -27,7 +27,8 @@ const handlers = {
     1: removeIncorrectUnits,
     2: fixFks,
     3: fixFks2,
-    4: addCrewColumn
+    4: addCrewColumn,
+    5: discordLinkAccount
 };
 
 async function main() {
@@ -401,4 +402,11 @@ async function addCrewColumn () {
         
     await runSQL(`ALTER TABLE unit
         ADD COLUMN current_era BOOLEAN DEFAULT 0`);
+}
+
+async function discordLinkAccount () { 
+    
+    await runSQL(`ALTER TABLE player
+                ADD COLUMN discord_id VARCHAR(32) NULL,
+                ADD INDEX idx_player_discord_id (discord_id);`);
 }
