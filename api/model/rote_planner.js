@@ -94,4 +94,15 @@ rote_planner.deletePlan = async (id) => {
     return "true";
 }
 
+rote_planner.checkActive = async () => {
+
+    let sql = "SELECT rp.id, rp.name ";
+    sql += "FROM rote_planner rp ";
+    sql += "WHERE name = 'active' ";
+
+    const rows = await runSQL(sql, []);
+
+    return rows.length === 1;
+}
+
 export default rote_planner;

@@ -969,4 +969,67 @@ rote.getGuildData = async (ally_code) => {
   return guildData;
 }
 
+rote.getAllyDeployments = async (phase, ally_code) => {
+
+  let sql = `
+    SELECT rp.phase_${phase} AS phase
+    FROM rote_planner rp
+    WHERE rp.name = 'active'
+  `;
+
+  const rows = await runSQL(sql, []);
+  const phaseData = typeof rows[0].phase === 'string'
+      ? JSON.parse(rows[0].phase)
+      : rows[0].phase;
+
+  const planetData = await runSQL(
+      `SELECT path, phase, planet FROM rote_planets`
+  );
+
+  const activePlanets = Object.entries(phaseData)
+      .filter(([key, data]) => data.deployment > 0)
+      .map(([key, data]) => {
+          const planetName = key.substring(key.indexOf('-') + 1)
+              .replaceAll('-', ' ');
+
+          const planet = planetData.find(p =>
+              p.planet.toLowerCase() === planetName.toLowerCase()
+          );
+
+          return planet ? {
+              path: planet.path,
+              phase: planet.phase,
+              planet: planet.planet
+          } : null;
+      })
+      .filter(Boolean);
+
+  const latestPlanets = Object.values(
+      Object.groupBy(activePlanets, planet => planet.path)
+  ).map(planets =>
+      planets.reduce((latest, current) =>
+          current.phase > latest.phase ? current : latest
+      ).planet
+  );
+
+  sql = `
+    SELECT
+        rp.path,
+        rp.planet,
+        ro.operation,
+        u.character_name
+      FROM rote_operation ro
+      INNER JOIN unit u
+        ON u.base_id = ro.base_id
+      INNER JOIN rote_planets rp
+        ON rp.path = ro.path
+        AND rp.phase = ro.phase
+      WHERE ro.ally_code = ?
+      AND rp.planet IN (${latestPlanets.map(() => '?').join(',')})
+      ORDER BY rp.path, ro.operation, u.character_name
+  `;
+
+  return await runSQL(sql, [ally_code, ...latestPlanets]);
+};
+
 export default rote;

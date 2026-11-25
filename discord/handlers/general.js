@@ -1,11 +1,13 @@
 import {
   ActionRowBuilder,
+  EmbedBuilder,
   MessageFlags,
   ModalBuilder,
   StringSelectMenuBuilder,
   TextInputBuilder,
   TextInputStyle,
 } from 'discord.js';
+
 import { apiRequest } from '../api.js';
 
 export async function handleGeneralInteraction(interaction) {
@@ -57,7 +59,12 @@ export async function handleGeneralInteraction(interaction) {
 
   switch (interaction.commandName) {
 
-    case 'linkaccount':
+    case 'bot_help':
+      await showHelp(interaction);
+      return true;
+      break;
+
+    case 'link_account':
       await checkPlayer(interaction, interaction.user.id, interaction.member.displayName);
       
       return true;
@@ -197,4 +204,65 @@ async function checkPlayer(interaction, userId, userName, allowModal = true) {
       flags: MessageFlags.Ephemeral
     });
   }
+}
+
+async function showHelp(interaction) {
+    /*await interaction.reply({
+    content: `
+    General
+    bot_help - You are here already!
+    link_account - Link your discord account to your SWGOH account, this will allow you to get better help from me!
+    vader - Summon the Dark Lord, no not Voldemort!
+    yoda - Looking? Found someone, you have, I would say, hmmm?
+    RotE
+    rote_op_units - Find who has the required units
+    rote_my_ops - List your operation deployments for this phase.
+    `,
+    flags: MessageFlags.Ephemeral
+  });*/
+
+
+  const helpEmbed = new EmbedBuilder()
+    .setColor(0x3498DB)
+    .setTitle('🤖 BB-VIP | Command Help')
+    .setDescription(
+      "Your SWGOH guild assistant. Here's what I can do for you!"
+    )
+    .addFields(
+      {
+        name: '👥 General Commands',
+        value: [
+          '**`/bot_help`**',
+          'You\'re already here! Displays this help message.',
+          '',
+          '**`/link_account`**',
+          'Link your Discord account to your SWGOH account for a more personalised experience.',
+          '',
+          '**`/vader`**',
+          'Summon the Dark Lord. No, not Voldemort!',
+          '',
+          '**`/yoda`**',
+          'Looking for someone? Found someone, you have, I would say... hmmm?'
+        ].join('\n')
+      },
+      {
+        name: '🌌 Rise of the Empire (RotE)',
+        value: [
+          '**`/rote_op_units`**',
+          'Find out which guild members have the required units for an operation.',
+          '',
+          '**`/rote_my_ops`**',
+          'View your operation deployments for the current phase.'
+        ].join('\n')
+      }
+    )
+    .setFooter({
+      text: 'BB-VIP • May the Force be with you!'
+    });
+
+  await interaction.reply({
+    embeds: [helpEmbed],
+    flags: MessageFlags.Ephemeral
+  });
+
 }

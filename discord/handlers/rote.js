@@ -3,6 +3,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  EmbedBuilder,
   StringSelectMenuBuilder,
   MessageFlags
 } from 'discord.js';
@@ -16,6 +17,95 @@ const roteUnitSelections = new Map();
 export async function handleRoteInteraction(interaction) {
 
   try {
+
+    // ==========================================
+    // ROTE MY OP DEPLOYMENTS
+    // ==========================================
+
+    if (
+      interaction.isChatInputCommand() &&
+      interaction.commandName === 'rote_my_ops'
+    ) {
+
+      const phase = interaction.options.getInteger('phase');
+
+      const deployments = await apiRequest(`/rote/ops/deployments/${phase}/${interaction.user.id}`);
+
+      //player not found
+      if(!deployments.player){
+        await interaction.reply({
+          content: 'Player not found, check you have linked your account by calling /link_account',
+          flags: MessageFlags.Ephemeral
+        });
+        return;
+      }
+
+      // no active plan
+      if(!deployments.planner){
+        await interaction.reply({
+          content: 'No Active rote plan has been set, send a message to Bobba Daw',
+          flags: MessageFlags.Ephemeral
+        });
+        return;
+      }
+
+      const embed = createDeploymentEmbed(deployments.deployments);
+
+      await interaction.reply({
+          embeds: [embed],
+          flags: MessageFlags.Ephemeral
+      });
+    }
+
+  function createDeploymentEmbed(deployments) {
+    const paths = {
+        dark: { name: '🌑 Dark Side', operations: {} },
+        light: { name: '🌟 Light Side', operations: {} },
+        neutral: { name: '⚖️ Neutral', operations: {} }
+    };
+
+    for (const deployment of deployments) {
+        const { path, planet, operation, character_name } = deployment;
+
+        if (!paths[path]) continue;
+
+        paths[path].planet = planet;
+
+        if (!paths[path].operations[operation]) {
+            paths[path].operations[operation] = [];
+        }
+
+        paths[path].operations[operation].push(character_name);
+    }
+
+    const embed = new EmbedBuilder()
+        .setColor(0x5865F2)
+        .setTitle('Your ROTE Deployments')
+        .setDescription(
+            Object.values(paths)
+                .filter(group => Object.keys(group.operations).length > 0)
+                .map(group => {
+                    const operationText = Object.entries(group.operations)
+                        .sort(([a], [b]) => Number(a) - Number(b))
+                        .map(([operation, characters]) =>
+                            `**Operation ${operation}**\n` +
+                            characters.map(name => `• ${name}`).join('\n')
+                        )
+                        .join('\n');
+
+                    return `**${group.name} – ${group.planet}**\n${operationText}`;
+                })
+                .join('\n\n')
+        )
+        .setFooter({
+            text: `Total deployments: ${deployments.length}`
+        });
+
+    return embed;
+  }
+
+
+    
 
     // ==========================================
     // ROTE OP UNITS COMMAND
@@ -361,7 +451,7 @@ async function showRoteOperationUnits(interaction, path, planet, operation) {
 
   // Update the original interaction response
   const message = await interaction.editReply({
-    content: 'Which units can you deploy? Select as many as you need.',
+    content: 'Which units are needed? Select as many as you need.',
     components: []
   });
 
